@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct LoginView: View {
+    @StateObject var authKakao: AuthKakao = AuthKakao()
     var body: some View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
-            WDGLogoView()
+            VStack(spacing: 300) {
+                WDGLogoView()
+                VStack(spacing: 20) {
+                    Button("KAKAO LOGIN", action: {
+                        authKakao.handleKakaoLogin()
+                    })
+                    Button("KAKAO LOGOUT", action: {})
+                }
+            }
         }
     }
 }
@@ -33,8 +42,8 @@ struct WDGLogoView: View {
     }
 }
 
-struct LoginView_Preview: PreviewProvider {
-    static var previews: some View {
-        LoginView()
-    }
-}
+//struct LoginView_Preview: PreviewProvider {
+//    static var previews: some View {
+//        LoginView()
+//    }
+//}
