@@ -11,6 +11,8 @@
 		F4623E572AEBA4B20044F0C5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E562AEBA4B20044F0C5 /* ContentView.swift */; };
 		F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E582AEBA4B40044F0C5 /* Assets.xcassets */; };
 		F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */; };
+		F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E632AEBA5AB0044F0C5 /* LoginView.swift */; };
+		F4623E6A2AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4623E692AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,9 @@
 		F4623E562AEBA4B20044F0C5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F4623E582AEBA4B40044F0C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F4623E632AEBA5AB0044F0C5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		F4623E692AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DelaGothicOne-Regular.ttf"; sourceTree = "<group>"; };
+		F4623E6B2AEBAA0E0044F0C5 /* WDG-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "WDG-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +56,11 @@
 		F4623E532AEBA4B20044F0C5 /* WDG_iOS */ = {
 			isa = PBXGroup;
 			children = (
+				F4623E6B2AEBAA0E0044F0C5 /* WDG-iOS-Info.plist */,
+				F4623E672AEBA7A90044F0C5 /* Containers */,
+				F4623E662AEBA6450044F0C5 /* Models */,
 				F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */,
+				F4623E622AEBA58B0044F0C5 /* View */,
 				F4623E562AEBA4B20044F0C5 /* ContentView.swift */,
 				F4623E582AEBA4B40044F0C5 /* Assets.xcassets */,
 				F4623E5A2AEBA4B40044F0C5 /* Preview Content */,
@@ -65,6 +74,37 @@
 				F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F4623E622AEBA58B0044F0C5 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				F4623E632AEBA5AB0044F0C5 /* LoginView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		F4623E662AEBA6450044F0C5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F4623E672AEBA7A90044F0C5 /* Containers */ = {
+			isa = PBXGroup;
+			children = (
+				F4623E682AEBA7B30044F0C5 /* Fonts */,
+			);
+			path = Containers;
+			sourceTree = "<group>";
+		};
+		F4623E682AEBA7B30044F0C5 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				F4623E692AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,6 +167,7 @@
 			files = (
 				F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */,
 				F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */,
+				F4623E6A2AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +178,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
 				F4623E572AEBA4B20044F0C5 /* ContentView.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
 			);
@@ -274,6 +316,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"WDG_iOS/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "WDG-iOS-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -302,6 +345,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"WDG_iOS/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "WDG-iOS-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
