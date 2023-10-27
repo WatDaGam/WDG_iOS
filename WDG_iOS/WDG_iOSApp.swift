@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import KakaoSDKCommon
+import KakaoSDKAuth
+import KakaoSDKUser
 
 @main
 struct WDG_iOSApp: App {
+    @UIApplicationDelegateAdaptor var appDelegate : AppDelegate
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            MainListView()
         }
     }
 }
