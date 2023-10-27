@@ -13,6 +13,7 @@
 		F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */; };
 		F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E632AEBA5AB0044F0C5 /* LoginView.swift */; };
 		F4623E6A2AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4623E692AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf */; };
+		F4623E6F2AEBCD060044F0C5 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = F4623E6E2AEBCD060044F0C5 /* .swiftlint.yml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		F4623E632AEBA5AB0044F0C5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F4623E692AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DelaGothicOne-Regular.ttf"; sourceTree = "<group>"; };
 		F4623E6B2AEBAA0E0044F0C5 /* WDG-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "WDG-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
+		F4623E6E2AEBCD060044F0C5 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +42,7 @@
 		F4623E482AEBA4B20044F0C5 = {
 			isa = PBXGroup;
 			children = (
+				F4623E6E2AEBCD060044F0C5 /* .swiftlint.yml */,
 				F4623E532AEBA4B20044F0C5 /* WDG_iOS */,
 				F4623E522AEBA4B20044F0C5 /* Products */,
 			);
@@ -122,6 +125,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F4623E5F2AEBA4B40044F0C5 /* Build configuration list for PBXNativeTarget "WDG_iOS" */;
 			buildPhases = (
+				F4623E6D2AEBCC8B0044F0C5 /* SwiftLint Script */,
 				F4623E4D2AEBA4B20044F0C5 /* Sources */,
 				F4623E4E2AEBA4B20044F0C5 /* Frameworks */,
 				F4623E4F2AEBA4B20044F0C5 /* Resources */,
@@ -173,6 +177,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4623E6F2AEBCD060044F0C5 /* .swiftlint.yml in Resources */,
 				F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */,
 				F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */,
 				F4623E6A2AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf in Resources */,
@@ -180,6 +185,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F4623E6D2AEBCC8B0044F0C5 /* SwiftLint Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "SwiftLint Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F4623E4D2AEBA4B20044F0C5 /* Sources */ = {
@@ -231,8 +257,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -295,7 +320,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
