@@ -12,20 +12,41 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 class AuthKakao: ObservableObject {
+    @Published var isLoggedIn: Bool = false
+    @MainActor
     func handleKakaoLogin() {
-        // 카카오톡 실행 가능 여부 확인
-        if (UserApi.isKakaoTalkLoginAvailable()) {
+        Task {
+            isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
+                                loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
+        }
+    }
+    @MainActor
+    func handleKakaoLogout() { Task { isLoggedIn = await logoutWithKakao() } }
+    func loginWithKakaoTalkApp() async -> Bool {
+        await withCheckedContinuation { continuation in
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
-                if let error = error { print(error) } else {
-                    print("loginWithKakaoTalk() success.")
+                if error != nil { continuation.resume(returning: false) } else {
                     _ = oauthToken
+                    continuation.resume(returning: true)
                 }
             }
-        } else {
+        }
+    }
+    func loginWithoutKakaoTalkApp() async -> Bool {
+        await withCheckedContinuation { continuation in
             UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
-                if let error = error { print(error) } else {
-                    print("loginWithKakaoAccount() success.")
+                if error != nil { continuation.resume(returning: false) } else {
                     _ = oauthToken
+                    continuation.resume(returning: true)
+                }
+            }
+        }
+    }
+    func logoutWithKakao() async -> Bool {
+        await withCheckedContinuation { continuation in
+            UserApi.shared.logout {(error) in
+                if error != nil { continuation.resume(returning: false) } else {
+                    continuation.resume(returning: true)
                 }
             }
         }
