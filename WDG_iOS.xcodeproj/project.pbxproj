@@ -22,6 +22,7 @@
 		F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E902AEBEA590044F0C5 /* AppDelegate.swift */; };
 		F4623E932AEBEC990044F0C5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E922AEBEC990044F0C5 /* SceneDelegate.swift */; };
 		F4623E952AEBF3400044F0C5 /* AuthKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E942AEBF3400044F0C5 /* AuthKakao.swift */; };
+		F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E962AEC036B0044F0C5 /* MainListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		F4623E902AEBEA590044F0C5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F4623E922AEBEC990044F0C5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F4623E942AEBF3400044F0C5 /* AuthKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthKakao.swift; sourceTree = "<group>"; };
+		F4623E962AEC036B0044F0C5 /* MainListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				F4623E632AEBA5AB0044F0C5 /* LoginView.swift */,
+				F4623E962AEC036B0044F0C5 /* MainListView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -247,6 +250,7 @@
 				F4623E952AEBF3400044F0C5 /* AuthKakao.swift in Sources */,
 				F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
+				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
 				F4623E572AEBA4B20044F0C5 /* ContentView.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
 			);
