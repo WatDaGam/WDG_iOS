@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E62AECDCFF00B3E19E /* ContentView.swift */; };
+		F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E82AECDF1800B3E19E /* PostView.swift */; };
+		F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EA2AECE03600B3E19E /* SettingsView.swift */; };
 		F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */; };
-		F4623E572AEBA4B20044F0C5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E562AEBA4B20044F0C5 /* ContentView.swift */; };
 		F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E582AEBA4B40044F0C5 /* Assets.xcassets */; };
 		F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */; };
 		F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E632AEBA5AB0044F0C5 /* LoginView.swift */; };
@@ -26,9 +28,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F43EE5E62AECDCFF00B3E19E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F43EE5E82AECDF1800B3E19E /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
+		F43EE5EA2AECE03600B3E19E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F4623E512AEBA4B20044F0C5 /* WDG_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WDG_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WDG_iOSApp.swift; sourceTree = "<group>"; };
-		F4623E562AEBA4B20044F0C5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F4623E582AEBA4B40044F0C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F4623E632AEBA5AB0044F0C5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -84,7 +88,6 @@
 				F4623E662AEBA6450044F0C5 /* Models */,
 				F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */,
 				F4623E622AEBA58B0044F0C5 /* View */,
-				F4623E562AEBA4B20044F0C5 /* ContentView.swift */,
 				F4623E582AEBA4B40044F0C5 /* Assets.xcassets */,
 				F4623E5A2AEBA4B40044F0C5 /* Preview Content */,
 			);
@@ -104,6 +107,9 @@
 			children = (
 				F4623E632AEBA5AB0044F0C5 /* LoginView.swift */,
 				F4623E962AEC036B0044F0C5 /* MainListView.swift */,
+				F43EE5EA2AECE03600B3E19E /* SettingsView.swift */,
+				F43EE5E82AECDF1800B3E19E /* PostView.swift */,
+				F43EE5E62AECDCFF00B3E19E /* ContentView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -248,10 +254,12 @@
 			files = (
 				F4623E932AEBEC990044F0C5 /* SceneDelegate.swift in Sources */,
 				F4623E952AEBF3400044F0C5 /* AuthKakao.swift in Sources */,
+				F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */,
+				F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */,
+				F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */,
 				F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
 				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
-				F4623E572AEBA4B20044F0C5 /* ContentView.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
