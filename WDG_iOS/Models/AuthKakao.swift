@@ -21,7 +21,12 @@ class AuthKakao: ObservableObject {
         }
     }
     @MainActor
-    func handleKakaoLogout() { Task { isLoggedIn = await logoutWithKakao() } }
+    func handleKakaoLogout() {
+        Task {
+            let result = await !logoutWithKakao()
+            DispatchQueue.main.async { self.isLoggedIn = result }
+        }
+    }
     func loginWithKakaoTalkApp() async -> Bool {
         await withCheckedContinuation { continuation in
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in

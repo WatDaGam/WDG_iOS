@@ -11,8 +11,7 @@ struct ContentView: View {
     @StateObject var authKakao: AuthKakao = AuthKakao()
     var body: some View {
         Group {
-            //            if authKakao.isLoggedIn {
-            if true { // 임시 개발용
+            if authKakao.isLoggedIn {
                 // 사용자가 로그인한 경우 표시될 뷰
                 TabView {
                     MainListView()
@@ -23,7 +22,7 @@ struct ContentView: View {
                         .tabItem {
                             Image(systemName: "square.and.pencil")
                         }
-                    SettingsView()
+                    SettingsView(authKakao: authKakao)
                         .tabItem {
                             Image(systemName: "person")
                         }

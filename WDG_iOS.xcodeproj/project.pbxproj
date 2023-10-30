@@ -10,6 +10,7 @@
 		F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E62AECDCFF00B3E19E /* ContentView.swift */; };
 		F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E82AECDF1800B3E19E /* PostView.swift */; };
 		F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EA2AECE03600B3E19E /* SettingsView.swift */; };
+		F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EC2AED0EC800B3E19E /* Message.swift */; };
 		F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */; };
 		F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E582AEBA4B40044F0C5 /* Assets.xcassets */; };
 		F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */; };
@@ -31,6 +32,7 @@
 		F43EE5E62AECDCFF00B3E19E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F43EE5E82AECDF1800B3E19E /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		F43EE5EA2AECE03600B3E19E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F43EE5EC2AED0EC800B3E19E /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		F4623E512AEBA4B20044F0C5 /* WDG_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WDG_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WDG_iOSApp.swift; sourceTree = "<group>"; };
 		F4623E582AEBA4B40044F0C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				F4623E902AEBEA590044F0C5 /* AppDelegate.swift */,
 				F4623E922AEBEC990044F0C5 /* SceneDelegate.swift */,
 				F4623E942AEBF3400044F0C5 /* AuthKakao.swift */,
+				F43EE5EC2AED0EC800B3E19E /* Message.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 				F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */,
 				F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
+				F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */,
 				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
 			);
@@ -399,6 +403,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "WDG-iOS-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "왔다감";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -429,6 +435,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "WDG-iOS-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "왔다감";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

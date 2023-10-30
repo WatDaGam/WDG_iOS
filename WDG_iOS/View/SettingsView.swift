@@ -8,17 +8,10 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject var authKakao: AuthKakao = AuthKakao()
+    @ObservedObject var authKakao: AuthKakao
     var body: some View {
-        VStack {            
-            Text("Settings")
-            Button("KAKAO LOGOUT", action: {
-                authKakao.handleKakaoLogout()
-            })
+        VStack {
+            Button("KAKAO LOGOUT", action: { authKakao.handleKakaoLogout() })
         }
     }
 }
-
-//#Preview {
-//    SettingsView()
-//}
