@@ -13,6 +13,7 @@ import KakaoSDKUser
 
 class AuthKakao: ObservableObject {
     @Published var isLoggedIn: Bool = false
+    @Published var isNewAccount: Bool = false
     @MainActor
     func handleKakaoLogin() {
         Task {
@@ -31,8 +32,10 @@ class AuthKakao: ObservableObject {
         await withCheckedContinuation { continuation in
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
                 if error != nil { continuation.resume(returning: false) } else {
-                    _ = oauthToken
+                    let accessToken = oauthToken?.accessToken // 백엔드에 전달할 토큰
+//                    let result = getLoginInfoWithKakao(accessToken)
                     continuation.resume(returning: true)
+//                    continuation.resume(returning: result)
                 }
             }
         }
@@ -41,16 +44,39 @@ class AuthKakao: ObservableObject {
         await withCheckedContinuation { continuation in
             UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
                 if error != nil { continuation.resume(returning: false) } else {
-                    _ = oauthToken
+                    let accessToken = oauthToken?.accessToken // 백엔드에 전달할 토큰
+//                    let result = getLoginInfoWithKakao(accessToken)
+                    continuation.resume(returning: true)
+//                    continuation.resume(returning: result)
+                }
+            }
+        }
+    }
+//    func getLoginInfoWithKakao(accessToken: String) async -> Bool {
+//        await withCheckedContinuation { continuation in
+//            backendApi.login(accessToken) {(response) in
+//                if response.status != 200 || response.status != 201 { continuation.resume(returning: false) }
+//                else if response.status == 201 {
+//                    isNewAccount = true
+//                    continuation.resume(returning: true)
+//                } else { continuation.resume(returning: true) }
+//            }
+//        }
+//    }
+    func logoutWithKakao() async -> Bool {
+        await withCheckedContinuation { continuation in
+            UserApi.shared.logout {(error) in
+                if error != nil { continuation.resume(returning: false) } else {
                     continuation.resume(returning: true)
                 }
             }
         }
     }
-    func logoutWithKakao() async -> Bool {
+    func deleteAccountWithKakao() async -> Bool {
         await withCheckedContinuation { continuation in
             UserApi.shared.logout {(error) in
                 if error != nil { continuation.resume(returning: false) } else {
+                    // 백엔드로 회원 탈퇴 보내기, ourToken
                     continuation.resume(returning: true)
                 }
             }
