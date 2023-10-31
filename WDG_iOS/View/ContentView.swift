@@ -33,6 +33,12 @@ struct ContentView: View {
             } else {
                 // 사용자가 로그인하지 않은 경우 LoginView 표시
                 LoginView(authKakao: authKakao)
+                    .alert(isPresented: $authKakao.loginFailedAlert) {
+                        Alert(
+                            title: Text("로그인에 실패하였습니다."),
+                            message: Text("다시 시도해주세요.")
+                        )
+                    }
             }
         }
     }
