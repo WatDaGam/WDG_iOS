@@ -14,11 +14,13 @@ import KakaoSDKUser
 class AuthKakao: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isNewAccount: Bool = false
+    @Published var loginFailedAlert: Bool = false
     @MainActor
     func handleKakaoLogin() {
         Task {
             isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
                                 loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
+            if !isLoggedIn { loginFailedAlert = true }
         }
     }
     @MainActor
@@ -31,11 +33,17 @@ class AuthKakao: ObservableObject {
     func loginWithKakaoTalkApp() async -> Bool {
         await withCheckedContinuation { continuation in
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
-                if error != nil { continuation.resume(returning: false) } else {
-                    let accessToken = oauthToken?.accessToken // 백엔드에 전달할 토큰
-                    //                    let result = getLoginInfoWithKakao(accessToken)
-                    continuation.resume(returning: true)
-                    //                    continuation.resume(returning: result)
+                if let error = error {
+                    print("Login error: \(error.localizedDescription)")
+                    continuation.resume(returning: false)
+                } else if let accessToken = oauthToken?.accessToken {
+                    Task {
+                        let result = await self.getLoginInfoWithKakao(accessToken: accessToken)
+                        continuation.resume(returning: result)
+                    }
+                } else {
+                    print("No access token available")
+                    continuation.resume(returning: false)
                 }
             }
         }
@@ -47,8 +55,6 @@ class AuthKakao: ObservableObject {
                     print("Login error: \(error.localizedDescription)")
                     continuation.resume(returning: false)
                 } else if let accessToken = oauthToken?.accessToken {
-                    // 백엔드에 전달할 토큰
-                    print("accessToken: ", accessToken)
                     Task {
                         let result = await self.getLoginInfoWithKakao(accessToken: accessToken)
                         continuation.resume(returning: result)
@@ -62,14 +68,18 @@ class AuthKakao: ObservableObject {
     }
     func getLoginInfoWithKakao(accessToken: String) async -> Bool {
         await withCheckedContinuation { continuation in
-            guard let loginURL = URL(string: "https://0b88436b-a8a0-463a-bb4d-07b31d747be2.mock.pstmn.io/login?accessToken=validToken&platform=KAKAO") else {
+            guard let loginURL = URL(string: "https://0b88436b-a8a0-463a-bb4d-07b31d747be2.mock.pstmn.io/login?platform=KAKAO") else {
                 print("Invalid URL")
                 return
             }
-            URLSession.shared.dataTask(with: loginURL) { _, response, error in
+            var request = URLRequest(url: loginURL)
+            request.addValue("Bearer newValidToken", forHTTPHeaderField: "Authorization")
+//            request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            URLSession.shared.dataTask(with: request) { _, response, error in
                 if let httpResponse = response as? HTTPURLResponse {
                     DispatchQueue.main.async {
                         if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 {
+                            self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
                             continuation.resume(returning: false)
                         } else if httpResponse.statusCode == 201 {
                             self.isNewAccount = true
