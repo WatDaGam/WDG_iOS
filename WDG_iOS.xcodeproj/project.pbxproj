@@ -26,6 +26,7 @@
 		F4623E932AEBEC990044F0C5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E922AEBEC990044F0C5 /* SceneDelegate.swift */; };
 		F4623E952AEBF3400044F0C5 /* AuthKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E942AEBF3400044F0C5 /* AuthKakao.swift */; };
 		F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E962AEC036B0044F0C5 /* MainListView.swift */; };
+		F4C1B0892AEFCD6D009B9FF3 /* SetNicknameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0882AEFCD6D009B9FF3 /* SetNicknameView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		F4623E922AEBEC990044F0C5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F4623E942AEBF3400044F0C5 /* AuthKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthKakao.swift; sourceTree = "<group>"; };
 		F4623E962AEC036B0044F0C5 /* MainListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainListView.swift; sourceTree = "<group>"; };
+		F4C1B0882AEFCD6D009B9FF3 /* SetNicknameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetNicknameView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				F43EE5EA2AECE03600B3E19E /* SettingsView.swift */,
 				F43EE5E82AECDF1800B3E19E /* PostView.swift */,
 				F43EE5E62AECDCFF00B3E19E /* ContentView.swift */,
+				F4C1B0882AEFCD6D009B9FF3 /* SetNicknameView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 				F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */,
 				F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
+				F4C1B0892AEFCD6D009B9FF3 /* SetNicknameView.swift in Sources */,
 				F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */,
 				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
@@ -400,6 +404,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WDG_iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = 6AC2WG5B7U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "WDG-iOS-Info.plist";
@@ -432,6 +437,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WDG_iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = 6AC2WG5B7U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "WDG-iOS-Info.plist";
