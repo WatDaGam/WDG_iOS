@@ -85,6 +85,7 @@ class AuthKakao: ObservableObject {
                             self.isNewAccount = true
                             continuation.resume(returning: true)
                         } else {
+                            self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
                             continuation.resume(returning: true)
                         }
                     }
