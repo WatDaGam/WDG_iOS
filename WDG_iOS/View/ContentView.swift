@@ -11,7 +11,9 @@ struct ContentView: View {
     @StateObject var authKakao: AuthKakao = AuthKakao()
     var body: some View {
         Group {
-            if authKakao.isLoggedIn {
+            if authKakao.isLoggedIn && authKakao.isNewAccount {
+                SetNicknameView(authKakao: authKakao)
+            } else if authKakao.isLoggedIn {
                 // 사용자가 로그인한 경우 표시될 뷰
                 TabView {
                     MainListView()
