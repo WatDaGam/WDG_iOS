@@ -13,20 +13,22 @@ import KakaoSDKUser
 
 class AuthKakao: ObservableObject {
     @Published var isLoggedIn: Bool = false
-    @Published var isNewAccount: Bool = false
+    @Published var isNewAccount: Bool = true
     @Published var loginFailedAlert: Bool = false
     @MainActor
     func handleKakaoLogin() {
         Task {
-            isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
-                                loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
+//            isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
+//                                loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
+            isLoggedIn = true // 개발용
             if !isLoggedIn { loginFailedAlert = true }
         }
     }
     @MainActor
     func handleKakaoLogout() {
         Task {
-            let result = await !logoutWithKakao()
+//            let result = await !logoutWithKakao()
+            let result = false // 개발용
             DispatchQueue.main.async { self.isLoggedIn = result }
         }
     }
