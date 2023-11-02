@@ -27,6 +27,7 @@ struct SetNicknameView: View {
     @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
+    private var tokenModel: TokenModel = TokenModel()
     private var infoList: [String] = ["default", "fail", "success"]
     private var nicknameInfoDict: [String: NicknameInfo] = [
         "default": NicknameInfo(message: "닉네임은 2자부터 10자까지 설정할 수 있습니다.", color: Color.gray, image: "info.circle"),

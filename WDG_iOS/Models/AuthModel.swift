@@ -15,6 +15,7 @@ class AuthModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isNewAccount: Bool = true
     @Published var loginFailedAlert: Bool = false
+    private var tokenModel: TokenModel = TokenModel()
     @MainActor
     func handleKakaoLogin() {
         Task {
@@ -80,13 +81,25 @@ class AuthModel: ObservableObject {
                 if let httpResponse = response as? HTTPURLResponse {
                     DispatchQueue.main.async {
                         if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 {
-                            self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
+                            print("httpResponse: ", httpResponse.statusCode)
                             continuation.resume(returning: false)
                         } else if httpResponse.statusCode == 201 {
                             self.isNewAccount = true
+                            self.tokenModel.saveToken(
+                                httpResponse.headers["Authorization"] ?? "", type: "accessToken"
+                            )
+                            self.tokenModel.saveToken(
+                                httpResponse.headers["Refresh-Token"] ?? "", type: "refreshToken"
+                            )
                             continuation.resume(returning: true)
                         } else {
                             self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
+                            self.tokenModel.saveToken(
+                                httpResponse.headers["Authorization"] ?? "", type: "accessToken"
+                            )
+                            self.tokenModel.saveToken(
+                                httpResponse.headers["Refresh-Token"] ?? "", type: "refreshToken"
+                            )
                             continuation.resume(returning: true)
                         }
                     }
