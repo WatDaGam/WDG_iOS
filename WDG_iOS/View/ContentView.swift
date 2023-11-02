@@ -44,6 +44,14 @@ struct ContentView: View {
     }
 }
 
-//#Preview {
-//    ContentView()
-//}
+struct ContentViewPreviews: PreviewProvider {
+    static func loggedInAuthKakao() -> AuthKakao {
+        let authKakao = AuthKakao()
+        authKakao.isLoggedIn = true
+        authKakao.isNewAccount = false
+        return authKakao
+    }
+    static var previews: some View {
+        ContentView(authKakao: loggedInAuthKakao())
+    }
+}
