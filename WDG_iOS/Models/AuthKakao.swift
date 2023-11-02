@@ -31,6 +31,8 @@ class AuthKakao: ObservableObject {
             let result = false // 개발용
             DispatchQueue.main.async { self.isLoggedIn = result }
         }
+        isLoggedIn = false
+        isNewAccount = false
     }
     func loginWithKakaoTalkApp() async -> Bool {
         await withCheckedContinuation { continuation in
