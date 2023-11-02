@@ -18,15 +18,16 @@ struct SetNicknameView: View {
     @StateObject var setNickname: SetNicknameViewModel = SetNicknameViewModel()
     @State private var nickname: String = ""
     @FocusState private var focusField: Field?
-    @ObservedObject var authKakao: AuthKakao
-    init(authKakao: AuthKakao) {
-        self.authKakao = authKakao
+    @ObservedObject var authModel: AuthModel
+    init(authModel: AuthModel) {
+        self.authModel = authModel
     }
     @State private var attempts: Int = 0
     @State private var mode: Bool = false
     @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
+    private var tokenModel: TokenModel = TokenModel()
     private var infoList: [String] = ["default", "fail", "success"]
     private var nicknameInfoDict: [String: NicknameInfo] = [
         "default": NicknameInfo(message: "닉네임은 2자부터 10자까지 설정할 수 있습니다.", color: Color.gray, image: "info.circle"),
@@ -74,32 +75,33 @@ struct SetNicknameView: View {
                 Spacer()
                 if isConfirm {
                     Button(action: {
-                        authKakao.isNewAccount = !setNickname.setNickname(nickname: nickname)
-                    }) {
+                        authModel.isNewAccount = !setNickname.setNickname(nickname: nickname)
+                    }, label: {
                         Text("가입하기")
                             .font(Font.custom("Noto Sans", size: 20))
                             .foregroundColor(.white)
-                    }
+                    })
                     .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
-                    .frame(height: 40)  // 버튼의 높이 설정
+                    .frame(height: 50)  // 버튼의 높이 설정
                     .background(.blue)
                     .padding(.bottom, 0)
                 } else {
                     Button(action: {
                         isValidNickname = setNickname.checkNickname(nickname: nickname) ? 2 : 1
-                        if infoList[isValidNickname] == "success" { isConfirm = true }
-                        else {
+                        if infoList[isValidNickname] == "success" {
+                            isConfirm = true
+                        } else {
                             withAnimation {
                                 self.attempts += 1
                             }
                         }
-                    }) {
+                    }, label: {
                         Text("확인")
                             .font(Font.custom("Noto Sans", size: 20))
                             .foregroundColor(.white)
-                    }
+                    })
                     .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
-                    .frame(height: 40)  // 버튼의 높이 설정
+                    .frame(height: 50)  // 버튼의 높이 설정
                     .background(.blue)
                     .padding(.bottom, 0)
                 }
@@ -117,11 +119,9 @@ struct SetNicknameView: View {
                     primaryButton: .destructive(Text("예")) {
                         // "예"를 선택했을 때의 동작
                         // 토큰 삭제 및 로그아웃 처리
-                        authKakao.isLoggedIn = false
+                        authModel.deleteAccount()
                     },
-                    secondaryButton: .cancel(Text("아니오")) {
-                        // "아니오"를 선택했을 때의 동작
-                    }
+                    secondaryButton: .cancel(Text("아니오"))
                 )
             }
             .onAppear { focusField = .nickname }
@@ -143,7 +143,7 @@ extension View {
 
 struct SetNicknameViewPreviews: PreviewProvider {
     static var previews: some View {
-        let authKakao: AuthKakao = AuthKakao()
-        SetNicknameView(authKakao: authKakao)
+        let authModel: AuthModel = AuthModel()
+        SetNicknameView(authModel: authModel)
     }
 }

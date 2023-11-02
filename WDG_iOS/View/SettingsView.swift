@@ -8,26 +8,62 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @ObservedObject var authKakao: AuthKakao
+    @ObservedObject var authModel: AuthModel
+    @State private var alertType: AlertType?
+    enum AlertType: Identifiable {
+        case logout
+        case removeAccount
+        var id: Int {
+            switch self {
+            case .logout:
+                return 0
+            case .removeAccount:
+                return 1
+            }
+        }
+    }
     var body: some View {
-        NavigationView {  // NavigationView를 추가
+        NavigationView {
             ZStack {
-                Color.white.edgesIgnoringSafeArea(.all)  // 전체 화면에 흰색 배경 적용
+                Color.white.edgesIgnoringSafeArea(.all)
                 List {
                     Button("프로필", action: { print("profile clicked!") })
                     Button("내 작성 목록", action: { print("my list clicked!") })
-                    Button("로그아웃", action: { authKakao.handleKakaoLogout() })
+                    Button("로그아웃", action: { alertType = .logout })
+                    Button("회원탈퇴", action: { alertType = .removeAccount })
                 }
-                .listStyle(.plain)  // 리스트 스타일을 평범한 스타일로 설정
+                .listStyle(.plain)
             }
-            .navigationBarTitle("마이페이지", displayMode: .inline)  // 상단 헤더 타이틀 설정
+            .navigationBarTitle("마이페이지", displayMode: .inline)
+            .alert(item: $alertType) { type in
+                switch type {
+                case .logout:
+                    return Alert(
+                        title: Text("로그아웃"),
+                        message: Text("로그아웃 시 로그인 화면으로 이동합니다."),
+                        primaryButton: .destructive(Text("예")) {
+                            authModel.handleLogout()
+                        },
+                        secondaryButton: .cancel(Text("아니오"))
+                    )
+                case .removeAccount:
+                    return Alert(
+                        title: Text("회원탈퇴"),
+                        message: Text("회원탈퇴 시 모든 데이터가 삭제됩니다."),
+                        primaryButton: .destructive(Text("탈퇴")) {
+                            authModel.deleteAccount()
+                        },
+                        secondaryButton: .cancel(Text("취소"))
+                    )
+                }
+            }
         }
     }
 }
 
 struct SettingsViewPreviews: PreviewProvider {
     static var previews: some View {
-        let authKakao: AuthKakao = AuthKakao()
-        SettingsView(authKakao: authKakao)
+        let authModel: AuthModel = AuthModel()
+        SettingsView(authModel: authModel)
     }
 }
