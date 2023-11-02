@@ -20,7 +20,7 @@ included: # case-sensitive paths to include during linting. `--path` is ignored 
 excluded: # case-sensitive paths to ignore during linting. Takes precedence over `included`
   - Carthage
   - Pods
-  - Sources/ExcludedFolder
+  - WDG_iOS/Models/KeyChainSwift.swift
   - Sources/ExcludedFile.swift
   - Sources/*/ExcludedFile.swift # exclude files with a wildcard
 
