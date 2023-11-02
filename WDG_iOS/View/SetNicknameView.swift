@@ -24,6 +24,7 @@ struct SetNicknameView: View {
     }
     @State private var attempts: Int = 0
     @State private var mode: Bool = false
+    @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
     private var infoList: [String] = ["default", "fail", "success"]
@@ -105,10 +106,24 @@ struct SetNicknameView: View {
             }
             .navigationBarItems(leading: Button(
                 action: {
-                    // 토큰 삭제도 해줘야함
-                    authKakao.isLoggedIn = false
+                    // 경고창을 표시
+                    isCancle = true
                 }, label: { Text("취소") })
             )
+            .alert(isPresented: $isCancle) {
+                Alert(
+                    title: Text("회원가입 취소"),
+                    message: Text("취소 시 정보가 저장되지 않습니다."),
+                    primaryButton: .destructive(Text("예")) {
+                        // "예"를 선택했을 때의 동작
+                        // 토큰 삭제 및 로그아웃 처리
+                        authKakao.isLoggedIn = false
+                    },
+                    secondaryButton: .cancel(Text("아니오")) {
+                        // "아니오"를 선택했을 때의 동작
+                    }
+                )
+            }
             .onAppear { focusField = .nickname }
         }
     }

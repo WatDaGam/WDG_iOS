@@ -75,8 +75,7 @@ class AuthKakao: ObservableObject {
                 return
             }
             var request = URLRequest(url: loginURL)
-            request.addValue("Bearer newValidToken", forHTTPHeaderField: "Authorization")
-//            request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
             URLSession.shared.dataTask(with: request) { _, response, error in
                 if let httpResponse = response as? HTTPURLResponse {
                     DispatchQueue.main.async {
