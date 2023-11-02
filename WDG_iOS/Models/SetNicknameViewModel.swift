@@ -8,25 +8,26 @@
 import Foundation
 
 class SetNicknameViewModel: ObservableObject {
-    func validateNickname(nickname: String) async {
-        guard let url = URL(string: "https://yourserver.com/validate-nickname") else { return }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let requestBody = ["nickname": nickname]
-        
-        do {
-            let requestData = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-            request.httpBody = requestData
-            
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let response = try JSONDecoder().decode(NicknameValidationResponse.self, from: data)
-            
-            DispatchQueue.main.async {
-                self.isValid = response.isValid
-            }
-        } catch {
-            print("Error validating nickname: \(error)")
+    func checkNickname(nickname: String) -> Bool {
+        // 닉네임 길이 검사
+        if nickname.count < 2 {
+            return false
         }
+        // 영어 알파벳, 한국어 문자, 숫자만 허용하는 정규 표현식
+        let pattern = "^[a-zA-Z0-9가-힣]+$"
+        // 정규 표현식 검사
+        let regex = try? NSRegularExpression(pattern: pattern)
+        let range = NSRange(location: 0, length: nickname.utf16.count)
+        // 정규 표현식에 일치하는지 검사
+        if let match = regex?.firstMatch(in: nickname, options: [], range: range), match.range == range {
+            return true
+            // 백엔드로 중복 검사 체크
+        } else {
+            return false
+        }
+    }
+    func setNickname(nickname: String) -> Bool {
+        // 백엔드로 닉네임 설정한다고 요청
+        return true
     }
 }

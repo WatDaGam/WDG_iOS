@@ -15,12 +15,14 @@ struct NicknameInfo {
 
 struct SetNicknameView: View {
     enum Field: Hashable { case nickname }
+    @StateObject var setNickname: SetNicknameViewModel = SetNicknameViewModel()
     @State private var nickname: String = ""
     @FocusState private var focusField: Field?
     @ObservedObject var authKakao: AuthKakao
     init(authKakao: AuthKakao) {
         self.authKakao = authKakao
     }
+    @State private var attempts: Int = 0
     @State private var mode: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
@@ -37,15 +39,10 @@ struct SetNicknameView: View {
                 VStack {
                     HStack {
                         TextField("", text: $nickname)
-                            .onChange(of: nickname) { newValue in
-                                if newValue.count > 10 {
-                                    nickname = String(newValue.prefix(10))
-                                }
-                                isValidNickname = (isValidNickname + 1) % 3
+                            .onChange(of: nickname) { oldValue, newValue in
+                                if newValue.count > 10 { nickname = oldValue }
+                                if nickname.isEmpty { isValidNickname = 0 }
                                 isConfirm = false
-                                if nickname.isEmpty {
-                                    isValidNickname = 0
-                                }
                             }
                             .font(.system(size: 20, weight: .bold))
                             .focused($focusField, equals: .nickname)
@@ -69,13 +66,14 @@ struct SetNicknameView: View {
                             .foregroundColor(nicknameInfoDict[infoList[isValidNickname]]?.color ?? Color.gray)
                             .font(.system(size: 14))
                     }
+                    .modifier(Shake(animatableData: CGFloat(attempts)))
                     .frame(maxWidth: .infinity)
                     .padding(.top, -15)
                 }
                 Spacer()
                 if isConfirm {
                     Button(action: {
-                        authKakao.isNewAccount = false
+                        authKakao.isNewAccount = !setNickname.setNickname(nickname: nickname)
                     }) {
                         Text("가입하기")
                             .font(Font.custom("Noto Sans", size: 20))
@@ -87,7 +85,13 @@ struct SetNicknameView: View {
                     .padding(.bottom, 0)
                 } else {
                     Button(action: {
+                        isValidNickname = setNickname.checkNickname(nickname: nickname) ? 2 : 1
                         if infoList[isValidNickname] == "success" { isConfirm = true }
+                        else {
+                            withAnimation {
+                                self.attempts += 1
+                            }
+                        }
                     }) {
                         Text("확인")
                             .font(Font.custom("Noto Sans", size: 20))
@@ -101,6 +105,7 @@ struct SetNicknameView: View {
             }
             .navigationBarItems(leading: Button(
                 action: {
+                    // 토큰 삭제도 해줘야함
                     authKakao.isLoggedIn = false
                 }, label: { Text("취소") })
             )
