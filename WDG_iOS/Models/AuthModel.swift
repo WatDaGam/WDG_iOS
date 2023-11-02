@@ -11,24 +11,22 @@ import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
 
-class AuthKakao: ObservableObject {
+class AuthModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isNewAccount: Bool = true
     @Published var loginFailedAlert: Bool = false
     @MainActor
     func handleKakaoLogin() {
         Task {
-//            isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
-//                                loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
-            isLoggedIn = true // 개발용
+            isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
+                                loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
             if !isLoggedIn { loginFailedAlert = true }
         }
     }
     @MainActor
     func handleKakaoLogout() {
         Task {
-//            let result = await !logoutWithKakao()
-            let result = false // 개발용
+            let result = await !logoutWithKakao()
             DispatchQueue.main.async { self.isLoggedIn = result }
         }
         isLoggedIn = false
@@ -72,7 +70,7 @@ class AuthKakao: ObservableObject {
     }
     func getLoginInfoWithKakao(accessToken: String) async -> Bool {
         await withCheckedContinuation { continuation in
-            guard let loginURL = URL(string: "https://0b88436b-a8a0-463a-bb4d-07b31d747be2.mock.pstmn.io/login?platform=KAKAO") else {
+            guard let loginURL = URL(string: "http://52.78.126.48:8080/login?platform=KAKAO") else {
                 print("Invalid URL")
                 return
             }

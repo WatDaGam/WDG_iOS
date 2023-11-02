@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @ObservedObject var authKakao: AuthKakao = AuthKakao()
+    @ObservedObject var authModel: AuthModel = AuthModel()
     @State private var logoOffset: CGFloat = 150
     @State private var endAnimation: Bool = false
     @State private var mode: Bool = true
@@ -33,7 +33,7 @@ struct LoginView: View {
                 VStack {
                     if endAnimation {
                         Button(action: {
-                            authKakao.handleKakaoLogin()
+                            authModel.handleKakaoLogin()
                         }, label: {
                             Image("KakaoLoginButtonImage")
                         })
