@@ -24,12 +24,8 @@ class AuthModel: ObservableObject {
             if !isLoggedIn { loginFailedAlert = true }
         }
     }
-    @MainActor
-    func handleKakaoLogout() {
-        Task {
-            let result = await !logoutWithKakao()
-            DispatchQueue.main.async { self.isLoggedIn = result }
-        }
+    func handleLogout() {
+        self.tokenModel.deleteAllToken()
         isLoggedIn = false
         isNewAccount = false
     }
@@ -82,12 +78,13 @@ class AuthModel: ObservableObject {
                     DispatchQueue.main.async {
                         let accessToken = httpResponse.headers["Authorization"] ?? ""
                         let refreshToken = httpResponse.headers["Refresh-Token"] ?? ""
+                        //                        let accessExpire = httpResponse.headers["expire"] ?? ""
                         if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 {
-                            print("httpResponse: ", httpResponse.statusCode)
                             continuation.resume(returning: false)
                         } else if httpResponse.statusCode == 201 {
                             self.isNewAccount = true
                             self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
+                            //                            self.tokenModel.saveToken(accessExpire, type: "accessExpire")
                             continuation.resume(returning: true)
                         } else {
                             self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
@@ -102,20 +99,78 @@ class AuthModel: ObservableObject {
             }.resume() // URLSession dataTask를 시작하기 위해 resume() 호출 필요
         }
     }
-    func logoutWithKakao() async -> Bool {
-        await withCheckedContinuation { continuation in
-            self.tokenModel.deleteAllToken()
-            continuation.resume(returning: true)
-        }
-    }
-    func deleteAccountWithKakao() {
+    func deleteAccount() {
         Task {
             await withCheckedContinuation { continuation in
-                self.tokenModel.deleteAllToken()
-                continuation.resume(returning: true)
+                guard let deleteURL = URL(string: "http://52.78.126.48:8080/withdrawal") else {
+                    print("Invalid URL")
+                    return
+                }
+                let accessToken = self.tokenModel.getToken("accessToken") ?? ""
+                var request = URLRequest(url: deleteURL)
+                request.httpMethod = "DELETE"
+                request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+                URLSession.shared.dataTask(with: request) { _, response, error in
+                    if let httpResponse = response as? HTTPURLResponse {
+                        DispatchQueue.main.async {
+                            print(httpResponse.allHeaderFields)
+                            print(httpResponse.statusCode)
+                            if httpResponse.statusCode != 200 {
+                                print("delete false")
+                                continuation.resume(returning: false)
+                            } else {
+                                print("delete here")
+                                continuation.resume(returning: true)
+                            }
+                        }
+                    } else {
+                        print("Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
+                        continuation.resume(returning: false)
+                    }
+                }.resume()
             }
         }
+        self.tokenModel.deleteAllToken()
         isLoggedIn = false
         isNewAccount = false
+    }
+    func reissuanceAccessToken() async -> Bool {
+        await withCheckedContinuation { continuation in
+            guard let accessExpireStr = self.tokenModel.getToken("accessExpire"),
+                  let accessExpireDate = ISO8601DateFormatter().date(from: accessExpireStr) else {
+                print("No access token or invalid date format")
+                return
+            }
+            if Date().timeIntervalSince(accessExpireDate) < 1000 {
+                guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/reissuance") else {
+                    print("Invalid URL")
+                    return
+                }
+                let beforeRefreshToken = self.tokenModel.getToken("refreshToken") ?? ""
+                var request = URLRequest(url: reissuanceURL)
+                request.httpMethod = "POST"
+                request.addValue("Bearer \(beforeRefreshToken)", forHTTPHeaderField: "Authorization")
+                URLSession.shared.dataTask(with: request) { _, response, error in
+                    if let httpResponse = response as? HTTPURLResponse {
+                        DispatchQueue.main.async {
+                            print(httpResponse.allHeaderFields)
+                            print(httpResponse.statusCode)
+                            let afterAccessToken = httpResponse.headers["Authorization"] ?? ""
+                            let afterRefreshToken = httpResponse.headers["Refresh-Token"] ?? ""
+                            if httpResponse.statusCode != 200 {
+                                continuation.resume(returning: false)
+                            } else {
+                                self.tokenModel.saveAllToken(access: afterAccessToken, refresh: afterRefreshToken)
+                                continuation.resume(returning: true)
+                            }
+                        }
+                    } else {
+                        print("Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
+                        continuation.resume(returning: false)
+                    }
+                }.resume()
+            }
+            continuation.resume(returning: true)
+        }
     }
 }

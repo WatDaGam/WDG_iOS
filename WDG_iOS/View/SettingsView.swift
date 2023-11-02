@@ -42,7 +42,7 @@ struct SettingsView: View {
                         title: Text("로그아웃"),
                         message: Text("로그아웃 시 로그인 화면으로 이동합니다."),
                         primaryButton: .destructive(Text("예")) {
-                            authModel.handleKakaoLogout()
+                            authModel.handleLogout()
                         },
                         secondaryButton: .cancel(Text("아니오"))
                     )
@@ -51,7 +51,7 @@ struct SettingsView: View {
                         title: Text("회원탈퇴"),
                         message: Text("회원탈퇴 시 모든 데이터가 삭제됩니다."),
                         primaryButton: .destructive(Text("탈퇴")) {
-                            authModel.deleteAccountWithKakao()
+                            authModel.deleteAccount()
                         },
                         secondaryButton: .cancel(Text("취소"))
                     )
