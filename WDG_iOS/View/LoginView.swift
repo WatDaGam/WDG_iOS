@@ -11,12 +11,13 @@ struct LoginView: View {
     @ObservedObject var authKakao: AuthKakao = AuthKakao()
     @State private var logoOffset: CGFloat = 150
     @State private var endAnimation: Bool = false
+    @State private var mode: Bool = true
     var body: some View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
             VStack(spacing: 300) {
-                WDGLogoView()
+                WDGLogoView(mode: $mode)
                     .offset(y: logoOffset)
                     .onAppear {
                         withAnimation(
@@ -44,17 +45,18 @@ struct LoginView: View {
 }
 
 struct WDGLogoView: View {
+    @Binding var mode: Bool
     var body: some View {
         HStack(spacing: -10) {
             Text("W")
                 .font(Font.custom("Dela Gothic One", size: 68))
-                .foregroundColor(.white)
+                .foregroundColor(mode ? .white : .black)
             Text("D")
                 .font(Font.custom("Dela Gothic One", size: 68))
-                .foregroundColor(.white)
+                .foregroundColor(mode ? .white : .black)
             Text("G")
                 .font(Font.custom("Dela Gothic One", size: 68))
-                .foregroundColor(.white)
+                .foregroundColor(mode ? .white : .black)
         }
     }
 }
