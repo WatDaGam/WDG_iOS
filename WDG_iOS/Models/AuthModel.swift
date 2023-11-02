@@ -80,26 +80,18 @@ class AuthModel: ObservableObject {
             URLSession.shared.dataTask(with: request) { _, response, error in
                 if let httpResponse = response as? HTTPURLResponse {
                     DispatchQueue.main.async {
+                        let accessToken = httpResponse.headers["Authorization"] ?? ""
+                        let refreshToken = httpResponse.headers["Refresh-Token"] ?? ""
                         if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 {
                             print("httpResponse: ", httpResponse.statusCode)
                             continuation.resume(returning: false)
                         } else if httpResponse.statusCode == 201 {
                             self.isNewAccount = true
-                            self.tokenModel.saveToken(
-                                httpResponse.headers["Authorization"] ?? "", type: "accessToken"
-                            )
-                            self.tokenModel.saveToken(
-                                httpResponse.headers["Refresh-Token"] ?? "", type: "refreshToken"
-                            )
+                            self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
                             continuation.resume(returning: true)
                         } else {
                             self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
-                            self.tokenModel.saveToken(
-                                httpResponse.headers["Authorization"] ?? "", type: "accessToken"
-                            )
-                            self.tokenModel.saveToken(
-                                httpResponse.headers["Refresh-Token"] ?? "", type: "refreshToken"
-                            )
+                            self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
                             continuation.resume(returning: true)
                         }
                     }
@@ -112,21 +104,18 @@ class AuthModel: ObservableObject {
     }
     func logoutWithKakao() async -> Bool {
         await withCheckedContinuation { continuation in
-            UserApi.shared.logout {(error) in
-                if error != nil { continuation.resume(returning: false) } else {
-                    continuation.resume(returning: true)
-                }
-            }
+            self.tokenModel.deleteAllToken()
+            continuation.resume(returning: true)
         }
     }
-    func deleteAccountWithKakao() async -> Bool {
-        await withCheckedContinuation { continuation in
-            UserApi.shared.logout {(error) in
-                if error != nil { continuation.resume(returning: false) } else {
-                    // 백엔드로 회원 탈퇴 보내기, ourToken
-                    continuation.resume(returning: true)
-                }
+    func deleteAccountWithKakao() {
+        Task {
+            await withCheckedContinuation { continuation in
+                self.tokenModel.deleteAllToken()
+                continuation.resume(returning: true)
             }
         }
+        isLoggedIn = false
+        isNewAccount = false
     }
 }
