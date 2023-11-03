@@ -75,7 +75,11 @@ struct SetNicknameView: View {
                 Spacer()
                 if isConfirm {
                     Button(action: {
-                        authModel.isNewAccount = !setNickname.setNickname(nickname: nickname)
+                        Task {
+                            let result = await setNickname.setNickname(nickname: nickname)
+                            isValidNickname = result ? 2 : 1
+                            authModel.isNewAccount = !result
+                        }
                     }, label: {
                         Text("가입하기")
                             .font(Font.custom("Noto Sans", size: 20))

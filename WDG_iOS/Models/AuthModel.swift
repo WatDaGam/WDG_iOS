@@ -16,7 +16,7 @@ class AuthModel: ObservableObject {
     @Published var isNewAccount: Bool
     @Published var loginFailedAlert: Bool
     var tokenModel: TokenModel // @EnvironmentObject 대신 일반 프로퍼티로 변경
-    init(tokenModel: TokenModel, isLoggedIn: Bool = false, isNewAccount: Bool = true, loginFailedAlert: Bool = false) {
+    init(tokenModel: TokenModel, isLoggedIn: Bool = false, isNewAccount: Bool = false, loginFailedAlert: Bool = false) {
         self.tokenModel = tokenModel
         self.isLoggedIn = isLoggedIn
         self.isNewAccount = isNewAccount
