@@ -15,12 +15,14 @@ class AuthModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isNewAccount: Bool = true
     @Published var loginFailedAlert: Bool = false
+    @Published var isValidToken: Bool = true
     private var tokenModel: TokenModel = TokenModel()
     @MainActor
     func handleKakaoLogin() {
         Task {
             isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
                                 loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
+            isValidToken = true
             if !isLoggedIn { loginFailedAlert = true }
         }
     }
@@ -76,19 +78,24 @@ class AuthModel: ObservableObject {
             URLSession.shared.dataTask(with: request) { _, response, error in
                 if let httpResponse = response as? HTTPURLResponse {
                     DispatchQueue.main.async {
+                        print(httpResponse.allHeaderFields)
                         let accessToken = httpResponse.headers["Authorization"] ?? ""
                         let refreshToken = httpResponse.headers["Refresh-Token"] ?? ""
-                        //                        let accessExpire = httpResponse.headers["expire"] ?? ""
+                        let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+                        let refreshExpire = httpResponse.headers["Refresh-Expiration-Time"] ?? ""
                         if httpResponse.statusCode != 200 && httpResponse.statusCode != 201 {
                             continuation.resume(returning: false)
                         } else if httpResponse.statusCode == 201 {
                             self.isNewAccount = true
                             self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
-                            //                            self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                            self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                            self.tokenModel.saveToken(refreshExpire, type: "refreshExpire")
                             continuation.resume(returning: true)
                         } else {
                             self.isNewAccount = true // 닉네임 설정 뷰 개발 위해 임시 적용
                             self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
+                            self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                            self.tokenModel.saveToken(refreshExpire, type: "refreshExpire")
                             continuation.resume(returning: true)
                         }
                     }
@@ -101,6 +108,7 @@ class AuthModel: ObservableObject {
     }
     func deleteAccount() {
         Task {
+            await validateToken()
             await withCheckedContinuation { continuation in
                 guard let deleteURL = URL(string: "http://52.78.126.48:8080/withdrawal") else {
                     print("Invalid URL")
@@ -134,43 +142,55 @@ class AuthModel: ObservableObject {
         isLoggedIn = false
         isNewAccount = false
     }
-    func reissuanceAccessToken() async -> Bool {
-        await withCheckedContinuation { continuation in
-            guard let accessExpireStr = self.tokenModel.getToken("accessExpire"),
-                  let accessExpireDate = ISO8601DateFormatter().date(from: accessExpireStr) else {
-                print("No access token or invalid date format")
-                return
-            }
-            if Date().timeIntervalSince(accessExpireDate) < 1000 {
-                guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/reissuance") else {
-                    print("Invalid URL")
-                    return
-                }
-                let beforeRefreshToken = self.tokenModel.getToken("refreshToken") ?? ""
-                var request = URLRequest(url: reissuanceURL)
-                request.httpMethod = "POST"
-                request.addValue("Bearer \(beforeRefreshToken)", forHTTPHeaderField: "Authorization")
-                URLSession.shared.dataTask(with: request) { _, response, error in
-                    if let httpResponse = response as? HTTPURLResponse {
-                        DispatchQueue.main.async {
-                            print(httpResponse.allHeaderFields)
-                            print(httpResponse.statusCode)
-                            let afterAccessToken = httpResponse.headers["Authorization"] ?? ""
-                            let afterRefreshToken = httpResponse.headers["Refresh-Token"] ?? ""
-                            if httpResponse.statusCode != 200 {
-                                continuation.resume(returning: false)
-                            } else {
-                                self.tokenModel.saveAllToken(access: afterAccessToken, refresh: afterRefreshToken)
-                                continuation.resume(returning: true)
-                            }
-                        }
-                    } else {
-                        print("Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
-                        continuation.resume(returning: false)
-                    }
-                }.resume()
-            }
-            continuation.resume(returning: true)
+    @MainActor
+    func validateToken() {
+        Task {
+            isValidToken = await reissuanceAccessToken()
+            if !isValidToken { handleLogout() }
         }
+    }
+    func reissuanceAccessToken() async -> Bool {
+        guard let accessExpireStr = self.tokenModel.getToken("accessExpire"),
+              let accessExpireDouble = Double(accessExpireStr) else {
+            print("No access token or invalid date format")
+            return false
+        }
+        guard let refreshExpireStr = self.tokenModel.getToken("refreshExpire"),
+              let refreshExpireDouble = Double(refreshExpireStr) else {
+            print("No access token or invalid date format")
+            return false
+        }
+        let refreshExpire = refreshExpireDouble / 1000
+        if refreshExpire < Date().timeIntervalSince1970 { return false }
+        let beforeAccessExpire = accessExpireDouble / 1000
+        if beforeAccessExpire - Date().timeIntervalSince1970 < 10 {
+            guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/refreshtoken") else {
+                print("Invalid URL")
+                return false
+            }
+            let beforeRefreshToken = self.tokenModel.getToken("refreshToken") ?? ""
+            var request = URLRequest(url: reissuanceURL)
+            request.addValue(beforeRefreshToken, forHTTPHeaderField: "Refresh-Token")
+            do {
+                let (_, response) = try await URLSession.shared.data(for: request)
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    print("Invalid response")
+                    return false
+                }
+                print("statusCode :", httpResponse.statusCode)
+                if httpResponse.statusCode != 200 {
+                    return false
+                }
+                let accessToken = httpResponse.headers["Authorization"] ?? ""
+                let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+                self.tokenModel.saveToken(accessToken, type: "accessToken")
+                self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                return true
+            } catch {
+                print("Fetch failed: \(error.localizedDescription)")
+                return false
+            }
+        }
+        return true
     }
 }

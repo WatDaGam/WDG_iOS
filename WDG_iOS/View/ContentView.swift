@@ -16,7 +16,7 @@ struct ContentView: View {
             } else if authModel.isLoggedIn {
                 // 사용자가 로그인한 경우 표시될 뷰
                 TabView {
-                    MainListView()
+                    MainListView(authModel: authModel)
                         .tabItem {
                             Image(systemName: "list.bullet")
                         }
@@ -33,14 +33,30 @@ struct ContentView: View {
             } else {
                 // 사용자가 로그인하지 않은 경우 LoginView 표시
                 LoginView(authModel: authModel)
-                    .alert(isPresented: $authModel.loginFailedAlert) {
-                        Alert(
-                            title: Text("로그인에 실패하였습니다."),
-                            message: Text("다시 시도해주세요.")
-                        )
-                    }
             }
         }
+        .alert(isPresented: $authModel.loginFailedAlert) {
+            Alert(
+                title: Text("로그인에 실패하였습니다."),
+                message: Text("다시 시도해주세요.")
+            )
+        }
+        .alert(isPresented: $authModel.isValidToken.inverted) {
+            Alert(
+                title: Text("로그인이 만료되었습니다."),
+                message: Text("다시 로그인해주세요.")
+            )
+        }
+    }
+}
+
+extension Binding where Value == Bool {
+    /// A binding to the inverse of the bool value.
+    var inverted: Binding<Bool> {
+        Binding<Bool>(
+            get: { !self.wrappedValue },
+            set: { self.wrappedValue = !$0 }
+        )
     }
 }
 
