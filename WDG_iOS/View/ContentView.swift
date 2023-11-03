@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var authModel: AuthModel = AuthModel()
+    @EnvironmentObject var authModel: AuthModel
+    @EnvironmentObject var tokenModel: TokenModel
     var body: some View {
         Group {
             if authModel.isLoggedIn && authModel.isNewAccount {
-                SetNicknameView(authModel: authModel)
+                SetNicknameView()
             } else if authModel.isLoggedIn {
                 // 사용자가 로그인한 경우 표시될 뷰
                 TabView {
-                    MainListView(authModel: authModel)
+                    MainListView()
                         .tabItem {
                             Image(systemName: "list.bullet")
                         }
@@ -24,7 +25,7 @@ struct ContentView: View {
                         .tabItem {
                             Image(systemName: "square.and.pencil")
                         }
-                    SettingsView(authModel: authModel)
+                    SettingsView()
                         .tabItem {
                             Image(systemName: "person")
                         }
@@ -32,7 +33,7 @@ struct ContentView: View {
                 .accentColor(.black)
             } else {
                 // 사용자가 로그인하지 않은 경우 LoginView 표시
-                LoginView(authModel: authModel)
+                LoginView()
             }
         }
         .alert(isPresented: $authModel.loginFailedAlert) {
@@ -41,7 +42,7 @@ struct ContentView: View {
                 message: Text("다시 시도해주세요.")
             )
         }
-        .alert(isPresented: $authModel.isValidToken.inverted) {
+        .alert(isPresented: $tokenModel.isValidToken.inverted) {
             Alert(
                 title: Text("로그인이 만료되었습니다."),
                 message: Text("다시 로그인해주세요.")
@@ -57,17 +58,5 @@ extension Binding where Value == Bool {
             get: { !self.wrappedValue },
             set: { self.wrappedValue = !$0 }
         )
-    }
-}
-
-struct ContentViewPreviews: PreviewProvider {
-    static func loggedInAuthModel() -> AuthModel {
-        let authModel = AuthModel()
-        authModel.isLoggedIn = true
-        authModel.isNewAccount = false
-        return authModel
-    }
-    static var previews: some View {
-        ContentView(authModel: loggedInAuthModel())
     }
 }

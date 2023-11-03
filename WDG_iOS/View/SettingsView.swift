@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @ObservedObject var authModel: AuthModel
+    @EnvironmentObject var authModel: AuthModel
     @State private var alertType: AlertType?
     enum AlertType: Identifiable {
         case logout
@@ -63,7 +63,6 @@ struct SettingsView: View {
 
 struct SettingsViewPreviews: PreviewProvider {
     static var previews: some View {
-        let authModel: AuthModel = AuthModel()
-        SettingsView(authModel: authModel)
+        SettingsView()
     }
 }

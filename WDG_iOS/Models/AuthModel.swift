@@ -12,17 +12,21 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 class AuthModel: ObservableObject {
-    @Published var isLoggedIn: Bool = false
-    @Published var isNewAccount: Bool = true
-    @Published var loginFailedAlert: Bool = false
-    @Published var isValidToken: Bool = true
-    private var tokenModel: TokenModel = TokenModel()
+    @Published var isLoggedIn: Bool
+    @Published var isNewAccount: Bool
+    @Published var loginFailedAlert: Bool
+    var tokenModel: TokenModel // @EnvironmentObject 대신 일반 프로퍼티로 변경
+    init(tokenModel: TokenModel, isLoggedIn: Bool = false, isNewAccount: Bool = true, loginFailedAlert: Bool = false) {
+        self.tokenModel = tokenModel
+        self.isLoggedIn = isLoggedIn
+        self.isNewAccount = isNewAccount
+        self.loginFailedAlert = loginFailedAlert
+    }
     @MainActor
     func handleKakaoLogin() {
         Task {
             isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?
                                 loginWithKakaoTalkApp() : loginWithoutKakaoTalkApp())
-            isValidToken = true
             if !isLoggedIn { loginFailedAlert = true }
         }
     }
@@ -108,7 +112,7 @@ class AuthModel: ObservableObject {
     }
     func deleteAccount() {
         Task {
-            await validateToken()
+            await tokenModel.validateToken(authModel: self)
             await withCheckedContinuation { continuation in
                 guard let deleteURL = URL(string: "http://52.78.126.48:8080/withdrawal") else {
                     print("Invalid URL")
@@ -142,55 +146,55 @@ class AuthModel: ObservableObject {
         isLoggedIn = false
         isNewAccount = false
     }
-    @MainActor
-    func validateToken() {
-        Task {
-            isValidToken = await reissuanceAccessToken()
-            if !isValidToken { handleLogout() }
-        }
-    }
-    func reissuanceAccessToken() async -> Bool {
-        guard let accessExpireStr = self.tokenModel.getToken("accessExpire"),
-              let accessExpireDouble = Double(accessExpireStr) else {
-            print("No access token or invalid date format")
-            return false
-        }
-        guard let refreshExpireStr = self.tokenModel.getToken("refreshExpire"),
-              let refreshExpireDouble = Double(refreshExpireStr) else {
-            print("No access token or invalid date format")
-            return false
-        }
-        let refreshExpire = refreshExpireDouble / 1000
-        if refreshExpire < Date().timeIntervalSince1970 { return false }
-        let beforeAccessExpire = accessExpireDouble / 1000
-        if beforeAccessExpire - Date().timeIntervalSince1970 < 10 {
-            guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/refreshtoken") else {
-                print("Invalid URL")
-                return false
-            }
-            let beforeRefreshToken = self.tokenModel.getToken("refreshToken") ?? ""
-            var request = URLRequest(url: reissuanceURL)
-            request.addValue(beforeRefreshToken, forHTTPHeaderField: "Refresh-Token")
-            do {
-                let (_, response) = try await URLSession.shared.data(for: request)
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    print("Invalid response")
-                    return false
-                }
-                print("statusCode :", httpResponse.statusCode)
-                if httpResponse.statusCode != 200 {
-                    return false
-                }
-                let accessToken = httpResponse.headers["Authorization"] ?? ""
-                let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
-                self.tokenModel.saveToken(accessToken, type: "accessToken")
-                self.tokenModel.saveToken(accessExpire, type: "accessExpire")
-                return true
-            } catch {
-                print("Fetch failed: \(error.localizedDescription)")
-                return false
-            }
-        }
-        return true
-    }
+//    @MainActor
+//    func validateToken() {
+//        Task {
+//            self.isValidToken = await reissuanceAccessToken()
+//            if !self.isValidToken { handleLogout() }
+//        }
+//    }
+//    func reissuanceAccessToken() async -> Bool {
+//        guard let accessExpireStr = self.tokenModel.getToken("accessExpire"),
+//              let accessExpireDouble = Double(accessExpireStr) else {
+//            print("No access token or invalid date format")
+//            return false
+//        }
+//        guard let refreshExpireStr = self.tokenModel.getToken("refreshExpire"),
+//              let refreshExpireDouble = Double(refreshExpireStr) else {
+//            print("No access token or invalid date format")
+//            return false
+//        }
+//        let refreshExpire = refreshExpireDouble / 1000
+//        if refreshExpire < Date().timeIntervalSince1970 { return false }
+//        let beforeAccessExpire = accessExpireDouble / 1000
+//        if beforeAccessExpire - Date().timeIntervalSince1970 < 10 {
+//            guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/refreshtoken") else {
+//                print("Invalid URL")
+//                return false
+//            }
+//            let beforeRefreshToken = self.tokenModel.getToken("refreshToken") ?? ""
+//            var request = URLRequest(url: reissuanceURL)
+//            request.addValue(beforeRefreshToken, forHTTPHeaderField: "Refresh-Token")
+//            do {
+//                let (_, response) = try await URLSession.shared.data(for: request)
+//                guard let httpResponse = response as? HTTPURLResponse else {
+//                    print("Invalid response")
+//                    return false
+//                }
+//                print("statusCode :", httpResponse.statusCode)
+//                if httpResponse.statusCode != 200 {
+//                    return false
+//                }
+//                let accessToken = httpResponse.headers["Authorization"] ?? ""
+//                let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+//                self.tokenModel.saveToken(accessToken, type: "accessToken")
+//                self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+//                return true
+//            } catch {
+//                print("Fetch failed: \(error.localizedDescription)")
+//                return false
+//            }
+//        }
+//        return true
+//    }
 }
