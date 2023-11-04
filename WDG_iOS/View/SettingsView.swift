@@ -51,7 +51,9 @@ struct SettingsView: View {
                         title: Text("회원탈퇴"),
                         message: Text("회원탈퇴 시 모든 데이터가 삭제됩니다."),
                         primaryButton: .destructive(Text("탈퇴")) {
-                            authModel.deleteAccount()
+                            Task {
+                                await authModel.deleteAccount()
+                            }
                         },
                         secondaryButton: .cancel(Text("취소"))
                     )

@@ -125,7 +125,9 @@ struct SetNicknameView: View {
                     primaryButton: .destructive(Text("예")) {
                         // "예"를 선택했을 때의 동작
                         // 토큰 삭제 및 로그아웃 처리
-                        authModel.deleteAccount()
+                        Task {
+                            await authModel.deleteAccount()
+                        }
                     },
                     secondaryButton: .cancel(Text("아니오"))
                 )
