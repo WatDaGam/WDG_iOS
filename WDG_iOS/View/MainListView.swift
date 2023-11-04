@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct MainListView: View {
-    @ObservedObject var authModel: AuthModel
+    @EnvironmentObject var authModel: AuthModel
+    @EnvironmentObject var tokenModel: TokenModel
     var body: some View {
         VStack {
             Button(action: {
-                authModel.validateToken()
+                Task {
+                    await tokenModel.validateToken(authModel: authModel)
+                }
             }, label: {
                 Text("토큰 재발급 테스트")
             })

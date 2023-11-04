@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @ObservedObject var authModel: AuthModel = AuthModel()
+    @EnvironmentObject var authModel: AuthModel
     @State private var logoOffset: CGFloat = 150
     @State private var endAnimation: Bool = false
     @State private var mode: Bool = true

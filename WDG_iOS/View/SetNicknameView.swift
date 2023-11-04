@@ -18,10 +18,10 @@ struct SetNicknameView: View {
     @StateObject var setNickname: SetNicknameViewModel = SetNicknameViewModel()
     @State private var nickname: String = ""
     @FocusState private var focusField: Field?
-    @ObservedObject var authModel: AuthModel
-    init(authModel: AuthModel) {
-        self.authModel = authModel
-    }
+    @EnvironmentObject var authModel: AuthModel
+//    init(authModel: AuthModel) {
+//        self.authModel = authModel
+//    }
     @State private var attempts: Int = 0
     @State private var mode: Bool = false
     @State private var isCancle: Bool = false
@@ -75,7 +75,11 @@ struct SetNicknameView: View {
                 Spacer()
                 if isConfirm {
                     Button(action: {
-                        authModel.isNewAccount = !setNickname.setNickname(nickname: nickname)
+                        Task {
+                            let result = await setNickname.setNickname(nickname: nickname)
+                            isValidNickname = result ? 2 : 1
+                            authModel.isNewAccount = !result
+                        }
                     }, label: {
                         Text("가입하기")
                             .font(Font.custom("Noto Sans", size: 20))
@@ -87,12 +91,14 @@ struct SetNicknameView: View {
                     .padding(.bottom, 0)
                 } else {
                     Button(action: {
-                        isValidNickname = setNickname.checkNickname(nickname: nickname) ? 2 : 1
-                        if infoList[isValidNickname] == "success" {
-                            isConfirm = true
-                        } else {
-                            withAnimation {
-                                self.attempts += 1
+                        Task {
+                            isValidNickname = await setNickname.checkNickname(nickname: nickname) ? 2 : 1
+                            if infoList[isValidNickname] == "success" {
+                                isConfirm = true
+                            } else {
+                                withAnimation {
+                                    self.attempts += 1
+                                }
                             }
                         }
                     }, label: {
@@ -119,7 +125,9 @@ struct SetNicknameView: View {
                     primaryButton: .destructive(Text("예")) {
                         // "예"를 선택했을 때의 동작
                         // 토큰 삭제 및 로그아웃 처리
-                        authModel.deleteAccount()
+                        Task {
+                            await authModel.deleteAccount()
+                        }
                     },
                     secondaryButton: .cancel(Text("아니오"))
                 )
@@ -143,7 +151,6 @@ extension View {
 
 struct SetNicknameViewPreviews: PreviewProvider {
     static var previews: some View {
-        let authModel: AuthModel = AuthModel()
-        SetNicknameView(authModel: authModel)
+        SetNicknameView()
     }
 }

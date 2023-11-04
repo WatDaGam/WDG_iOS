@@ -14,8 +14,12 @@ import KakaoSDKUser
 struct WDG_iOSApp: App {
     @UIApplicationDelegateAdaptor var appDelegate : AppDelegate
     var body: some Scene {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
         WindowGroup {
             ContentView()
+                .environmentObject(authModel)
+                .environmentObject(tokenModel)
         }
     }
 }
