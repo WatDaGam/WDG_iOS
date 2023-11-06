@@ -60,3 +60,16 @@ extension Binding where Value == Bool {
         )
     }
 }
+
+struct ContentPreview: PreviewProvider {
+    static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
+        let postModel = PostModel()
+        authModel.isLoggedIn = true
+        return ContentView()
+            .environmentObject(authModel)
+            .environmentObject(tokenModel)
+            .environmentObject(postModel)
+    }
+}

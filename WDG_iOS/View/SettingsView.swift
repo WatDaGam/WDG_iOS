@@ -7,9 +7,15 @@
 
 import SwiftUI
 
+enum SettingsNavigationDestination {
+    case profile
+    // 다른 네비게이션 목적지를 추가할 수 있습니다.
+}
+
 struct SettingsView: View {
     @EnvironmentObject var authModel: AuthModel
     @State private var alertType: AlertType?
+    @State private var selectedNavigation: SettingsNavigationDestination?
     enum AlertType: Identifiable {
         case logout
         case removeAccount
@@ -22,12 +28,24 @@ struct SettingsView: View {
             }
         }
     }
+    // 네비게이션 바의 외관을 설정하는 초기화자 추가
+    init() {
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = UIColor.black // 검정색 배경 설정
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white] // 타이틀 텍스트 색상을 흰색으로 설정
+        // 네비게이션 바의 기본 외관을 설정
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        // 네비게이션 바의 버튼 아이템 색상을 설정
+        UINavigationBar.appearance().tintColor = .white
+    }
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.white.edgesIgnoringSafeArea(.all)
                 List {
-                    Button("프로필", action: { print("profile clicked!") })
+                    NavigationLink("프로필", value: SettingsNavigationDestination.profile)
                     Button("내 작성 목록", action: { print("my list clicked!") })
                     Button("로그아웃", action: { alertType = .logout })
                     Button("회원탈퇴", action: { alertType = .removeAccount })
@@ -35,6 +53,12 @@ struct SettingsView: View {
                 .listStyle(.plain)
             }
             .navigationBarTitle("마이페이지", displayMode: .inline)
+            .navigationDestination(for: SettingsNavigationDestination.self) { destination in
+                switch destination {
+                case .profile:
+                    ProfileView()
+                }
+            }
             .alert(item: $alertType) { type in
                 switch type {
                 case .logout:
@@ -65,6 +89,8 @@ struct SettingsView: View {
 
 struct SettingsViewPreviews: PreviewProvider {
     static var previews: some View {
+        let postModel = PostModel()
         SettingsView()
+            .environmentObject(postModel)
     }
 }
