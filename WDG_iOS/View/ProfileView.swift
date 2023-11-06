@@ -26,6 +26,38 @@ struct ProfileView: View {
             }
         }
     }
+    var postList: some View {
+        List {
+            ForEach(postModel.posts) { post in
+                if post.nickname == nickname {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 30) {
+                            Text(post.nickname)
+                                .font(.headline)
+                            Text(post.message)
+                                .font(.subheadline)
+                        }
+                        .padding()
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 30) {
+                            HStack {
+                                Image(systemName: "heart")
+                                Text("\(post.likes)")
+                            }
+                            HStack {
+                                Image(systemName: "location")
+                                Text("\(Int.random(in: 1...100) * 10)m")
+                            }
+                        }
+                        .padding()
+                    }
+                    .frame(height: 100)
+                    .listRowInsets(EdgeInsets())
+                }
+            }
+        }
+        .listStyle(.plain)
+    }
     var body: some View {
         VStack {
             HStack(spacing: 20) {
@@ -36,7 +68,7 @@ struct ProfileView: View {
             }
             .padding(.vertical, 30)
             Divider()
-            HStack {
+            HStack { // 향후 이미지를 버튼으로 변경 예정
                 Spacer() // 이미지를 중앙으로 밀기 위해 추가
                 Image(systemName: "signpost.right")
                 Spacer() // Divider와 다른 이미지 사이에 공간을 만들기 위해 추가
@@ -48,36 +80,7 @@ struct ProfileView: View {
             }
             .frame(height: 30) // HStack의 높이를 설정
             Divider()
-            List {
-                ForEach(postModel.posts) { post in
-                    if post.nickname == nickname {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 30) {
-                                Text(post.nickname)
-                                    .font(.headline)
-                                Text(post.message)
-                                    .font(.subheadline)
-                            }
-                            .padding()
-                            Spacer()
-                            VStack(alignment: .trailing, spacing: 30) {
-                                HStack {
-                                    Image(systemName: "heart")
-                                    Text("\(post.likes)")
-                                }
-                                HStack {
-                                    Image(systemName: "location")
-                                    Text("\(Int.random(in: 1...100) * 10)m")
-                                }
-                            }
-                            .padding()
-                        }
-                        .frame(height: 100)
-                        .listRowInsets(EdgeInsets())
-                    }
-                }
-            }
-            .listStyle(.plain)
+            postList
             Spacer()
         }
         .navigationBarBackButtonHidden(true)
