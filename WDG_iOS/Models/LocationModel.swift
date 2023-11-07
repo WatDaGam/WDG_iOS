@@ -11,6 +11,7 @@ import CoreLocation
 // 위치 정보를 관리하고 업데이트를 처리할 클래스 정의
 class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
+    private var refreshLocation: CLLocation?
     @Published var location: CLLocation?
     @Published var currentLocation: CLLocation?
     @Published var locationName: String = "위치 정보 없음"
@@ -68,6 +69,18 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error getting location: \(error)")
+        if currentLocation != nil {
+            // 에러가 발생하더라도 이전 위치 정보(currentLocation)가 있으면 그 정보를 계속 사용합니다.
+            // 이 경우 새로운 위치 업데이트가 실패하더라도 사용자에게 영향을 주지 않습니다.
+            // 위치명이 이미 설정되어 있으면, 업데이트를 재시도하지 않아도 됩니다.
+            // 그렇지 않은 경우에만 위치명을 업데이트합니다.
+            if locationName == "위치 정보 없음" || locationName == "위치 정보를 찾을 수 없음" {
+                updateLocationName(with: currentLocation!)
+            }
+        } else {
+            // 이전 위치 정보가 없다면 사용자에게 위치 정보를 얻을 수 없음을 알립니다.
+            locationName = "위치 정보를 찾을 수 없음"
+        }
     }
     func reverseGeocode() {
         guard let location = currentLocation else { return }
