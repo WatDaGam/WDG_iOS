@@ -8,14 +8,37 @@
 import Foundation
 import CoreLocation
 
+// CLLocationCoordinate2D를 위한 Hashable 래퍼 구조체 정의
+struct LocationHash: Hashable {
+    let latitude: Double
+    let longitude: Double
+
+    init(coordinate: CLLocationCoordinate2D) {
+        self.latitude = coordinate.latitude
+        self.longitude = coordinate.longitude
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(latitude)
+        hasher.combine(longitude)
+    }
+
+    static func == (leftHash: LocationHash, rightHash: LocationHash) -> Bool {
+        return leftHash.latitude == rightHash.latitude && leftHash.longitude == rightHash.longitude
+    }
+}
+
 // 위치 정보를 관리하고 업데이트를 처리할 클래스 정의
 class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     private var refreshLocation: CLLocation?
+    private var lastRequestedTime: Date? // 마지막으로 역지오코딩 요청한 시간을 저장
+    private var geocodeRequestDelay: TimeInterval = 60 // 60초 간격으로 요청하도록 초기 설정
     @Published var location: CLLocation?
     @Published var currentLocation: CLLocation?
     @Published var locationName: String = "위치 정보 없음"
     private let geocoder = CLGeocoder()
+    private var locationCache: [LocationHash: String] = [:] // 위치 이름 캐시
     override init() {
         super.init()
         self.locationManager.delegate = self
@@ -44,18 +67,37 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     private func updateLocationName(with location: CLLocation) {
-        // Update the location name using reverse geocoding
+        // 캐시된 위치 이름을 확인합니다.
+        let coordinateKey = LocationHash(coordinate: location.coordinate)
+        if let cachedName = locationCache[coordinateKey] {
+            self.locationName = cachedName
+            return
+        }
+        // 마지막 요청 시간을 확인하여 요청 간격을 준수합니다.
+        if let lastRequested = lastRequestedTime, Date().timeIntervalSince(lastRequested) < geocodeRequestDelay {
+            return
+        }
+        // 새로운 요청 시간을 기록합니다.
+        lastRequestedTime = Date()
         geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
             guard let self = self else { return }
+            // 요청 실패 시 백오프 시간 증가
             if let error = error {
                 print(error)
+                self.geocodeRequestDelay *= 2 // 다음 요청 전에 대기 시간을 두 배로 늘립니다.
                 self.locationName = "위치 정보를 찾을 수 없음"
-            } else if let placemarks = placemarks?.first {
-                if let city = placemarks.locality, let country = placemarks.country {
+                return
+            }
+            // 성공적으로 위치 정보를 받았을 때 백오프 시간을 초기화합니다.
+            self.geocodeRequestDelay = 60
+            if let placemark = placemarks?.first {
+                if let city = placemark.locality, let country = placemark.country {
                     self.locationName = "\(city), \(country)"
                 } else {
-                    self.locationName = placemarks.name ?? "알 수 없는 위치"
+                    self.locationName = placemark.name ?? "알 수 없는 위치"
                 }
+                // 캐시에 위치 이름을 저장합니다.
+                self.locationCache[coordinateKey] = self.locationName
             }
         }
     }
