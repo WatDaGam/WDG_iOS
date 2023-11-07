@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
@@ -39,5 +40,34 @@ class PostModel: ObservableObject {
             dummyMessages.append(message)
         }
         self.posts = dummyMessages
+    }
+}
+
+struct Post: View {
+    var post: Message
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 30) {
+                Text(post.nickname)
+                    .font(.headline)
+                Text(post.message)
+                    .font(.subheadline)
+            }
+            .padding()
+            Spacer()
+            VStack(alignment: .trailing, spacing: 30) {
+                HStack {
+                    Image(systemName: "heart")
+                    Text("\(post.likes)")
+                }
+                HStack {
+                    Image(systemName: "location")
+                    Text("\(Int.random(in: 1...100) * 10)m")
+                }
+            }
+            .padding()
+        }
+        .frame(height: 100)
+        .listRowInsets(EdgeInsets())
     }
 }
