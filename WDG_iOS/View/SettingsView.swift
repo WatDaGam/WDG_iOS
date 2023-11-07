@@ -14,6 +14,7 @@ enum SettingsNavigationDestination {
 
 struct SettingsView: View {
     @EnvironmentObject var authModel: AuthModel
+    @EnvironmentObject var locationModel: LocationModel
     @State private var alertType: AlertType?
     @State private var selectedNavigation: SettingsNavigationDestination?
     enum AlertType: Identifiable {
@@ -57,6 +58,7 @@ struct SettingsView: View {
                 switch destination {
                 case .profile:
                     ProfileView()
+                        .environmentObject(locationModel)
                 }
             }
             .alert(item: $alertType) { type in

@@ -10,6 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var postModel: PostModel
+    @EnvironmentObject var locationModel: LocationModel
     private var nickname: String = "정찬웅"
     private var numberOfPosts: Int = 10
     private var numberOfLikes: Int = 321
@@ -31,6 +32,7 @@ struct ProfileView: View {
             ForEach(postModel.posts) { post in
                 if post.nickname == nickname {
                     Post(post: post)
+                        .environmentObject(locationModel)
                 }
             }
         }

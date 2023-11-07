@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var tokenModel: TokenModel
+    @EnvironmentObject var locationModel: LocationModel
     var body: some View {
         Group {
             if authModel.isLoggedIn && authModel.isNewAccount {
@@ -21,6 +22,7 @@ struct ContentView: View {
                         .tabItem {
                             Image(systemName: "list.bullet")
                         }
+                        .environmentObject(locationModel)
                     PostView()
                         .tabItem {
                             Image(systemName: "square.and.pencil")
@@ -66,10 +68,12 @@ struct ContentPreview: PreviewProvider {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
+        let locationModel = LocationModel()
         authModel.isLoggedIn = true
         return ContentView()
             .environmentObject(authModel)
             .environmentObject(tokenModel)
             .environmentObject(postModel)
+            .environmentObject(locationModel)
     }
 }

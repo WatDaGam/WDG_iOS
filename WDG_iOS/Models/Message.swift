@@ -7,14 +7,19 @@
 
 import Foundation
 
+struct LocationType: Codable {
+    var latitude: Double
+    var longitude: Double
+}
+
 struct Message: Identifiable, Codable {
     let id: UUID
     let nickname: String
     var message: String
     var date: Date
     var likes: Int
-    let location: [Double]
-    init(id: UUID = UUID(), nickname: String, message: String, date: Date, location: [Double], likes: Int) {
+    let location: LocationType
+    init(id: UUID = UUID(), nickname: String, message: String, date: Date, location: LocationType, likes: Int) {
         self.id = id
         self.nickname = nickname
         self.message = message
@@ -23,7 +28,7 @@ struct Message: Identifiable, Codable {
         self.likes = likes
     }
     static func createSampleMessage(
-        nickname: String, message: String, date: Date, location: [Double], likes: Int) -> Message {
+        nickname: String, message: String, date: Date, location: LocationType, likes: Int) -> Message {
             return Message(nickname: nickname, message: message, date: date, location: location, likes: likes)
     }
 }

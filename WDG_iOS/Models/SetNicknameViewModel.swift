@@ -75,6 +75,13 @@ class SetNicknameViewModel: ObservableObject {
                     print("Invalid response")
                     return false
                 }
+                let accessToken = httpResponse.headers["Authorization"] ?? ""
+                let refreshToken = httpResponse.headers["Refresh-Token"] ?? ""
+                let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+                let refreshExpire = httpResponse.headers["Refresh-Expiration-Time"] ?? ""
+                self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
+                self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                self.tokenModel.saveToken(refreshExpire, type: "refreshExpire")
                 return httpResponse.statusCode == 200
             } catch {
                 print("Fetch failed: \(error.localizedDescription)")
