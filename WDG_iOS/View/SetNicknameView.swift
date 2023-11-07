@@ -19,11 +19,7 @@ struct SetNicknameView: View {
     @State private var nickname: String = ""
     @FocusState private var focusField: Field?
     @EnvironmentObject var authModel: AuthModel
-//    init(authModel: AuthModel) {
-//        self.authModel = authModel
-//    }
     @State private var attempts: Int = 0
-    @State private var mode: Bool = false
     @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
@@ -37,7 +33,7 @@ struct SetNicknameView: View {
     var body: some View {
         NavigationView {
             VStack {
-                WDGLogoView(mode: $mode)
+                WDGLogoView(size: 68, spacing: -10, mode: false)
                 VStack {
                     HStack {
                         TextField("", text: $nickname)

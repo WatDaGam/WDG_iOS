@@ -16,10 +16,24 @@ struct WDG_iOSApp: App {
     var body: some Scene {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
+        let postModel = PostModel()
         WindowGroup {
             ContentView()
                 .environmentObject(authModel)
                 .environmentObject(tokenModel)
+                .environmentObject(postModel)
         }
+    }
+}
+
+struct AppPreview: PreviewProvider {
+    static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
+        let postModel = PostModel()
+        ContentView()
+            .environmentObject(authModel)
+            .environmentObject(tokenModel)
+            .environmentObject(postModel)
     }
 }

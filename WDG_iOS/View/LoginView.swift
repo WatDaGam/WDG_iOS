@@ -11,13 +11,12 @@ struct LoginView: View {
     @EnvironmentObject var authModel: AuthModel
     @State private var logoOffset: CGFloat = 150
     @State private var endAnimation: Bool = false
-    @State private var mode: Bool = true
     var body: some View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
             VStack(spacing: 300) {
-                WDGLogoView(mode: $mode)
+                WDGLogoView(size: 68, spacing: -10, mode: true)
                     .offset(y: logoOffset)
                     .onAppear {
                         withAnimation(
@@ -45,17 +44,19 @@ struct LoginView: View {
 }
 
 struct WDGLogoView: View {
-    @Binding var mode: Bool
+    var size: CGFloat
+    var spacing: CGFloat
+    var mode: Bool
     var body: some View {
-        HStack(spacing: -10) {
+        HStack(spacing: spacing) {
             Text("W")
-                .font(Font.custom("Dela Gothic One", size: 68))
+                .font(Font.custom("Dela Gothic One", size: size))
                 .foregroundColor(mode ? .white : .black)
             Text("D")
-                .font(Font.custom("Dela Gothic One", size: 68))
+                .font(Font.custom("Dela Gothic One", size: size))
                 .foregroundColor(mode ? .white : .black)
             Text("G")
-                .font(Font.custom("Dela Gothic One", size: 68))
+                .font(Font.custom("Dela Gothic One", size: size))
                 .foregroundColor(mode ? .white : .black)
         }
     }
