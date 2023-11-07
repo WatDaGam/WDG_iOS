@@ -21,7 +21,42 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization() // 사용 중 권한 요청
         self.locationManager.startUpdatingLocation() // 위치 업데이트 시작
-//        if let currLocation = self.location { self.updateLocation(currLocation) }
+    }
+    private func checkLocationServicesAuthorization() {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            // The user has not yet made a choice regarding whether the app can use location services.
+            locationManager.requestWhenInUseAuthorization()
+        case .restricted, .denied:
+            // The user has denied the use of location services for the app or they are restricted.
+            // Set the default location here
+            let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
+            self.location = defaultLocation
+            self.currentLocation = defaultLocation
+            self.updateLocationName(with: defaultLocation)
+        case .authorizedWhenInUse, .authorizedAlways:
+            // The app is authorized to use location services.
+            locationManager.startUpdatingLocation()
+        default:
+            // Handle any future cases
+            break
+        }
+    }
+    private func updateLocationName(with location: CLLocation) {
+        // Update the location name using reverse geocoding
+        geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
+            guard let self = self else { return }
+            if let error = error {
+                print(error)
+                self.locationName = "위치 정보를 찾을 수 없음"
+            } else if let placemarks = placemarks?.first {
+                if let city = placemarks.locality, let country = placemarks.country {
+                    self.locationName = "\(city), \(country)"
+                } else {
+                    self.locationName = placemarks.name ?? "알 수 없는 위치"
+                }
+            }
+        }
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         // 가장 최근의 위치 정보 가져오기
