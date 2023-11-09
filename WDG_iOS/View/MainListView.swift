@@ -13,9 +13,11 @@ struct MainListView: View {
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
+    @Binding var latitude: Double
+    @Binding var longitude: Double
     var body: some View {
         VStack {
-            Header(locationModel : locationModel)
+            MainListHeader(locationModel : locationModel, latitude: $latitude, longitude: $longitude)
                 .environmentObject(postModel)
             List {
                 ForEach(postModel.posts) { post in
@@ -28,19 +30,23 @@ struct MainListView: View {
     }
 }
 
-struct Header: View {
+struct MainListHeader: View {
     @ObservedObject var locationModel: LocationModel
     @EnvironmentObject var postModel: PostModel
     @State private var selectedSortOption: String
     @State private var showingLocationSettingsAlert: Bool
+    @Binding var latitude: Double
+    @Binding var longitude: Double
     let sortOptions: [String]
     private var locationManager: CLLocationManager
-    init(locationModel: LocationModel) {
+    init(locationModel: LocationModel, latitude: Binding<Double>, longitude: Binding<Double>) {
         _locationModel = ObservedObject(initialValue: locationModel)
         _selectedSortOption = State(initialValue: "최신순")
         _showingLocationSettingsAlert = State(initialValue: false)
         sortOptions = ["최신순", "좋아요순"]
         locationManager = CLLocationManager()
+        _latitude = latitude
+        _longitude = longitude
     }
     var body: some View {
         HStack {
@@ -109,10 +115,13 @@ struct Header: View {
 }
 
 struct MainListViewPreviews: PreviewProvider {
+    @State static var latitude: Double = 0.0
+    @State static var longitude: Double = 0.0
+
     static var previews: some View {
         let postModel = PostModel()
         let locationModel = LocationModel()
-        MainListView()
+        MainListView(latitude: $latitude, longitude: $longitude)
             .environmentObject(postModel)
             .environmentObject(locationModel)
     }

@@ -11,22 +11,27 @@ struct ContentView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var locationModel: LocationModel
+    @State var latitude: Double = 0
+    @State var longitude: Double = 0
     var body: some View {
         Group {
             if authModel.isLoggedIn && authModel.isNewAccount {
                 SetNicknameView()
+                    .environmentObject(authModel)
+                    .environmentObject(tokenModel)
             } else if authModel.isLoggedIn {
                 // 사용자가 로그인한 경우 표시될 뷰
                 TabView {
-                    MainListView()
+                    MainListView(latitude: $latitude, longitude: $longitude)
                         .tabItem {
                             Image(systemName: "list.bullet")
                         }
                         .environmentObject(locationModel)
-                    PostView()
+                    PostView(latitude: latitude, longitude: longitude)
                         .tabItem {
                             Image(systemName: "square.and.pencil")
                         }
+                        .environmentObject(locationModel)
                     SettingsView()
                         .tabItem {
                             Image(systemName: "person")

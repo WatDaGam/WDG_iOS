@@ -74,7 +74,7 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             return
         }
         // 마지막 요청 시간을 확인하여 요청 간격을 준수합니다.
-        if let lastRequested = lastRequestedTime, Date().timeIntervalSince(lastRequested) < geocodeRequestDelay {
+        if let lastReq = lastRequestedTime, Date().timeIntervalSince(lastReq) < geocodeRequestDelay {
             return
         }
         // 새로운 요청 시간을 기록합니다.
@@ -146,5 +146,37 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.currentLocation = location
         // 위치를 업데이트할 때마다 역지오코딩을 수행
         reverseGeocode()
+    }
+    func getReverseGeocode(location: CLLocation, completion: @escaping (String) -> Void) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            if let error = error {
+                // 에러 핸들링
+                print(error)
+                completion("위치 정보를 찾을 수 없음")
+            } else if let placemark = placemarks?.first {
+                var addressString = ""
+
+                if let country = placemark.country {
+                    addressString += country
+                }
+                if let city = placemark.locality {
+                    addressString += ", \(city)"
+                }
+                if let subCity = placemark.subLocality {
+                    addressString += ", \(subCity)"
+                }
+                if let street = placemark.thoroughfare {
+                    addressString += ", \(street)"
+                }
+                if let subStreet = placemark.subThoroughfare {
+                    addressString += ", \(subStreet)"
+                }
+                
+                completion(addressString.isEmpty ? "알 수 없는 위치" : addressString)
+            } else {
+                completion("알 수 없는 위치")
+            }
+        }
     }
 }

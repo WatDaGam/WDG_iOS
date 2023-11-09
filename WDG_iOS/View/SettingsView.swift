@@ -43,16 +43,13 @@ struct SettingsView: View {
     }
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color.white.edgesIgnoringSafeArea(.all)
-                List {
-                    NavigationLink("프로필", value: SettingsNavigationDestination.profile)
-                    Button("내 작성 목록", action: { print("my list clicked!") })
-                    Button("로그아웃", action: { alertType = .logout })
-                    Button("회원탈퇴", action: { alertType = .removeAccount })
-                }
-                .listStyle(.plain)
+            List {
+                NavigationLink("프로필", value: SettingsNavigationDestination.profile)
+                Button("내 작성 목록", action: { print("my list clicked!") })
+                Button("로그아웃", action: { alertType = .logout })
+                Button("회원탈퇴", action: { alertType = .removeAccount })
             }
+            .listStyle(.plain)
             .navigationBarTitle("마이페이지", displayMode: .inline)
             .navigationDestination(for: SettingsNavigationDestination.self) { destination in
                 switch destination {
