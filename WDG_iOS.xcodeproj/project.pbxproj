@@ -34,6 +34,7 @@
 		F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */; };
 		F4E92E612AF8D3E60041C8F4 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E602AF8D3E50041C8F4 /* PostModel.swift */; };
 		F4E92E632AF9C54B0041C8F4 /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */; };
+		F4E92E652AFE7CCE0041C8F4 /* MyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +63,7 @@
 		F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F4E92E602AF8D3E50041C8F4 /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
 		F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
+		F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTabView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */,
 				F43EE5E82AECDF1800B3E19E /* PostView.swift */,
 				F43EE5E62AECDCFF00B3E19E /* ContentView.swift */,
+				F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */,
 				F4C1B0882AEFCD6D009B9FF3 /* SetNicknameView.swift */,
 			);
 			path = View;
@@ -292,6 +295,7 @@
 				F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
 				F4C1B0892AEFCD6D009B9FF3 /* SetNicknameView.swift in Sources */,
+				F4E92E652AFE7CCE0041C8F4 /* MyTabView.swift in Sources */,
 				F4C1B0932AF36738009B9FF3 /* TokenModel.swift in Sources */,
 				F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */,
 				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
