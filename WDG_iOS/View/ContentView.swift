@@ -13,31 +13,26 @@ struct ContentView: View {
     @EnvironmentObject var locationModel: LocationModel
     @State var latitude: Double = 0
     @State var longitude: Double = 0
+    @State var selectedTab: Int = 0
     var body: some View {
-        Group {
-            if authModel.isLoggedIn && authModel.isNewAccount {
+        VStack {
+            if authModel.isNewAccount && authModel.isLoggedIn {
                 SetNicknameView()
-                    .environmentObject(authModel)
-                    .environmentObject(tokenModel)
             } else if authModel.isLoggedIn {
-                // 사용자가 로그인한 경우 표시될 뷰
-                TabView {
-                    MainListView(latitude: $latitude, longitude: $longitude)
-                        .tabItem {
-                            Image(systemName: "list.bullet")
-                        }
-                        .environmentObject(locationModel)
-                    PostView(latitude: latitude, longitude: longitude)
-                        .tabItem {
-                            Image(systemName: "square.and.pencil")
-                        }
-                        .environmentObject(locationModel)
-                    SettingsView()
-                        .tabItem {
-                            Image(systemName: "person")
-                        }
+                VStack {
+                    if selectedTab == 0 {
+                        MainListView(latitude: $latitude, longitude: $longitude)
+                            .environmentObject(locationModel)
+                    } else if selectedTab == 1 {
+                        PostView(latitude: latitude, longitude: longitude, locationName: "test")
+                            .environmentObject(locationModel)
+                    } else {
+                        SettingsView()
+                    }
+                    Spacer()
+                    Divider()
+                    MyTabView(selectedTab: $selectedTab)
                 }
-                .accentColor(.black)
             } else {
                 // 사용자가 로그인하지 않은 경우 LoginView 표시
                 LoginView()
@@ -55,6 +50,45 @@ struct ContentView: View {
                 message: Text("다시 로그인해주세요.")
             )
         }
+    }
+}
+
+struct MyTabView: View {
+    @Binding var selectedTab: Int
+    var body: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                self.selectedTab = 0
+            }) {
+                Image(systemName: "list.bullet")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+            }
+            Spacer()
+            Spacer()
+            Button(action: {
+                self.selectedTab = 1
+            }) {
+                Image(systemName: "square.and.pencil")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+            }
+            Spacer()
+            Spacer()
+            Button(action: {
+                self.selectedTab = 2
+            }) {
+                Image(systemName: "person")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+            }
+            Spacer()
+        }
+        .padding(.horizontal)
+        .frame(height: 80)
+        .background(Rectangle().foregroundColor(.white))
+        .foregroundColor(.black)
     }
 }
 

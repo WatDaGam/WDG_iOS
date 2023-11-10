@@ -25,29 +25,18 @@ struct PostView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = ""
     @State private var alertType: PostAlertType?
-    @State private var geocodedAddress: String = "위치 확인 중..."
-    @EnvironmentObject var locationModel: LocationModel
     var latitude: Double
     var longitude: Double
+    var locationName: String
     var body: some View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
             VStack {
                 PostHeader(alertType: $alertType)
                 HStack {
-                    Text(geocodedAddress)
+                    Text(locationName)
                     Spacer()
                     Text("\(latitude) \(longitude)")
-                }
-                .onAppear {
-                    DispatchQueue.main.async { // 메인 스레드에서 상태 업데이트
-                    print("PostView onAppear 시작")
-                    let location = CLLocation(latitude: latitude, longitude: longitude)
-                    locationModel.getReverseGeocode(location: location) { address in
-                            print("Reverse geocode 완료: \(address)")
-                            self.geocodedAddress = address
-                        }
-                    }
                 }
                 .padding(.horizontal)
                 .font(.subheadline)
