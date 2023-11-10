@@ -37,6 +37,7 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var location: CLLocation?
     @Published var currentLocation: CLLocation?
     @Published var locationName: String = "위치 정보 없음"
+    private var updateInterval = 0
     private let geocoder = CLGeocoder()
     private var locationCache: [LocationHash: String] = [:] // 위치 이름 캐시
     override init() {
@@ -107,7 +108,11 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         print("위치 정보 수신")
         self.location = latestLocation
         // 위치를 업데이트할 때마다 역지오코딩을 수행
-        updateLocation(latestLocation)
+        if self.updateInterval == 0 {
+            updateLocation(latestLocation)
+            self.updateInterval = 60
+        }
+        self.updateInterval -= 1
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error getting location: \(error)")
@@ -129,16 +134,20 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
             guard let self = self else { return }
             if let error = error {
-                // 에러 핸들링
                 print(error)
                 self.locationName = "위치 정보를 찾을 수 없음"
-            } else if let placemarks = placemarks?.first {
-                // 여기서 placemarks에서 주소 정보를 얻어서 사용
-                if let city = placemarks.locality, let country = placemarks.country {
-                    self.locationName = "\(city), \(country)"
-                } else {
-                    self.locationName = placemarks.name ?? "알 수 없는 위치"
-                }
+            } else if let placemark = placemarks?.first {
+                // 상세 주소 정보를 얻습니다.
+//                print(placemark)
+//                let city = placemark.locality ?? "" // 도시
+//                let subLocality = placemark.subLocality ?? "" // 부속 지역 이름 (예: 동/읍/면)
+                let thoroughfare = placemark.thoroughfare ?? "" // 길 이름
+                let subThoroughfare = placemark.subThoroughfare ?? "" // 길 번호
+//                let country = placemark.country ?? "" // 국가
+                // 선택적으로 주소 구성 요소를 조합하여 상세한 주소 문자열을 생성합니다.
+                self.locationName = [thoroughfare, subThoroughfare]
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " ")
             }
         }
     }
@@ -146,37 +155,5 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.currentLocation = location
         // 위치를 업데이트할 때마다 역지오코딩을 수행
         reverseGeocode()
-    }
-    func getReverseGeocode(location: CLLocation, completion: @escaping (String) -> Void) {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-            if let error = error {
-                // 에러 핸들링
-                print(error)
-                completion("위치 정보를 찾을 수 없음")
-            } else if let placemark = placemarks?.first {
-                var addressString = ""
-
-                if let country = placemark.country {
-                    addressString += country
-                }
-                if let city = placemark.locality {
-                    addressString += ", \(city)"
-                }
-                if let subCity = placemark.subLocality {
-                    addressString += ", \(subCity)"
-                }
-                if let street = placemark.thoroughfare {
-                    addressString += ", \(street)"
-                }
-                if let subStreet = placemark.subThoroughfare {
-                    addressString += ", \(subStreet)"
-                }
-                
-                completion(addressString.isEmpty ? "알 수 없는 위치" : addressString)
-            } else {
-                completion("알 수 없는 위치")
-            }
-        }
     }
 }
