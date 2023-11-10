@@ -7,10 +7,24 @@
 
 import SwiftUI
 
+enum PostAlertType: Identifiable {
+    case cancle
+    case post
+    var id: Int {
+        switch self {
+        case .cancle:
+            return 0
+        case .post:
+            return 1
+        }
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var locationModel: LocationModel
+    @State var postAlertType: PostAlertType?
     @State var latitude: Double = 0
     @State var longitude: Double = 0
     @State var selectedTab: Int = 0
@@ -18,20 +32,28 @@ struct ContentView: View {
         VStack {
             if authModel.isNewAccount && authModel.isLoggedIn {
                 SetNicknameView()
+                    .environmentObject(authModel)
             } else if authModel.isLoggedIn {
                 VStack {
                     if selectedTab == 0 {
                         MainListView(latitude: $latitude, longitude: $longitude)
                             .environmentObject(locationModel)
                     } else if selectedTab == 1 {
-                        PostView(latitude: latitude, longitude: longitude, locationName: "test")
+                        PostView(
+                            postAlertType: $postAlertType,
+                            latitude: latitude,
+                            longitude: longitude,
+                            locationName: "test"
+                        )
                             .environmentObject(locationModel)
                     } else {
                         SettingsView()
                     }
                     Spacer()
                     Divider()
-                    MyTabView(selectedTab: $selectedTab)
+                    if selectedTab != 1 {
+                        MyTabView(selectedTab: $selectedTab)
+                    }
                 }
             } else {
                 // 사용자가 로그인하지 않은 경우 LoginView 표시
@@ -49,6 +71,30 @@ struct ContentView: View {
                 title: Text("로그인이 만료되었습니다."),
                 message: Text("다시 로그인해주세요.")
             )
+        }
+        .alert(item: $postAlertType) { type in
+            switch type {
+            case .cancle:
+                return Alert(
+                    title: Text("취소"),
+                    message: Text("취소 시 작성중인 게시글은 저장되지 않습니다."),
+                    primaryButton: .destructive(Text("예")) {
+                        selectedTab = 0
+                    },
+                    secondaryButton: .cancel(Text("아니오"))
+                )
+            case .post:
+                return Alert(
+                    title: Text("게시"),
+                    message: Text("현재 작성중인 글이 게시됩니다."),
+                    primaryButton: .destructive(Text("게시")) {
+                        //                        Task {
+                        //                            await authModel.deleteAccount()
+                        //                        }
+                    },
+                    secondaryButton: .cancel(Text("취소"))
+                )
+            }
         }
     }
 }

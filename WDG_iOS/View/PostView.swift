@@ -8,31 +8,26 @@
 import SwiftUI
 import CoreLocation
 
-enum PostAlertType: Identifiable {
-    case cancle
-    case post
-    var id: Int {
-        switch self {
-        case .cancle:
-            return 0
-        case .post:
-            return 1
-        }
-    }
-}
-
 struct PostView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = ""
-    @State private var alertType: PostAlertType?
+    @Binding private var postAlertType: PostAlertType?
     var latitude: Double
     var longitude: Double
     var locationName: String
+    public init(
+        postAlertType: Binding<PostAlertType?>, latitude: Double, longitude: Double, locationName: String
+    ) {
+        _postAlertType = postAlertType
+        self.latitude = latitude
+        self.longitude = longitude
+        self.locationName = locationName
+    }
     var body: some View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
             VStack {
-                PostHeader(alertType: $alertType)
+                PostHeader(postAlertType: $postAlertType)
                 HStack {
                     Text(locationName)
                     Spacer()
@@ -59,7 +54,7 @@ struct PostView: View {
                         Text("\(message.count)/50")
                             .padding(.leading)
                         Button(action: {
-                            alertType = .post
+                            postAlertType = .post
                         }, label: {
                             Text("남기기")
                         })
@@ -76,39 +71,39 @@ struct PostView: View {
             }
             .background(Rectangle().foregroundColor(.white))
         }
-        .alert(item: $alertType) { type in
-            switch type {
-            case .cancle:
-                return Alert(
-                    title: Text("취소"),
-                    message: Text("취소 시 작성중인 게시글은 저장되지 않습니다."),
-                    primaryButton: .destructive(Text("예")) {
-                        self.presentationMode.wrappedValue.dismiss()
-                    },
-                    secondaryButton: .cancel(Text("아니오"))
-                )
-            case .post:
-                return Alert(
-                    title: Text("게시"),
-                    message: Text("현재 작성중인 글이 게시됩니다."),
-                    primaryButton: .destructive(Text("게시")) {
-                        //                        Task {
-                        //                            await authModel.deleteAccount()
-                        //                        }
-                    },
-                    secondaryButton: .cancel(Text("취소"))
-                )
-            }
-        }
+//        .alert(item: $alertType) { type in
+//            switch type {
+//            case .cancle:
+//                return Alert(
+//                    title: Text("취소"),
+//                    message: Text("취소 시 작성중인 게시글은 저장되지 않습니다."),
+//                    primaryButton: .destructive(Text("예")) {
+//                    },
+//                    secondaryButton: .cancel(Text("아니오"))
+//                )
+//            case .post:
+//                return Alert(
+//                    title: Text("게시"),
+//                    message: Text("현재 작성중인 글이 게시됩니다."),
+//                    primaryButton: .destructive(Text("게시")) {
+//                        //                        Task {
+//                        //                            await authModel.deleteAccount()
+//                        //                        }
+//                    },
+//                    secondaryButton: .cancel(Text("취소"))
+//                )
+//            }
+//        }
     }
 }
 
 struct PostHeader: View {
-    @Binding var alertType: PostAlertType?
+    @Binding var postAlertType: PostAlertType?
     var body: some View {
         HStack {
             Button(action: {
-                alertType = .cancle
+                print("cancle click")
+                postAlertType = .cancle
             }, label: {
                 HStack {
                     Image(systemName: "chevron.left")
@@ -125,11 +120,18 @@ struct PostHeader: View {
         .background(Rectangle().foregroundColor(.black))
     }
 }
-//
-//struct PostViewPreviews: PreviewProvider {
-//    @State static var latitude: Double = 37.5666612
-//    @State static var longitude: Double = 126.9783785
-//    static var previews: some View {
-//        PostView(latitude: latitude, longitude: longitude)
-//    }
-//}
+
+struct PostViewPreviews: PreviewProvider {
+    @State static var latitude: Double = 37.5666612
+    @State static var longitude: Double = 126.9783785
+    @State static var selectedTab: Int = 1
+    @State static var postAlertType: PostAlertType?
+    static var previews: some View {
+        PostView(
+            postAlertType: $postAlertType,
+            latitude: latitude,
+            longitude: longitude,
+            locationName: "고양동"
+        )
+    }
+}
