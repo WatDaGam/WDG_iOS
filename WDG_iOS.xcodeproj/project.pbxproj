@@ -35,6 +35,7 @@
 		F4E92E612AF8D3E60041C8F4 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E602AF8D3E50041C8F4 /* PostModel.swift */; };
 		F4E92E632AF9C54B0041C8F4 /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */; };
 		F4E92E652AFE7CCE0041C8F4 /* MyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */; };
+		F4E92E672AFE7F7B0041C8F4 /* NavbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E662AFE7F7B0041C8F4 /* NavbarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		F4E92E602AF8D3E50041C8F4 /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
 		F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
 		F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTabView.swift; sourceTree = "<group>"; };
+		F4E92E662AFE7F7B0041C8F4 /* NavbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavbarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 			children = (
 				F4623E632AEBA5AB0044F0C5 /* LoginView.swift */,
 				F4623E962AEC036B0044F0C5 /* MainListView.swift */,
+				F4E92E662AFE7F7B0041C8F4 /* NavbarView.swift */,
 				F43EE5EA2AECE03600B3E19E /* SettingsView.swift */,
 				F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */,
 				F43EE5E82AECDF1800B3E19E /* PostView.swift */,
@@ -294,6 +297,7 @@
 				F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */,
 				F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
+				F4E92E672AFE7F7B0041C8F4 /* NavbarView.swift in Sources */,
 				F4C1B0892AEFCD6D009B9FF3 /* SetNicknameView.swift in Sources */,
 				F4E92E652AFE7CCE0041C8F4 /* MyTabView.swift in Sources */,
 				F4C1B0932AF36738009B9FF3 /* TokenModel.swift in Sources */,
