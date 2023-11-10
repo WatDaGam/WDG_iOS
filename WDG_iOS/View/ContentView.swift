@@ -25,6 +25,8 @@ struct ContentView: View {
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var locationModel: LocationModel
     @EnvironmentObject var postModel: PostModel
+    @Namespace var mainListTop
+    @State var scrollProxy: ScrollViewProxy?
     @State var postAlertType: PostAlertType?
     @State var latitude: Double = 0
     @State var longitude: Double = 0
@@ -44,7 +46,12 @@ struct ContentView: View {
             } else if authModel.isLoggedIn {
                 VStack {
                     if selectedTab == 0 {
-                        MainListView(latitude: $latitude, longitude: $longitude)
+                        MainListView(
+                            latitude: $latitude,
+                            longitude: $longitude,
+                            scrollProxy: $scrollProxy,
+                            namespace: mainListTop
+                        )
                             .environmentObject(locationModel)
                             .environmentObject(postModel)
                     } else if selectedTab == 1 {
@@ -61,7 +68,11 @@ struct ContentView: View {
                     }
                     Divider()
                     if selectedTab != 1 {
-                        MyTabView(selectedTab: $selectedTab)
+                        MyTabView(
+                            selectedTab: $selectedTab,
+                            scrollProxy: $scrollProxy,
+                            namespace: mainListTop
+                        )
                     }
                 }
             } else {
@@ -109,40 +120,48 @@ struct ContentView: View {
 
 struct MyTabView: View {
     @Binding var selectedTab: Int
+    @Binding var scrollProxy: ScrollViewProxy?
+    var namespace: Namespace.ID
     var body: some View {
         HStack {
             Spacer()
             Button(action: {
+                if self.selectedTab == 0 { scrollToTop() }
                 self.selectedTab = 0
-            }) {
+            }, label: {
                 Image(systemName: "list.bullet")
                     .resizable()
                     .frame(width: 30, height: 30)
-            }
+            })
             Spacer()
             Spacer()
             Button(action: {
                 self.selectedTab = 1
-            }) {
+            }, label: {
                 Image(systemName: "square.and.pencil")
                     .resizable()
                     .frame(width: 30, height: 30)
-            }
+            })
             Spacer()
             Spacer()
             Button(action: {
                 self.selectedTab = 2
-            }) {
+            }, label: {
                 Image(systemName: "person")
                     .resizable()
                     .frame(width: 30, height: 30)
-            }
+            })
             Spacer()
         }
         .padding(.horizontal)
         .frame(height: 80)
         .background(Rectangle().foregroundColor(.white))
         .foregroundColor(.black)
+    }
+    func scrollToTop() {
+        withAnimation {
+            scrollProxy?.scrollTo(namespace)
+        }
     }
 }
 

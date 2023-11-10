@@ -13,17 +13,26 @@ struct MainListView: View {
     @EnvironmentObject var locationModel: LocationModel
     @Binding var latitude: Double
     @Binding var longitude: Double
+    @Binding var scrollProxy: ScrollViewProxy?
+    var namespace: Namespace.ID
     var body: some View {
-        VStack {
-            MainListHeader(locationModel : locationModel, latitude: $latitude, longitude: $longitude)
-                .environmentObject(postModel)
-            List {
-                ForEach(postModel.posts) { post in
-                    Post(post: post)
-                        .environmentObject(locationModel)
+        ScrollViewReader { proxy in
+            ScrollView {
+                MainListHeader(locationModel : locationModel, latitude: $latitude, longitude: $longitude)
+                    .environmentObject(postModel)
+                    .id(namespace)
+                VStack {
+                    ForEach(postModel.posts) { post in
+                        Post(post: post)
+                            .environmentObject(locationModel)
+                    }
                 }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
+            .onAppear {
+                print("proxy: \(proxy)")
+                scrollProxy = proxy // ScrollViewProxy를 저장합니다.
+            }
         }
     }
 }
@@ -115,11 +124,17 @@ struct MainListHeader: View {
 struct MainListViewPreviews: PreviewProvider {
     @State static var latitude: Double = 0.0
     @State static var longitude: Double = 0.0
-
+    @State static var scrollProxy: ScrollViewProxy?
     static var previews: some View {
         let postModel = PostModel()
         let locationModel = LocationModel()
-        MainListView(latitude: $latitude, longitude: $longitude)
+        @Namespace var mainListTop
+        MainListView(
+            latitude: $latitude,
+            longitude: $longitude,
+            scrollProxy: $scrollProxy,
+            namespace: mainListTop
+        )
             .environmentObject(postModel)
             .environmentObject(locationModel)
     }
