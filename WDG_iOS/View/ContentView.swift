@@ -46,6 +46,19 @@ struct ContentView: View {
             } else if authModel.isLoggedIn {
                 VStack {
                     if selectedTab == 0 {
+                        NavbarView(
+                            left: { WDGLogoView(size: 24, spacing: -4, mode: true) },
+                            center: {
+                                MainNavbarCenter(
+                                    locationModel : locationModel,
+                                    latitude: $latitude,
+                                    longitude: $longitude
+                                )
+                            },
+                            right: {
+                                MainNavbarRight(postModel: postModel)
+                            }
+                        )
                         MainListView(
                             latitude: $latitude,
                             longitude: $longitude,
