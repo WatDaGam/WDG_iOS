@@ -37,6 +37,7 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var location: CLLocation?
     @Published var currentLocation: CLLocation?
     @Published var locationName: String = "위치 정보 없음"
+    @Published var defaultLocation: CLLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
     private var updateInterval = 0
     private let geocoder = CLGeocoder()
     private var locationCache: [LocationHash: String] = [:] // 위치 이름 캐시
@@ -55,10 +56,9 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         case .restricted, .denied:
             // The user has denied the use of location services for the app or they are restricted.
             // Set the default location here
-            let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-            self.location = defaultLocation
-            self.currentLocation = defaultLocation
-            self.updateLocationName(with: defaultLocation)
+            self.location = self.defaultLocation
+            self.currentLocation = self.defaultLocation
+            self.updateLocationName(with: self.defaultLocation)
         case .authorizedWhenInUse, .authorizedAlways:
             // The app is authorized to use location services.
             locationManager.startUpdatingLocation()

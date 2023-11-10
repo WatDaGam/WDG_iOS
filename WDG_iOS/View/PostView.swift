@@ -12,13 +12,19 @@ struct PostView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = ""
     @Binding private var postAlertType: PostAlertType?
+    @Binding var messageForm: Message
     var latitude: Double
     var longitude: Double
     var locationName: String
     public init(
-        postAlertType: Binding<PostAlertType?>, latitude: Double, longitude: Double, locationName: String
+        postAlertType: Binding<PostAlertType?>,
+        messageForm: Binding<Message>,
+        latitude: Double,
+        longitude: Double,
+        locationName: String
     ) {
         _postAlertType = postAlertType
+        _messageForm = messageForm
         self.latitude = latitude
         self.longitude = longitude
         self.locationName = locationName
@@ -54,6 +60,9 @@ struct PostView: View {
                         Text("\(message.count)/50")
                             .padding(.leading)
                         Button(action: {
+                            messageForm.location = LocationType(latitude: latitude, longitude: longitude)
+                            messageForm.message = message
+                            messageForm.date = Date()
                             postAlertType = .post
                         }, label: {
                             Text("남기기")
@@ -71,29 +80,6 @@ struct PostView: View {
             }
             .background(Rectangle().foregroundColor(.white))
         }
-//        .alert(item: $alertType) { type in
-//            switch type {
-//            case .cancle:
-//                return Alert(
-//                    title: Text("취소"),
-//                    message: Text("취소 시 작성중인 게시글은 저장되지 않습니다."),
-//                    primaryButton: .destructive(Text("예")) {
-//                    },
-//                    secondaryButton: .cancel(Text("아니오"))
-//                )
-//            case .post:
-//                return Alert(
-//                    title: Text("게시"),
-//                    message: Text("현재 작성중인 글이 게시됩니다."),
-//                    primaryButton: .destructive(Text("게시")) {
-//                        //                        Task {
-//                        //                            await authModel.deleteAccount()
-//                        //                        }
-//                    },
-//                    secondaryButton: .cancel(Text("취소"))
-//                )
-//            }
-//        }
     }
 }
 
@@ -126,9 +112,17 @@ struct PostViewPreviews: PreviewProvider {
     @State static var longitude: Double = 126.9783785
     @State static var selectedTab: Int = 1
     @State static var postAlertType: PostAlertType?
+    @State static var messageForm: Message = Message(
+        nickname: "myNickname",
+        message: "",
+        date: Date(),
+        location: LocationType(latitude: 37.56, longitude: 126.97),
+        likes: 0
+    )
     static var previews: some View {
         PostView(
             postAlertType: $postAlertType,
+            messageForm: $messageForm,
             latitude: latitude,
             longitude: longitude,
             locationName: "고양동"

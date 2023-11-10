@@ -9,8 +9,6 @@ import SwiftUI
 import CoreLocation
 
 struct MainListView: View {
-    @EnvironmentObject var authModel: AuthModel
-    @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
     @Binding var latitude: Double

@@ -18,7 +18,7 @@ struct Message: Identifiable, Codable {
     var message: String
     var date: Date
     var likes: Int
-    let location: LocationType
+    var location: LocationType
     init(id: UUID = UUID(), nickname: String, message: String, date: Date, location: LocationType, likes: Int) {
         self.id = id
         self.nickname = nickname

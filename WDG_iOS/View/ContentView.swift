@@ -24,10 +24,18 @@ struct ContentView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var locationModel: LocationModel
+    @EnvironmentObject var postModel: PostModel
     @State var postAlertType: PostAlertType?
     @State var latitude: Double = 0
     @State var longitude: Double = 0
     @State var selectedTab: Int = 0
+    @State var messageForm: Message = Message(
+        nickname: "myNickname",
+        message: "",
+        date: Date(),
+        location: LocationType(latitude: 37.56, longitude: 126.97),
+        likes: 0
+    )
     var body: some View {
         VStack {
             if authModel.isNewAccount && authModel.isLoggedIn {
@@ -38,9 +46,11 @@ struct ContentView: View {
                     if selectedTab == 0 {
                         MainListView(latitude: $latitude, longitude: $longitude)
                             .environmentObject(locationModel)
+                            .environmentObject(postModel)
                     } else if selectedTab == 1 {
                         PostView(
                             postAlertType: $postAlertType,
+                            messageForm: $messageForm,
                             latitude: latitude,
                             longitude: longitude,
                             locationName: "test"
@@ -49,7 +59,6 @@ struct ContentView: View {
                     } else {
                         SettingsView()
                     }
-                    Spacer()
                     Divider()
                     if selectedTab != 1 {
                         MyTabView(selectedTab: $selectedTab)
@@ -85,12 +94,11 @@ struct ContentView: View {
                 )
             case .post:
                 return Alert(
-                    title: Text("게시"),
+                    title: Text("남기기"),
                     message: Text("현재 작성중인 글이 게시됩니다."),
                     primaryButton: .destructive(Text("게시")) {
-                        //                        Task {
-                        //                            await authModel.deleteAccount()
-                        //                        }
+                        postModel.addPosts(message: messageForm)
+                        selectedTab = 0
                     },
                     secondaryButton: .cancel(Text("취소"))
                 )

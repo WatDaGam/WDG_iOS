@@ -16,6 +16,9 @@ class PostModel: ObservableObject {
         createDummyPosts()  // 생성자에서 더미 포스트 생성
         sortByDate()
     }
+    func addPosts(message: Message) {
+        self.posts.insert(message, at: 0)
+    }
     func setPosts(messages: [Message]) {
         self.posts = messages
     }
