@@ -7,15 +7,11 @@
 
 import SwiftUI
 
-enum SettingsNavigationDestination {
-    case profile
-    // 다른 네비게이션 목적지를 추가할 수 있습니다.
-}
-
 struct SettingsView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var locationModel: LocationModel
     @State private var alertType: AlertType?
+    @Binding var selectedTab: Int
     enum AlertType: Identifiable {
         case logout
         case removeAccount
@@ -30,8 +26,7 @@ struct SettingsView: View {
     }
     var body: some View {
         List {
-            NavigationLink("프로필", value: SettingsNavigationDestination.profile)
-            Button("내 작성 목록", action: { print("my list clicked!") })
+            Button("프로필", action: { selectedTab = 3 })
             Button("로그아웃", action: { alertType = .logout })
             Button("회원탈퇴", action: { alertType = .removeAccount })
         }
@@ -64,9 +59,10 @@ struct SettingsView: View {
 }
 
 struct SettingsViewPreviews: PreviewProvider {
+    @State static var selectedTab: Int = 2
     static var previews: some View {
         let postModel = PostModel()
-        SettingsView()
+        SettingsView(selectedTab: $selectedTab)
             .environmentObject(postModel)
     }
 }

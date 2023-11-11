@@ -68,7 +68,10 @@ struct ContentView: View {
                         .environmentObject(locationModel)
                     case 2:
                         settingsNavbarView()
-                        SettingsView()
+                        SettingsView(selectedTab: $selectedTab)
+                    case 3:
+                        profileNavbarView()
+                        ProfileView()
                     default:
                         EmptyView()
                     }
@@ -169,6 +172,23 @@ struct ContentView: View {
             center: {
                 Text("마이페이지")
                     .foregroundStyle(.white)
+            },
+            right: { EmptyView() }
+        )
+    }
+    @ViewBuilder
+    private func profileNavbarView() -> some View {
+        NavbarView(
+            left: {
+                Button(action: {
+                    selectedTab = 2
+                }, label: {
+                    Image(systemName: "chevron.backward")
+                        .foregroundColor(.white)
+                }) },
+            center: {
+                Text("프로필")
+                    .foregroundColor(.white)
             },
             right: { EmptyView() }
         )
