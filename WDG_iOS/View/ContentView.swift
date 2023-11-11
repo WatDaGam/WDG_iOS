@@ -45,29 +45,19 @@ struct ContentView: View {
                     .environmentObject(authModel)
             } else if authModel.isLoggedIn {
                 VStack {
-                    if selectedTab == 0 {
-                        NavbarView(
-                            left: { WDGLogoView(size: 24, spacing: -4, mode: true) },
-                            center: {
-                                MainNavbarCenter(
-                                    locationModel : locationModel,
-                                    latitude: $latitude,
-                                    longitude: $longitude
-                                )
-                            },
-                            right: {
-                                MainNavbarRight(postModel: postModel)
-                            }
-                        )
+                    switch selectedTab {
+                    case 0:
+                        mainListNavbarView()
                         MainListView(
                             latitude: $latitude,
                             longitude: $longitude,
                             scrollProxy: $scrollProxy,
                             namespace: mainListTop
                         )
-                            .environmentObject(locationModel)
-                            .environmentObject(postModel)
-                    } else if selectedTab == 1 {
+                        .environmentObject(locationModel)
+                        .environmentObject(postModel)
+                    case 1:
+                        postNavbarView()
                         PostView(
                             postAlertType: $postAlertType,
                             messageForm: $messageForm,
@@ -75,9 +65,12 @@ struct ContentView: View {
                             longitude: longitude,
                             locationName: "test"
                         )
-                            .environmentObject(locationModel)
-                    } else {
+                        .environmentObject(locationModel)
+                    case 2:
+                        settingsNavbarView()
                         SettingsView()
+                    default:
+                        EmptyView()
                     }
                     Divider()
                     if selectedTab != 1 {
@@ -128,6 +121,57 @@ struct ContentView: View {
                 )
             }
         }
+    }
+    @ViewBuilder
+    private func mainListNavbarView() -> some View {
+        NavbarView(
+            left: { WDGLogoView(size: 24, spacing: -4, mode: true) },
+            center: {
+                MainNavbarCenter(
+                    locationModel : locationModel,
+                    latitude: $latitude,
+                    longitude: $longitude
+                )
+            },
+            right: {
+                MainNavbarRight(postModel: postModel)
+            }
+        )
+    }
+    @ViewBuilder
+    private func postNavbarView() -> some View {
+        NavbarView(
+            left: {
+                Button(action: {
+                    print("cancle click")
+                    postAlertType = .cancle
+                }, label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("취소")
+                            .padding(-5)
+                    }
+                })
+                .foregroundColor(.white)
+            },
+            center: {
+                EmptyView()
+            },
+            right: {
+                EmptyView()
+            }
+        )
+    }
+    @ViewBuilder
+    private func settingsNavbarView() -> some View {
+        NavbarView(
+            left: { EmptyView() },
+            center: {
+                Text("마이페이지")
+                    .foregroundStyle(.white)
+            },
+            right: { EmptyView() }
+        )
     }
 }
 

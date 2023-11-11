@@ -33,7 +33,6 @@ struct PostView: View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
             VStack {
-                PostHeader(postAlertType: $postAlertType)
                 HStack {
                     Text(locationName)
                     Spacer()
@@ -80,30 +79,6 @@ struct PostView: View {
             }
             .background(Rectangle().foregroundColor(.white))
         }
-    }
-}
-
-struct PostHeader: View {
-    @Binding var postAlertType: PostAlertType?
-    var body: some View {
-        HStack {
-            Button(action: {
-                print("cancle click")
-                postAlertType = .cancle
-            }, label: {
-                HStack {
-                    Image(systemName: "chevron.left")
-                    Text("취소")
-                        .padding(-5)
-                }
-            })
-            Spacer()
-        }
-        .foregroundColor(.white)
-        .padding(.horizontal)
-        .frame(height: 60)
-        .frame(maxWidth: .infinity)
-        .background(Rectangle().foregroundColor(.black))
     }
 }
 
