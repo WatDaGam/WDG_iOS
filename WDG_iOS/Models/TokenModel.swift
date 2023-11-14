@@ -48,7 +48,7 @@ class TokenModel: ObservableObject {
         if refreshExpire < Date().timeIntervalSince1970 { return false }
         let beforeAccessExpire = accessExpireDouble / 1000
         if beforeAccessExpire - Date().timeIntervalSince1970 < 10 {
-            guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/refreshtoken") else {
+            guard let reissuanceURL = URL(string: "http://43.202.3.132:8080/refreshtoken") else {
                 print("Invalid URL")
                 return false
             }
