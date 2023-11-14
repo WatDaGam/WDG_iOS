@@ -53,22 +53,58 @@ class PostModel: ObservableObject {
 
 struct Post: View {
     @EnvironmentObject var locationModel: LocationModel
+    @State private var onClicked: Int = 0
     var post: Message
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 30) {
-                Text(post.nickname)
-                    .font(.headline)
-                Text(post.message)
-                    .font(.subheadline)
-            }
-            .padding()
-            Spacer()
-            VStack(alignment: .trailing, spacing: 30) {
-                HStack {
-                    Image(systemName: "heart")
-                    Text("\(post.likes)")
+        switch onClicked {
+        case 0:
+            HStack {
+                Text("\(post.nickname) 왔다감")
+                    .font(.system(size: 20).bold())
+                Spacer()
+                Image(systemName: "location")
+                if let location = locationModel.location {
+                    let distanceText = formattedDistance(from: post.location, to: location.coordinate)
+                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                } else {
+                    let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
+                    let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
+                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
                 }
+                Image(systemName: "heart")
+                Text("\(post.likes)")
+            }
+            .padding(.horizontal)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(height: 70)
+            .onTapGesture {
+                onClicked = 1
+            }
+        case 1:
+            VStack(spacing: 20) {
+                HStack {
+                    Text("\(post.nickname) 왔다감")
+                        .font(.system(size: 20).bold())
+                    VStack {
+                        Spacer()
+                        Text("\(post.location.latitude) \(post.location.longitude)")
+                            .font(.caption2)
+//                            .foregroundColor(.gray)
+                    }
+                    .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                    Spacer()
+                    Button(action: {
+                        print("button clicked!")
+                    }, label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundColor(.black)
+                    })
+                }
+                HStack {
+                    Text(post.message)
+                    Spacer()
+                }
+                Spacer()
                 HStack {
                     Image(systemName: "location")
                     if let location = locationModel.location {
@@ -79,13 +115,19 @@ struct Post: View {
                         let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
                         Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     }
+                    Spacer()
+                    Image(systemName: "heart")
+                    Text("\(post.likes)")
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .frame(height: 200)
+//            .onTapGesture {
+//                onClicked = 0
+//            }
+        default:
+            Text("default")
         }
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(height: 100)
-        .listRowInsets(EdgeInsets())
     }
     func formattedDistance(from location1: LocationType, to coordinate2: CLLocationCoordinate2D) -> String {
         let coordinate1 = CLLocation(latitude: location1.latitude, longitude: location1.longitude)
@@ -96,6 +138,21 @@ struct Post: View {
             return String(format: "%.1fkm", distanceInKilometers)
         } else {
             return String(format: "%.0fm", distanceInMeters)
+        }
+    }
+}
+
+struct PostPreviews: PreviewProvider {
+    static var previews: some View {
+        let postModel = PostModel()
+        let locationModel = LocationModel()
+        VStack {
+            Spacer()
+            Divider()
+            Post(post: postModel.posts[0])
+                .environmentObject(locationModel)
+            Divider()
+            Spacer()
         }
     }
 }

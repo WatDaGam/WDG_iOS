@@ -118,8 +118,8 @@ struct MainNavbarRight: View {
 }
 
 struct MainListViewPreviews: PreviewProvider {
-    @State static var latitude: Double = 0.0
-    @State static var longitude: Double = 0.0
+    @State static var latitude: Double = 37.5666612
+    @State static var longitude: Double = 126.9783785
     @State static var scrollProxy: ScrollViewProxy?
     static var previews: some View {
         let postModel = PostModel()
