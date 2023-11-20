@@ -139,15 +139,17 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             } else if let placemark = placemarks?.first {
                 // 상세 주소 정보를 얻습니다.
 //                print(placemark)
-//                let city = placemark.locality ?? "" // 도시
-//                let subLocality = placemark.subLocality ?? "" // 부속 지역 이름 (예: 동/읍/면)
+                let city = placemark.locality ?? "" // 도시
+                let subLocality = placemark.subLocality ?? "" // 부속 지역 이름 (예: 동/읍/면)
                 let thoroughfare = placemark.thoroughfare ?? "" // 길 이름
                 let subThoroughfare = placemark.subThoroughfare ?? "" // 길 번호
-//                let country = placemark.country ?? "" // 국가
+                let country = placemark.country ?? "" // 국가
                 // 선택적으로 주소 구성 요소를 조합하여 상세한 주소 문자열을 생성합니다.
-                self.locationName = [thoroughfare, subThoroughfare]
+                self.locationName = [subLocality, city, country]
                     .filter { !$0.isEmpty }
-                    .joined(separator: " ")
+                    .prefix(2)
+                    .joined(separator: ", ")
+                print(self.locationName)
             }
         }
     }

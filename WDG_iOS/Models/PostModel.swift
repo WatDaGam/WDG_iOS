@@ -34,7 +34,6 @@ class PostModel: ObservableObject {
             // 대한민국 서울 기준으로 무작위 위경도 생성
             let latitude = Double.random(in: 37.4...37.7)
             let longitude = Double.random(in: 126.8...127.2)
-            print("무작위 위치: \(latitude), \(longitude)")
             // 더미 메시지 생성
             let message = Message(
                 nickname: ["정찬웅", "yback", "sangkkim12"].randomElement()!,  // 더 안전한 접근 방법
@@ -55,6 +54,7 @@ struct Post: View {
     @EnvironmentObject var locationModel: LocationModel
     @State private var onClicked: Int = 0
     var post: Message
+    private let postMenuOption: [String] = ["신고하기"]
     var body: some View {
         switch onClicked {
         case 0:
@@ -62,21 +62,29 @@ struct Post: View {
                 Text("\(post.nickname) 왔다감")
                     .font(.system(size: 20).bold())
                 Spacer()
-                Image(systemName: "location")
-                if let location = locationModel.location {
-                    let distanceText = formattedDistance(from: post.location, to: location.coordinate)
-                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                } else {
-                    let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-                    let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
-                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                VStack(alignment: .trailing) {
+                    HStack {
+                        Image(systemName: "heart")
+                        Text("\(post.likes)")
+                    }
+                    Spacer()
+                    HStack {
+                        Image(systemName: "location")
+                        if let location = locationModel.location {
+                            let distanceText = formattedDistance(from: post.location, to: location.coordinate)
+                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                        } else {
+                            let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
+                            let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
+                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                        }
+                    }
                 }
-                Image(systemName: "heart")
-                Text("\(post.likes)")
+                .padding(.vertical)
             }
             .padding(.horizontal)
             .fixedSize(horizontal: false, vertical: true)
-            .frame(height: 70)
+            .frame(height: 90)
             .onTapGesture {
                 onClicked = 1
             }
@@ -89,16 +97,21 @@ struct Post: View {
                         Spacer()
                         Text("\(post.location.latitude) \(post.location.longitude)")
                             .font(.caption2)
-//                            .foregroundColor(.gray)
                     }
                     .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                     Spacer()
-                    Button(action: {
-                        print("button clicked!")
-                    }, label: {
+                    Menu {
+                        ForEach(postMenuOption, id: \.self) { option in
+                            Button(option) {
+                                if option == "신고하기" {
+                                    print("신고하기 누름")
+                                }
+                            }
+                        }
+                    } label: {
                         Image(systemName: "ellipsis")
                             .foregroundColor(.black)
-                    })
+                    }
                 }
                 HStack {
                     Text(post.message)
@@ -122,9 +135,6 @@ struct Post: View {
             }
             .padding(.horizontal)
             .frame(height: 200)
-//            .onTapGesture {
-//                onClicked = 0
-//            }
         default:
             Text("default")
         }
