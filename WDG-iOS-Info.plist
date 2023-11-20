@@ -25,12 +25,12 @@
 		<false/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>43.202.3.132</key>
+			<key>3.35.136.131</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>52.78.126.48</key>
+			<key>43.202.3.132</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

@@ -32,7 +32,7 @@ class SetNicknameViewModel: ObservableObject {
     func checkNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
             // 백엔드로 중복 검사 체크
-            guard let reissuanceURL = URL(string: "http://43.202.3.132:8080/nickname/check") else {
+            guard let reissuanceURL = URL(string: "http://3.35.136.131:8080/nickname/check") else {
                 print("Invalid URL")
                 return false
             }
@@ -59,7 +59,7 @@ class SetNicknameViewModel: ObservableObject {
     }
     func setNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
-            guard let reissuanceURL = URL(string: "http://43.202.3.132:8080/nickname/set") else {
+            guard let reissuanceURL = URL(string: "http://3.35.136.131:8080/nickname/set") else {
                 print("Invalid URL")
                 return false
             }
