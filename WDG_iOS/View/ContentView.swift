@@ -221,7 +221,7 @@ struct ContentPreview: PreviewProvider {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
-        let locationModel = LocationModel()
+        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         authModel.isLoggedIn = true
         return ContentView()
             .environmentObject(authModel)

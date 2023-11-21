@@ -10,11 +10,37 @@ import Combine
 import SwiftUI
 import CoreLocation
 
+struct StoryResponse: Codable {
+    let stories: [Story]
+}
+
+struct Story: Codable {
+    let createdAt: String
+    let nickname: String
+    let lati: Double
+    let id: Int
+    let longi: Double
+    let userId: Int
+    let content: String
+    let likeNum: Int
+}
+
+extension DateFormatter {
+    static let iso8601Full: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.calendar = Calendar(identifier: .iso8601)
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+}
+
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
     init() {
-        createDummyPosts()  // 생성자에서 더미 포스트 생성
-        sortByDate()
+//        createDummyPosts()  // 생성자에서 더미 포스트 생성
+//        sortByDate()
     }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)
@@ -24,6 +50,69 @@ class PostModel: ObservableObject {
     }
     func getPosts() -> [Message] {
         return self.posts
+    }
+    func getStoryList(accessToken: String, lati: Double?, longi: Double?) async -> Bool {
+        let jsonDict: [String: Any] = ["lati": lati ?? 0, "longi": longi ?? 0]
+        guard let userInfoURL = URL(string: "http://3.35.136.131:8080/storyList/renew") else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: userInfoURL)
+        request.httpMethod = "POST"
+        request.addValue(accessToken, forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
+            // JSON 데이터로 인코딩
+            do {
+                request.httpBody = try JSONSerialization.data(withJSONObject: jsonDict, options: [])
+            } catch {
+                print("Error: JSON 데이터 변환 실패")
+                return false
+            }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                return false
+            }
+            print(String(data: data, encoding: .utf8) ?? "No data")
+            print(httpResponse.allHeaderFields)
+            print("Status Code: ", httpResponse.statusCode)
+            if httpResponse.statusCode == 200 {
+                DispatchQueue.main.async {
+                    self.posts = self.parseStories(jsonData: data) ?? []
+                }
+                // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
+                print("Account deletion successful.")
+                return true
+            } else {
+                print("Account deletion failed with status code: \(httpResponse.statusCode)")
+                return false
+            }
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
+    }
+    func parseStories(jsonData: Data) -> [Message]? {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(DateFormatter.iso8601Full) // 날짜 포맷 설정
+        do {
+            let storyResponse = try decoder.decode(StoryResponse.self, from: jsonData)
+            return storyResponse.stories.map { story in
+                // Story 구조체 인스턴스를 Message 구조체로 변환
+                Message(
+                    id: UUID(), // 새로운 UUID 생성
+                    nickname: story.nickname,
+                    message: story.content,
+                    date: DateFormatter.iso8601Full.date(from: story.createdAt) ?? Date(),
+                    location: LocationType(latitude: story.lati, longitude: story.longi),
+                    likes: story.likeNum
+                )
+            }
+        } catch {
+            print("Error parsing JSON: \(error)")
+            return nil
+        }
     }
     func createDummyPosts() {
         var dummyMessages = [Message]()
@@ -154,8 +243,10 @@ struct Post: View {
 
 struct PostPreviews: PreviewProvider {
     static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
-        let locationModel = LocationModel()
+        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         VStack {
             Spacer()
             Divider()

@@ -12,17 +12,17 @@ import CoreLocation
 struct LocationHash: Hashable {
     let latitude: Double
     let longitude: Double
-
+    
     init(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
-
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(latitude)
         hasher.combine(longitude)
     }
-
+    
     static func == (leftHash: LocationHash, rightHash: LocationHash) -> Bool {
         return leftHash.latitude == rightHash.latitude && leftHash.longitude == rightHash.longitude
     }
@@ -34,6 +34,9 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var refreshLocation: CLLocation?
     private var lastRequestedTime: Date? // 마지막으로 역지오코딩 요청한 시간을 저장
     private var geocodeRequestDelay: TimeInterval = 60 // 60초 간격으로 요청하도록 초기 설정
+    var tokenModel: TokenModel
+    var authModel: AuthModel
+    var postModel: PostModel
     @Published var location: CLLocation?
     @Published var currentLocation: CLLocation?
     @Published var locationName: String = "위치 정보 없음"
@@ -41,8 +44,11 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var updateInterval = 0
     private let geocoder = CLGeocoder()
     private var locationCache: [LocationHash: String] = [:] // 위치 이름 캐시
-    override init() {
-        super.init()
+    init(tokenModel: TokenModel, authModel: AuthModel, postModel: PostModel) {
+        self.tokenModel = tokenModel
+        self.authModel = authModel
+        self.postModel = postModel
+        super.init() // 'super.init()' 호출은 모든 프로퍼티를 초기화한 후에 호출해야 합니다.
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization() // 사용 중 권한 요청
@@ -108,8 +114,19 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         print("위치 정보 수신")
         self.location = latestLocation
         // 위치를 업데이트할 때마다 역지오코딩을 수행
+        print("updateInterval:", self.updateInterval)
+        if postModel.getPosts().isEmpty {
+            Task {
+                await tokenModel.validateToken(authModel: authModel)
+                await postModel.getStoryList(accessToken: tokenModel.getToken("accessToken") ?? "", lati: self.location?.coordinate.latitude, longi: self.location?.coordinate.longitude)
+            }
+        }
         if self.updateInterval == 0 {
             updateLocation(latestLocation)
+            Task {
+                await tokenModel.validateToken(authModel: authModel)
+                await postModel.getStoryList(accessToken: tokenModel.getToken("accessToken") ?? "", lati: self.location?.coordinate.latitude, longi: self.location?.coordinate.longitude)
+            }
             self.updateInterval = 60
         }
         self.updateInterval -= 1
@@ -138,7 +155,7 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 self.locationName = "위치 정보를 찾을 수 없음"
             } else if let placemark = placemarks?.first {
                 // 상세 주소 정보를 얻습니다.
-//                print(placemark)
+                //                print(placemark)
                 let city = placemark.locality ?? "" // 도시
                 let subLocality = placemark.subLocality ?? "" // 부속 지역 이름 (예: 동/읍/면)
                 let thoroughfare = placemark.thoroughfare ?? "" // 길 이름

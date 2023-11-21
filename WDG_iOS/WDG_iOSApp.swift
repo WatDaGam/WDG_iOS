@@ -17,7 +17,7 @@ struct WDG_iOSApp: App {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
-        let locationModel = LocationModel()
+        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         let userInfo = UserInfo(tokenModel: tokenModel, authModel: authModel)
         WindowGroup {
             ContentView()
@@ -35,7 +35,7 @@ struct AppPreview: PreviewProvider {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
-        let locationModel = LocationModel()
+        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         let userInfo = UserInfo(tokenModel: tokenModel, authModel: authModel)
         ContentView()
             .environmentObject(authModel)

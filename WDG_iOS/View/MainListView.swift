@@ -122,8 +122,10 @@ struct MainListViewPreviews: PreviewProvider {
     @State static var longitude: Double = 126.9783785
     @State static var scrollProxy: ScrollViewProxy?
     static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
-        let locationModel = LocationModel()
+        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         @Namespace var mainListTop
         MainListView(
             latitude: $latitude,
