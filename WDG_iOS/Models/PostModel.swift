@@ -15,7 +15,7 @@ struct StoryResponse: Codable {
 }
 
 struct Story: Codable {
-    let createdAt: String
+    let createdAt: Double
     let nickname: String
     let lati: Double
     let id: Int
@@ -23,12 +23,16 @@ struct Story: Codable {
     let userId: Int
     let content: String
     let likeNum: Int
+
+    var date: Date {
+        return Date(timeIntervalSince1970: createdAt / 1000) // 밀리초를 초로 변환
+    }
 }
 
 extension DateFormatter {
     static let iso8601Full: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" // ISO 8601 형식
         formatter.calendar = Calendar(identifier: .iso8601)
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -101,7 +105,7 @@ class PostModel: ObservableObject {
                     id: story.id, // 새로운 UUID 생성
                     nickname: story.nickname,
                     message: story.content,
-                    date: DateFormatter.iso8601Full.date(from: story.createdAt) ?? Date(),
+                    date: story.date,
                     location: LocationType(latitude: story.lati, longitude: story.longi),
                     likes: story.likeNum
                 )
