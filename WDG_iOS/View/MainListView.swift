@@ -14,6 +14,7 @@ struct MainListView: View {
     @Binding var latitude: Double
     @Binding var longitude: Double
     @Binding var scrollProxy: ScrollViewProxy?
+    @State private var currentScrollOffset: CGFloat = 0
     var namespace: Namespace.ID
     var body: some View {
         ScrollViewReader { proxy in
@@ -33,6 +34,12 @@ struct MainListView: View {
             .onAppear {
                 print("proxy: \(proxy)")
                 scrollProxy = proxy // ScrollViewProxy를 저장합니다.
+            }
+            .onChange(of: postModel.posts.count) {
+                // posts가 변경될 때 스크롤 위치를 유지
+                withAnimation {
+                    proxy.scrollTo(currentScrollOffset, anchor: .top)
+                }
             }
         }
     }
@@ -133,7 +140,7 @@ struct MainListViewPreviews: PreviewProvider {
             scrollProxy: $scrollProxy,
             namespace: mainListTop
         )
-            .environmentObject(postModel)
-            .environmentObject(locationModel)
+        .environmentObject(postModel)
+        .environmentObject(locationModel)
     }
 }

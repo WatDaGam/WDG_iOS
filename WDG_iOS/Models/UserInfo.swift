@@ -7,6 +7,12 @@
 
 import Foundation
 
+struct UserInfoResponse: Codable {
+    let storyNum: Int
+    let nickname: String
+    let likeNum: Int
+}
+
 class UserInfo: ObservableObject {
     private var nickname: String = ""
     private var storyNum: Int = 0
@@ -31,26 +37,19 @@ class UserInfo: ObservableObject {
         request.httpMethod = "GET"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         do {
+            let decoder = JSONDecoder()
             let (data, response) = try await URLSession.shared.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
                 print("Invalid response")
                 return false
             }
-            print(String(data: data, encoding: .utf8) ?? "No data")
-            print(httpResponse.allHeaderFields)
-            print("Status Code: ", httpResponse.statusCode)
             if httpResponse.statusCode == 200 {
-                let responseNickname = httpResponse.allHeaderFields["nickname"] as? String ?? ""
-                let responseStoryNum = (httpResponse.allHeaderFields["storyNum"] as? String).flatMap(Int.init) ?? 0
-                let responseLikeNum = (httpResponse.allHeaderFields["likeNum"] as? String).flatMap(Int.init) ?? 0
-                if responseNickname != "" {
-                    DispatchQueue.main.async {
-                        self.nickname = responseNickname
-                        self.storyNum = responseStoryNum
-                        self.likeNum = responseLikeNum
-                    }
+                let userInfoResponse = try decoder.decode(UserInfoResponse.self, from: data)
+                DispatchQueue.main.async {
+                    self.nickname = userInfoResponse.nickname
+                    self.storyNum = userInfoResponse.storyNum
+                    self.likeNum = userInfoResponse.likeNum
                 }
-                // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
                 print("Account deletion successful.")
                 return true
             } else {

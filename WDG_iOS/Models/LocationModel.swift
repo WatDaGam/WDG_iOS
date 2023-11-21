@@ -12,17 +12,14 @@ import CoreLocation
 struct LocationHash: Hashable {
     let latitude: Double
     let longitude: Double
-    
     init(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
-    
     func hash(into hasher: inout Hasher) {
         hasher.combine(latitude)
         hasher.combine(longitude)
     }
-    
     static func == (leftHash: LocationHash, rightHash: LocationHash) -> Bool {
         return leftHash.latitude == rightHash.latitude && leftHash.longitude == rightHash.longitude
     }

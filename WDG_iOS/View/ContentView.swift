@@ -198,7 +198,7 @@ struct ContentView: View {
                         .foregroundColor(.white)
                 }) },
             center: {
-                Text("프로필")
+                Text(userInfo.getUserNickname())
                     .foregroundColor(.white)
             },
             right: { EmptyView() }
