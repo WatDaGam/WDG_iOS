@@ -11,24 +11,24 @@ import CoreLocation
 struct PostView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = ""
-    @Binding private var postAlertType: PostAlertType?
+    @Binding var alertType: AlertType?
     @Binding var messageForm: Message
     var latitude: Double
     var longitude: Double
     var locationName: String
-    public init(
-        postAlertType: Binding<PostAlertType?>,
-        messageForm: Binding<Message>,
-        latitude: Double,
-        longitude: Double,
-        locationName: String
-    ) {
-        _postAlertType = postAlertType
-        _messageForm = messageForm
-        self.latitude = latitude
-        self.longitude = longitude
-        self.locationName = locationName
-    }
+//    public init(
+//        postAlertType: Binding<PostAlertType?>,
+//        messageForm: Binding<Message>,
+//        latitude: Double,
+//        longitude: Double,
+//        locationName: String
+//    ) {
+//        _postAlertType = postAlertType
+//        _messageForm = messageForm
+//        self.latitude = latitude
+//        self.longitude = longitude
+//        self.locationName = locationName
+//    }
     var body: some View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
@@ -62,7 +62,8 @@ struct PostView: View {
                             messageForm.location = LocationType(latitude: latitude, longitude: longitude)
                             messageForm.message = message
                             messageForm.date = Date()
-                            postAlertType = .post
+                            print("post clicked")
+                            alertType = .postUpload
                         }, label: {
                             Text("남기기")
                         })
@@ -86,7 +87,7 @@ struct PostViewPreviews: PreviewProvider {
     @State static var latitude: Double = 37.5666612
     @State static var longitude: Double = 126.9783785
     @State static var selectedTab: Int = 1
-    @State static var postAlertType: PostAlertType?
+    @State static var alertType: AlertType?
     @State static var messageForm: Message = Message(
         id: 0,
         nickname: "myNickname",
@@ -97,7 +98,7 @@ struct PostViewPreviews: PreviewProvider {
     )
     static var previews: some View {
         PostView(
-            postAlertType: $postAlertType,
+            alertType: $alertType,
             messageForm: $messageForm,
             latitude: latitude,
             longitude: longitude,

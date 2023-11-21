@@ -10,20 +10,15 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var locationModel: LocationModel
-    @State private var alertType: AlertType?
+    @Binding var alertType: AlertType?
     @Binding var selectedTab: Int
-    enum AlertType: Identifiable {
-        case logout
-        case removeAccount
-        var id: Int {
-            switch self {
-            case .logout:
-                return 0
-            case .removeAccount:
-                return 1
-            }
-        }
-    }
+//    public init(
+//        settingAlertType: Binding<SettingAlertType?>,
+//        selectedTab: Binding<Int>,
+//    ) {
+//        _settingAlertType = settingAlertType
+//        _selectedTab = selectedTab
+//    }
     var body: some View {
         List {
             Button("프로필", action: { selectedTab = 3 })
@@ -31,38 +26,18 @@ struct SettingsView: View {
             Button("회원탈퇴", action: { alertType = .removeAccount })
         }
         .listStyle(.plain)
-        .alert(item: $alertType) { type in
-            switch type {
-            case .logout:
-                return Alert(
-                    title: Text("로그아웃"),
-                    message: Text("로그아웃 시 로그인 화면으로 이동합니다."),
-                    primaryButton: .destructive(Text("예")) {
-                        authModel.handleLogout()
-                    },
-                    secondaryButton: .cancel(Text("아니오"))
-                )
-            case .removeAccount:
-                return Alert(
-                    title: Text("회원탈퇴"),
-                    message: Text("회원탈퇴 시 모든 데이터가 삭제됩니다."),
-                    primaryButton: .destructive(Text("탈퇴")) {
-                        Task {
-                            await authModel.deleteAccount()
-                        }
-                    },
-                    secondaryButton: .cancel(Text("취소"))
-                )
-            }
-        }
     }
 }
 
 struct SettingsViewPreviews: PreviewProvider {
     @State static var selectedTab: Int = 2
+    @State static var alertType: AlertType?
     static var previews: some View {
         let postModel = PostModel()
-        SettingsView(selectedTab: $selectedTab)
+        SettingsView(
+            alertType: $alertType,
+            selectedTab: $selectedTab
+        )
             .environmentObject(postModel)
     }
 }

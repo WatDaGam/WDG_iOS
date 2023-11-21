@@ -16,6 +16,8 @@ struct NavbarView<Left: View, Center: View, Right: View>: View {
         HStack {
             if let leftView = left {
                 leftView
+            } else {
+                Spacer()  // 왼쪽 뷰가 비어있으면 Spacer 추가
             }
             Spacer()
             if let centerView = center {
@@ -24,6 +26,8 @@ struct NavbarView<Left: View, Center: View, Right: View>: View {
             Spacer()
             if let rightView = right {
                 rightView
+            } else {
+                Spacer()  // 오른쪽 뷰가 비어있으면 Spacer 추가
             }
         }
         .padding(.horizontal)

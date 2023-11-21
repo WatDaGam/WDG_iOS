@@ -142,11 +142,6 @@ class PostModel: ObservableObject {
             print(httpResponse.allHeaderFields)
             print("Status Code: ", httpResponse.statusCode)
             if httpResponse.statusCode == 200 {
-//                DispatchQueue.main.async {
-//                    self.addPosts(message: Message(
-//                        id: , nickname: <#T##String#>, message: <#T##String#>, date: <#T##Date#>, location: <#T##LocationType#>, likes: <#T##Int#>))
-//                }
-                // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
                 print("Account deletion successful.")
                 return true
             } else {

@@ -7,15 +7,21 @@
 
 import SwiftUI
 
-enum PostAlertType: Identifiable {
-    case cancle
-    case post
+enum AlertType: Identifiable {
+    case logout
+    case removeAccount
+    case postCancle
+    case postUpload
     var id: Int {
         switch self {
-        case .cancle:
+        case .logout:
             return 0
-        case .post:
+        case .removeAccount:
             return 1
+        case .postUpload:
+            return 2
+        case .postCancle:
+            return 3
         }
     }
 }
@@ -28,7 +34,7 @@ struct ContentView: View {
     @EnvironmentObject var userInfo: UserInfo
     @Namespace var mainListTop
     @State var scrollProxy: ScrollViewProxy?
-    @State var postAlertType: PostAlertType?
+    @State var alertType: AlertType?
     @State var latitude: Double = 0
     @State var longitude: Double = 0
     @State var selectedTab: Int = 0
@@ -66,7 +72,7 @@ struct ContentView: View {
                     case 1:
                         postNavbarView()
                         PostView(
-                            postAlertType: $postAlertType,
+                            alertType: $alertType,
                             messageForm: $messageForm,
                             latitude: locationModel.getCurrentLocation().coordinate.latitude,
                             longitude: locationModel.getCurrentLocation().coordinate.longitude,
@@ -75,7 +81,10 @@ struct ContentView: View {
                         .environmentObject(locationModel)
                     case 2:
                         settingsNavbarView()
-                        SettingsView(selectedTab: $selectedTab)
+                        SettingsView(
+                            alertType: $alertType,
+                            selectedTab: $selectedTab
+                        )
                         .onAppear {
                             Task {
                                 await userInfo.getUserInfo()
@@ -117,9 +126,29 @@ struct ContentView: View {
                 message: Text("다시 로그인해주세요.")
             )
         }
-        .alert(item: $postAlertType) { type in
+        .alert(item: $alertType) { type in
             switch type {
-            case .cancle:
+            case .logout:
+                return Alert(
+                    title: Text("로그아웃"),
+                    message: Text("로그아웃 시 로그인 화면으로 이동합니다."),
+                    primaryButton: .destructive(Text("예")) {
+                        authModel.handleLogout()
+                    },
+                    secondaryButton: .cancel(Text("아니오"))
+                )
+            case .removeAccount:
+                return Alert(
+                    title: Text("회원탈퇴"),
+                    message: Text("회원탈퇴 시 모든 데이터가 삭제됩니다."),
+                    primaryButton: .destructive(Text("탈퇴")) {
+                        Task {
+                            await authModel.deleteAccount()
+                        }
+                    },
+                    secondaryButton: .cancel(Text("취소"))
+                )
+            case .postCancle:
                 return Alert(
                     title: Text("취소"),
                     message: Text("취소 시 작성중인 게시글은 저장되지 않습니다."),
@@ -128,7 +157,7 @@ struct ContentView: View {
                     },
                     secondaryButton: .cancel(Text("아니오"))
                 )
-            case .post:
+            case .postUpload:
                 return Alert(
                     title: Text("남기기"),
                     message: Text("현재 작성중인 글이 게시됩니다."),
@@ -175,33 +204,30 @@ struct ContentView: View {
             left: {
                 Button(action: {
                     print("cancle click")
-                    postAlertType = .cancle
+                    alertType = .postCancle
                 }, label: {
                     HStack {
                         Image(systemName: "chevron.left")
-                        Text("취소")
-                            .padding(-5)
                     }
                 })
                 .foregroundColor(.white)
             },
             center: {
-                EmptyView()
+                Text("\(userInfo.getUserNickname()) 왔다감")
+                    .foregroundStyle(.white)
             },
-            right: {
-                EmptyView()
-            }
+            right: {}
         )
     }
     @ViewBuilder
     private func settingsNavbarView() -> some View {
         NavbarView(
-            left: { EmptyView() },
+            left: {},
             center: {
                 Text("마이페이지")
                     .foregroundStyle(.white)
             },
-            right: { EmptyView() }
+            right: {}
         )
     }
     @ViewBuilder
@@ -218,7 +244,7 @@ struct ContentView: View {
                 Text(userInfo.getUserNickname())
                     .foregroundColor(.white)
             },
-            right: { EmptyView() }
+            right: {}
         )
     }
 }
