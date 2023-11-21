@@ -33,6 +33,7 @@ struct ContentView: View {
     @State var longitude: Double = 0
     @State var selectedTab: Int = 0
     @State var messageForm: Message = Message(
+        id: 0,
         nickname: "myNickname",
         message: "",
         date: Date(),
@@ -67,9 +68,9 @@ struct ContentView: View {
                         PostView(
                             postAlertType: $postAlertType,
                             messageForm: $messageForm,
-                            latitude: latitude,
-                            longitude: longitude,
-                            locationName: "test"
+                            latitude: locationModel.getCurrentLocation().coordinate.latitude,
+                            longitude: locationModel.getCurrentLocation().coordinate.longitude,
+                            locationName: locationModel.getLocationName()
                         )
                         .environmentObject(locationModel)
                     case 2:
@@ -82,7 +83,11 @@ struct ContentView: View {
                         }
                     case 3:
                         profileNavbarView()
-                        ProfileView(nickname: userInfo.getUserNickname(), numberOfPosts: userInfo.getUserStoryNum(), numberOfLikes: userInfo.getUserLikeNum())
+                        ProfileView(
+                            nickname: userInfo.getUserNickname(),
+                            numberOfPosts: userInfo.getUserStoryNum(),
+                            numberOfLikes: userInfo.getUserLikeNum()
+                        )
                     default:
                         EmptyView()
                     }
@@ -128,7 +133,19 @@ struct ContentView: View {
                     title: Text("남기기"),
                     message: Text("현재 작성중인 글이 게시됩니다."),
                     primaryButton: .destructive(Text("게시")) {
-                        postModel.addPosts(message: messageForm)
+                        Task {
+                            await tokenModel.validateToken(authModel: authModel)
+                            await postModel.uploadStory(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                content: messageForm.message,
+                                lati: messageForm.location.latitude,
+                                longi: messageForm.location.longitude
+                            )
+                            await postModel.getStoryList(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                lati: locationModel.getCurrentLocation().coordinate.latitude,
+                                longi: locationModel.getCurrentLocation().coordinate.longitude)
+                        }
                         selectedTab = 0
                     },
                     secondaryButton: .cancel(Text("취소"))

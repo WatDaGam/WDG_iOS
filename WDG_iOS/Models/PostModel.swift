@@ -38,10 +38,7 @@ extension DateFormatter {
 
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
-    init() {
-//        createDummyPosts()  // 생성자에서 더미 포스트 생성
-//        sortByDate()
-    }
+    init() { }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)
     }
@@ -61,13 +58,13 @@ class PostModel: ObservableObject {
         request.httpMethod = "POST"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
-            // JSON 데이터로 인코딩
-            do {
-                request.httpBody = try JSONSerialization.data(withJSONObject: jsonDict, options: [])
-            } catch {
-                print("Error: JSON 데이터 변환 실패")
-                return false
-            }
+        // JSON 데이터로 인코딩
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: jsonDict, options: [])
+        } catch {
+            print("Error: JSON 데이터 변환 실패")
+            return false
+        }
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -101,7 +98,7 @@ class PostModel: ObservableObject {
             return storyResponse.stories.map { story in
                 // Story 구조체 인스턴스를 Message 구조체로 변환
                 Message(
-                    id: UUID(), // 새로운 UUID 생성
+                    id: story.id, // 새로운 UUID 생성
                     nickname: story.nickname,
                     message: story.content,
                     date: DateFormatter.iso8601Full.date(from: story.createdAt) ?? Date(),
@@ -114,9 +111,52 @@ class PostModel: ObservableObject {
             return nil
         }
     }
+    func uploadStory(accessToken: String, content: String, lati: Double?, longi: Double?) async -> Bool {
+        let jsonDict: [String: Any] = ["content": content, "lati": lati ?? 0, "longi": longi ?? 0]
+        guard let userInfoURL = URL(string: "http://3.35.136.131:8080/story/upload") else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: userInfoURL)
+        request.httpMethod = "POST"
+        request.addValue(accessToken, forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
+        // JSON 데이터로 인코딩
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: jsonDict, options: [])
+        } catch {
+            print("Error: JSON 데이터 변환 실패")
+            return false
+        }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                return false
+            }
+            print(String(data: data, encoding: .utf8) ?? "No data")
+            print(httpResponse.allHeaderFields)
+            print("Status Code: ", httpResponse.statusCode)
+            if httpResponse.statusCode == 200 {
+//                DispatchQueue.main.async {
+//                    self.addPosts(message: Message(
+//                        id: , nickname: <#T##String#>, message: <#T##String#>, date: <#T##Date#>, location: <#T##LocationType#>, likes: <#T##Int#>))
+//                }
+                // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
+                print("Account deletion successful.")
+                return true
+            } else {
+                print("Account deletion failed with status code: \(httpResponse.statusCode)")
+                return false
+            }
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
+    }
     func createDummyPosts() {
         var dummyMessages = [Message]()
-        for _ in 1...20 {
+        for id in 1...20 {
             // 무작위 날짜 생성 (최근 3년 내)
             let randomDays = Int.random(in: 0...(365 * 3))
             let randomDate = Calendar.current.date(byAdding: .day, value: -randomDays, to: Date())!
@@ -125,6 +165,7 @@ class PostModel: ObservableObject {
             let longitude = Double.random(in: 126.8...127.2)
             // 더미 메시지 생성
             let message = Message(
+                id: id + 1000000,
                 nickname: ["정찬웅", "yback", "sangkkim12"].randomElement()!,  // 더 안전한 접근 방법
                 message: "Sample message \(Int.random(in: 1...100))",
                 date: randomDate,

@@ -88,6 +88,7 @@ struct PostViewPreviews: PreviewProvider {
     @State static var selectedTab: Int = 1
     @State static var postAlertType: PostAlertType?
     @State static var messageForm: Message = Message(
+        id: 0,
         nickname: "myNickname",
         message: "",
         date: Date(),

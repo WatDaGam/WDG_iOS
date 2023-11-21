@@ -13,13 +13,15 @@ struct LocationType: Codable {
 }
 
 struct Message: Identifiable, Codable {
-    let id: UUID
+    let id: Int
     let nickname: String
     var message: String
     var date: Date
     var likes: Int
     var location: LocationType
-    init(id: UUID = UUID(), nickname: String, message: String, date: Date, location: LocationType, likes: Int) {
+    init(
+        id: Int, nickname: String, message: String, date: Date, location: LocationType, likes: Int
+    ) {
         self.id = id
         self.nickname = nickname
         self.message = message
@@ -28,7 +30,9 @@ struct Message: Identifiable, Codable {
         self.likes = likes
     }
     static func createSampleMessage(
-        nickname: String, message: String, date: Date, location: LocationType, likes: Int) -> Message {
-            return Message(nickname: nickname, message: message, date: date, location: location, likes: likes)
+        id: Int, nickname: String, message: String, date: Date, location: LocationType, likes: Int) -> Message {
+            return Message(
+                id: id, nickname: nickname, message: message, date: date, location: location, likes: likes
+            )
     }
 }

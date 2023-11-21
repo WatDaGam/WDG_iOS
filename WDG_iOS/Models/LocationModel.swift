@@ -51,6 +51,8 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.locationManager.requestWhenInUseAuthorization() // 사용 중 권한 요청
         self.locationManager.startUpdatingLocation() // 위치 업데이트 시작
     }
+    func getLocationName() -> String { return self.locationName }
+    func getCurrentLocation() -> CLLocation { return currentLocation ?? CLLocation(latitude: 37.5666612, longitude: 126.9783785) }
     private func checkLocationServicesAuthorization() {
         switch locationManager.authorizationStatus {
         case .notDetermined:
@@ -110,6 +112,9 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let latestLocation = locations.last else { return }
         print("위치 정보 수신")
         self.location = latestLocation
+        if locationName == "위치 정보를 찾을 수 없음" {
+            updateLocation(latestLocation)
+        }
         // 위치를 업데이트할 때마다 역지오코딩을 수행
         print("updateInterval:", self.updateInterval)
         if postModel.getPosts().isEmpty {
