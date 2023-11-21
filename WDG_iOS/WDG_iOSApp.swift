@@ -18,12 +18,14 @@ struct WDG_iOSApp: App {
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
         let locationModel = LocationModel()
+        let userInfo = UserInfo(tokenModel: tokenModel, authModel: authModel)
         WindowGroup {
             ContentView()
                 .environmentObject(authModel)
                 .environmentObject(tokenModel)
                 .environmentObject(postModel)
                 .environmentObject(locationModel)
+                .environmentObject(userInfo)
         }
     }
 }
@@ -34,10 +36,12 @@ struct AppPreview: PreviewProvider {
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
         let locationModel = LocationModel()
+        let userInfo = UserInfo(tokenModel: tokenModel, authModel: authModel)
         ContentView()
             .environmentObject(authModel)
             .environmentObject(tokenModel)
             .environmentObject(postModel)
             .environmentObject(locationModel)
+            .environmentObject(userInfo)
     }
 }

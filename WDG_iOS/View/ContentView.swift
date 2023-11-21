@@ -25,6 +25,7 @@ struct ContentView: View {
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var locationModel: LocationModel
     @EnvironmentObject var postModel: PostModel
+    @EnvironmentObject var userInfo: UserInfo
     @Namespace var mainListTop
     @State var scrollProxy: ScrollViewProxy?
     @State var postAlertType: PostAlertType?
@@ -56,6 +57,11 @@ struct ContentView: View {
                         )
                         .environmentObject(locationModel)
                         .environmentObject(postModel)
+                        .onAppear {
+                            Task {
+                                await userInfo.getUserInfo()
+                            }
+                        }
                     case 1:
                         postNavbarView()
                         PostView(
@@ -69,9 +75,14 @@ struct ContentView: View {
                     case 2:
                         settingsNavbarView()
                         SettingsView(selectedTab: $selectedTab)
+                        .onAppear {
+                            Task {
+                                await userInfo.getUserInfo()
+                            }
+                        }
                     case 3:
                         profileNavbarView()
-                        ProfileView()
+                        ProfileView(nickname: userInfo.getUserNickname(), numberOfPosts: userInfo.getUserStoryNum(), numberOfLikes: userInfo.getUserLikeNum())
                     default:
                         EmptyView()
                     }

@@ -32,6 +32,7 @@
 		F4C1B0932AF36738009B9FF3 /* TokenModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0922AF36738009B9FF3 /* TokenModel.swift */; };
 		F4C1B0952AF36858009B9FF3 /* KeyChainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0942AF36858009B9FF3 /* KeyChainSwift.swift */; };
 		F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */; };
+		F4D7892F2B0B4BCB001B9B19 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D7892E2B0B4BCB001B9B19 /* UserInfo.swift */; };
 		F4E92E612AF8D3E60041C8F4 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E602AF8D3E50041C8F4 /* PostModel.swift */; };
 		F4E92E632AF9C54B0041C8F4 /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */; };
 		F4E92E652AFE7CCE0041C8F4 /* MyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */; };
@@ -62,6 +63,7 @@
 		F4C1B0922AF36738009B9FF3 /* TokenModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenModel.swift; sourceTree = "<group>"; };
 		F4C1B0942AF36858009B9FF3 /* KeyChainSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainSwift.swift; sourceTree = "<group>"; };
 		F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		F4D7892E2B0B4BCB001B9B19 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		F4E92E602AF8D3E50041C8F4 /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
 		F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
 		F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTabView.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 				F4E92E602AF8D3E50041C8F4 /* PostModel.swift */,
 				F4C1B08C2AF12DD2009B9FF3 /* SetNicknameViewModel.swift */,
 				F4C1B08E2AF31F8B009B9FF3 /* ShakeMotion.swift */,
+				F4D7892E2B0B4BCB001B9B19 /* UserInfo.swift */,
 				F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */,
 			);
 			path = Models;
@@ -304,6 +307,7 @@
 				F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */,
 				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
 				F4C1B08F2AF31F8B009B9FF3 /* ShakeMotion.swift in Sources */,
+				F4D7892F2B0B4BCB001B9B19 /* UserInfo.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

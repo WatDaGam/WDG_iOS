@@ -11,11 +11,11 @@ struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
-    private var nickname: String = "정찬웅"
-    private var numberOfPosts: Int = 10
-    private var numberOfLikes: Int = 321
-    private var numberOfFollowers: Int = 43214
-    private var numberOfFollowings: Int = 13
+    var nickname: String
+    var numberOfPosts: Int
+    var numberOfLikes: Int
+//    var numberOfFollowers: Int = 43214
+//    var numberOfFollowings: Int = 13
     var backButton : some View {  // 뒤로가기 버튼
         Button {
             self.presentationMode.wrappedValue.dismiss()
@@ -39,14 +39,12 @@ struct ProfileView: View {
         .listStyle(.plain)
     }
     var body: some View {
-        ZStack {
-            Color.black.edgesIgnoringSafeArea(.all)
             VStack {
                 HStack(spacing: 20) {
                     ProfileStatsView(stat: numberOfPosts, statTitle: "왔다감")
                     ProfileStatsView(stat: numberOfLikes, statTitle: "좋아요")
-                    ProfileStatsView(stat: numberOfFollowers, statTitle: "팔로워")
-                    ProfileStatsView(stat: numberOfFollowings, statTitle: "팔로잉")
+//                    ProfileStatsView(stat: numberOfFollowers, statTitle: "팔로워")
+//                    ProfileStatsView(stat: numberOfFollowings, statTitle: "팔로잉")
                 }
                 .padding(.vertical, 30)
                 Divider()
@@ -65,11 +63,7 @@ struct ProfileView: View {
                 postList
                 Spacer()
             }
-            .navigationBarBackButtonHidden(true)
-            .navigationBarTitle(Text(nickname).font(.subheadline), displayMode: .inline)
-            .background(Rectangle().foregroundColor(.white))
-        .navigationBarItems(leading: backButton)
-        }
+        
     }
 }
 
@@ -90,7 +84,7 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         let postModel = PostModel()
         let locationModel = LocationModel()
-        ProfileView()
+        ProfileView(nickname: "test", numberOfPosts: 10, numberOfLikes: 10)
             .environmentObject(postModel)
             .environmentObject(locationModel)
     }
