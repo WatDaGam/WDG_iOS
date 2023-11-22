@@ -173,7 +173,8 @@ struct ContentView: View {
                             await postModel.getStoryList(
                                 accessToken: tokenModel.getToken("accessToken") ?? "",
                                 lati: locationModel.getCurrentLocation().coordinate.latitude,
-                                longi: locationModel.getCurrentLocation().coordinate.longitude)
+                                longi: locationModel.getCurrentLocation().coordinate.longitude
+                            )
                         }
                         selectedTab = 0
                     },

@@ -11,6 +11,9 @@
 		F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E82AECDF1800B3E19E /* PostView.swift */; };
 		F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EA2AECE03600B3E19E /* SettingsView.swift */; };
 		F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EC2AED0EC800B3E19E /* Message.swift */; };
+		F44AEB5B2B0D71D600AA65FC /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = F44AEB5A2B0D71D600AA65FC /* Lottie */; };
+		F44AEB5D2B0D722200AA65FC /* LottieLike.json in Resources */ = {isa = PBXBuildFile; fileRef = F44AEB5C2B0D722200AA65FC /* LottieLike.json */; };
+		F44AEB5F2B0D742A00AA65FC /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44AEB5E2B0D742A00AA65FC /* LottieView.swift */; };
 		F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */; };
 		F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E582AEBA4B40044F0C5 /* Assets.xcassets */; };
 		F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4623E5B2AEBA4B40044F0C5 /* Preview Assets.xcassets */; };
@@ -44,6 +47,8 @@
 		F43EE5E82AECDF1800B3E19E /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		F43EE5EA2AECE03600B3E19E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F43EE5EC2AED0EC800B3E19E /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		F44AEB5C2B0D722200AA65FC /* LottieLike.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = LottieLike.json; sourceTree = "<group>"; };
+		F44AEB5E2B0D742A00AA65FC /* LottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieView.swift; sourceTree = "<group>"; };
 		F4623E512AEBA4B20044F0C5 /* WDG_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WDG_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4623E542AEBA4B20044F0C5 /* WDG_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WDG_iOSApp.swift; sourceTree = "<group>"; };
 		F4623E582AEBA4B40044F0C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -80,6 +85,7 @@
 				F4623E802AEBD37F0044F0C5 /* KakaoSDK in Frameworks */,
 				F4623E882AEBD37F0044F0C5 /* KakaoSDKCommon in Frameworks */,
 				F4623E822AEBD37F0044F0C5 /* KakaoSDKAuth in Frameworks */,
+				F44AEB5B2B0D71D600AA65FC /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +144,7 @@
 				F43EE5E62AECDCFF00B3E19E /* ContentView.swift */,
 				F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */,
 				F4C1B0882AEFCD6D009B9FF3 /* SetNicknameView.swift */,
+				F44AEB5E2B0D742A00AA65FC /* LottieView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -180,6 +187,7 @@
 		F4623E6C2AEBC4220044F0C5 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				F44AEB5C2B0D722200AA65FC /* LottieLike.json */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -207,6 +215,7 @@
 				F4623E832AEBD37F0044F0C5 /* KakaoSDKCert */,
 				F4623E852AEBD37F0044F0C5 /* KakaoSDKCertCore */,
 				F4623E872AEBD37F0044F0C5 /* KakaoSDKCommon */,
+				F44AEB5A2B0D71D600AA65FC /* Lottie */,
 			);
 			productName = WDG_iOS;
 			productReference = F4623E512AEBA4B20044F0C5 /* WDG_iOS.app */;
@@ -238,6 +247,7 @@
 			mainGroup = F4623E482AEBA4B20044F0C5;
 			packageReferences = (
 				F4623E7E2AEBD37F0044F0C5 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				F44AEB592B0D71D600AA65FC /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = F4623E522AEBA4B20044F0C5 /* Products */;
 			projectDirPath = "";
@@ -257,6 +267,7 @@
 				F4623E5C2AEBA4B40044F0C5 /* Preview Assets.xcassets in Resources */,
 				F4623E592AEBA4B40044F0C5 /* Assets.xcassets in Resources */,
 				F4623E6A2AEBA8180044F0C5 /* DelaGothicOne-Regular.ttf in Resources */,
+				F44AEB5D2B0D722200AA65FC /* LottieLike.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +308,7 @@
 				F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */,
 				F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */,
 				F4C1B0952AF36858009B9FF3 /* KeyChainSwift.swift in Sources */,
+				F44AEB5F2B0D742A00AA65FC /* LottieView.swift in Sources */,
 				F4623E912AEBEA590044F0C5 /* AppDelegate.swift in Sources */,
 				F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
@@ -529,6 +541,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F44AEB592B0D71D600AA65FC /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.3.3;
+			};
+		};
 		F4623E7E2AEBD37F0044F0C5 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
@@ -540,6 +560,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F44AEB5A2B0D71D600AA65FC /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44AEB592B0D71D600AA65FC /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
 		F4623E7F2AEBD37F0044F0C5 /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F4623E7E2AEBD37F0044F0C5 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;

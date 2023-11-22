@@ -28,7 +28,7 @@ class UserInfo: ObservableObject {
     func getUserLikeNum() -> Int { return self.likeNum }
     func getUserInfo() async -> Bool {
         await tokenModel.validateToken(authModel: authModel)
-        guard let userInfoURL = URL(string: "http://3.35.136.131:8080/userInfo") else {
+        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/userInfo") else {
             print("Invalid URL")
             return false
         }

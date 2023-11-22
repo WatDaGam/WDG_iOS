@@ -54,7 +54,7 @@ class PostModel: ObservableObject {
     }
     func getStoryList(accessToken: String, lati: Double?, longi: Double?) async -> Bool {
         let jsonDict: [String: Any] = ["lati": lati ?? 0, "longi": longi ?? 0]
-        guard let userInfoURL = URL(string: "http://3.35.136.131:8080/storyList/renew") else {
+        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/storyList/renew") else {
             print("Invalid URL")
             return false
         }
@@ -117,7 +117,7 @@ class PostModel: ObservableObject {
     }
     func uploadStory(accessToken: String, content: String, lati: Double?, longi: Double?) async -> Bool {
         let jsonDict: [String: Any] = ["content": content, "lati": lati ?? 0, "longi": longi ?? 0]
-        guard let userInfoURL = URL(string: "http://3.35.136.131:8080/story/upload") else {
+        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/story/upload") else {
             print("Invalid URL")
             return false
         }
@@ -258,7 +258,11 @@ struct Post: View {
                         Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     }
                     Spacer()
-                    Image(systemName: "heart")
+                    Button(action: {
+                        LottieView(name: "LottieLike", loopMode: .loop)
+                    }, label: {
+                        Image(systemName: "heart")
+                    })
                     Text("\(post.likes)")
                 }
             }
