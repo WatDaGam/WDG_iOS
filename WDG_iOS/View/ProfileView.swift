@@ -10,11 +10,12 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var postModel: PostModel
-    private var nickname: String = "정찬웅"
-    private var numberOfPosts: Int = 10
-    private var numberOfLikes: Int = 321
-    private var numberOfFollowers: Int = 43214
-    private var numberOfFollowings: Int = 13
+    @EnvironmentObject var locationModel: LocationModel
+    var nickname: String
+    var numberOfPosts: Int
+    var numberOfLikes: Int
+    //    var numberOfFollowers: Int = 43214
+    //    var numberOfFollowings: Int = 13
     var backButton : some View {  // 뒤로가기 버튼
         Button {
             self.presentationMode.wrappedValue.dismiss()
@@ -31,6 +32,7 @@ struct ProfileView: View {
             ForEach(postModel.posts) { post in
                 if post.nickname == nickname {
                     Post(post: post)
+                        .environmentObject(locationModel)
                 }
             }
         }
@@ -41,8 +43,6 @@ struct ProfileView: View {
             HStack(spacing: 20) {
                 ProfileStatsView(stat: numberOfPosts, statTitle: "왔다감")
                 ProfileStatsView(stat: numberOfLikes, statTitle: "좋아요")
-                ProfileStatsView(stat: numberOfFollowers, statTitle: "팔로워")
-                ProfileStatsView(stat: numberOfFollowings, statTitle: "팔로잉")
             }
             .padding(.vertical, 30)
             Divider()
@@ -61,9 +61,6 @@ struct ProfileView: View {
             postList
             Spacer()
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitle(Text(nickname).font(.subheadline), displayMode: .inline)
-        .navigationBarItems(leading: backButton)
     }
 }
 
@@ -82,8 +79,12 @@ struct ProfileStatsView: View {
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
-        ProfileView()
+        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
+        ProfileView(nickname: "test", numberOfPosts: 10, numberOfLikes: 10)
             .environmentObject(postModel)
+            .environmentObject(locationModel)
     }
 }

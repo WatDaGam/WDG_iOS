@@ -32,7 +32,7 @@ class SetNicknameViewModel: ObservableObject {
     func checkNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
             // 백엔드로 중복 검사 체크
-            guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/nickname/check") else {
+            guard let reissuanceURL = URL(string: "http://43.200.68.255:8080/nickname/check") else {
                 print("Invalid URL")
                 return false
             }
@@ -59,7 +59,7 @@ class SetNicknameViewModel: ObservableObject {
     }
     func setNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
-            guard let reissuanceURL = URL(string: "http://52.78.126.48:8080/nickname/set") else {
+            guard let reissuanceURL = URL(string: "http://43.200.68.255:8080/nickname/set") else {
                 print("Invalid URL")
                 return false
             }
@@ -75,6 +75,13 @@ class SetNicknameViewModel: ObservableObject {
                     print("Invalid response")
                     return false
                 }
+                let accessToken = httpResponse.headers["Authorization"] ?? ""
+                let refreshToken = httpResponse.headers["Refresh-Token"] ?? ""
+                let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+                let refreshExpire = httpResponse.headers["Refresh-Expiration-Time"] ?? ""
+                self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
+                self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                self.tokenModel.saveToken(refreshExpire, type: "refreshExpire")
                 return httpResponse.statusCode == 200
             } catch {
                 print("Fetch failed: \(error.localizedDescription)")

@@ -23,13 +23,21 @@ struct SetNicknameView: View {
     @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
-    private var tokenModel: TokenModel = TokenModel()
     private var infoList: [String] = ["default", "fail", "success"]
     private var nicknameInfoDict: [String: NicknameInfo] = [
-        "default": NicknameInfo(message: "닉네임은 2자부터 10자까지 설정할 수 있습니다.", color: Color.gray, image: "info.circle"),
-        "fail": NicknameInfo(message: "닉네임을 사용하실 수 없습니다.", color: Color.red, image: "xmark.circle"),
-        "success": NicknameInfo(message: "닉네임을 사용하실 수 있습니다.", color: Color.green, image: "checkmark.circle")
+        "default": NicknameInfo(
+            message: "닉네임은 2자부터 10자까지 설정할 수 있습니다.", color: Color.gray, image: "info.circle"
+        ),
+        "fail": NicknameInfo(
+            message: "닉네임을 사용하실 수 없습니다.", color: Color.red, image: "xmark.circle"
+        ),
+        "success": NicknameInfo(
+            message: "닉네임을 사용하실 수 있습니다.", color: Color.green, image: "checkmark.circle"
+        )
     ]
+//    init(authModel: AuthModel) {
+//        _authModel = ObservedObject(wrappedValue: authModel)
+//    }
     var body: some View {
         NavigationView {
             VStack {
@@ -72,9 +80,9 @@ struct SetNicknameView: View {
                 if isConfirm {
                     Button(action: {
                         Task {
-                            let result = await setNickname.setNickname(nickname: nickname)
-                            isValidNickname = result ? 2 : 1
-                            authModel.isNewAccount = !result
+                            let result = await self.setNickname.setNickname(nickname: nickname)
+                            self.isValidNickname = result ? 2 : 1
+                            self.authModel.isNewAccount = !result
                         }
                     }, label: {
                         Text("가입하기")
@@ -88,9 +96,9 @@ struct SetNicknameView: View {
                 } else {
                     Button(action: {
                         Task {
-                            isValidNickname = await setNickname.checkNickname(nickname: nickname) ? 2 : 1
-                            if infoList[isValidNickname] == "success" {
-                                isConfirm = true
+                            self.isValidNickname = await self.setNickname.checkNickname(nickname: nickname) ? 2 : 1
+                            if self.infoList[isValidNickname] == "success" {
+                                self.isConfirm = true
                             } else {
                                 withAnimation {
                                     self.attempts += 1
@@ -122,7 +130,7 @@ struct SetNicknameView: View {
                         // "예"를 선택했을 때의 동작
                         // 토큰 삭제 및 로그아웃 처리
                         Task {
-                            await authModel.deleteAccount()
+                            await self.authModel.deleteAccount()
                         }
                     },
                     secondaryButton: .cancel(Text("아니오"))
@@ -147,6 +155,9 @@ extension View {
 
 struct SetNicknameViewPreviews: PreviewProvider {
     static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
         SetNicknameView()
+            .environmentObject(authModel)
     }
 }
