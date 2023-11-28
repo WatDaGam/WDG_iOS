@@ -52,23 +52,23 @@ struct MainListView: View {
 
 struct MainNavbarCenter:View {
     @ObservedObject var locationModel: LocationModel
-    @State private var showingLocationSettingsAlert: Bool
     @Binding var latitude: Double
     @Binding var longitude: Double
+    @Binding var alertType: AlertType?
     private var locationManager: CLLocationManager
-    init(locationModel: LocationModel, latitude: Binding<Double>, longitude: Binding<Double>) {
+    init(locationModel: LocationModel, latitude: Binding<Double>, longitude: Binding<Double>, alertType: Binding<AlertType?>) {
         _locationModel = ObservedObject(initialValue: locationModel)
-        _showingLocationSettingsAlert = State(initialValue: false)
         locationManager = CLLocationManager()
         _latitude = latitude
         _longitude = longitude
+        _alertType = alertType
     }
     var body: some View {
         VStack {
             Spacer()
             Button(action: {
                 if locationManager.authorizationStatus == .denied {
-                    showingLocationSettingsAlert = true
+                    alertType = .locationAuth
                 }
             }, label: {
                 Text(locationModel.locationName)
@@ -76,20 +76,6 @@ struct MainNavbarCenter:View {
                     .foregroundColor(.white)
                     .font(.title3)
             })
-            .alert(isPresented: $showingLocationSettingsAlert) {
-                Alert(
-                    title: Text("위치 서비스 필요"),
-                    message: Text("위치 서비스를 사용하려면 설정에서 권한을 허용해 주세요."),
-                    primaryButton: .default(Text("설정으로 이동")) {
-                        // Take the user to the app settings
-                        if let settingUrl = URL(string: UIApplication.openSettingsURLString),
-                           UIApplication.shared.canOpenURL(settingUrl) {
-                            UIApplication.shared.open(settingUrl, options: [:], completionHandler: nil)
-                        }
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
             Spacer()
             if let location = locationModel.location {
                 Text("\(location.coordinate.latitude) \(location.coordinate.longitude)")

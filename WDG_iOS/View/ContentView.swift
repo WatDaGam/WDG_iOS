@@ -12,6 +12,7 @@ enum AlertType: Identifiable {
     case removeAccount
     case postCancle
     case postUpload
+    case locationAuth
     var id: Int {
         switch self {
         case .logout:
@@ -22,6 +23,8 @@ enum AlertType: Identifiable {
             return 2
         case .postCancle:
             return 3
+        case .locationAuth:
+            return 4
         }
     }
 }
@@ -182,6 +185,20 @@ struct ContentView: View {
                     },
                     secondaryButton: .cancel(Text("취소"))
                 )
+            case .locationAuth:
+                return  Alert(
+                    title: Text("위치 서비스 필요"),
+                    message: Text(
+                        "앱이 제대로 작동하려면 위치 서비스의 접근 권한이 필요합니다. 설정 > 개인정보 보호 및 보안 > 위치 서비스로 이동하여 '왔다감'의 위치 접근을 허용해주세요."
+                    ),
+                    primaryButton: .default(Text("설정으로 이동")) {
+                        if let settingUrl = URL(string: UIApplication.openSettingsURLString),
+                           UIApplication.shared.canOpenURL(settingUrl) {
+                            UIApplication.shared.open(settingUrl, options: [:], completionHandler: nil)
+                        }
+                    },
+                    secondaryButton: .cancel(Text("취소"))
+                )
             }
         }
     }
@@ -193,7 +210,8 @@ struct ContentView: View {
                 MainNavbarCenter(
                     locationModel : locationModel,
                     latitude: $latitude,
-                    longitude: $longitude
+                    longitude: $longitude,
+                    alertType: $alertType
                 )
             },
             right: {
