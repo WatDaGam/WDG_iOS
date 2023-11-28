@@ -23,7 +23,7 @@ struct Story: Codable {
     let userId: Int
     let content: String
     let likeNum: Int
-
+    
     var date: Date {
         return Date(timeIntervalSince1970: createdAt / 1000) // 밀리초를 초로 변환
     }
@@ -182,10 +182,14 @@ class PostModel: ObservableObject {
 struct Post: View {
     @EnvironmentObject var locationModel: LocationModel
     @State private var onClicked: Int = 0
+    @State private var isAnimating: Bool = false
+    @State private var isLike: Bool = false
     var post: Message
     private let postMenuOption: [String] = ["신고하기"]
     var body: some View {
-        let currentLocation = locationModel.location ?? CLLocation(latitude: 37.5666612, longitude: 126.9783785)
+        let currentLocation = locationModel.location ?? CLLocation(
+            latitude: 37.5666612, longitude: 126.9783785
+        )
         let distanceText = formattedDistance(from: post.location, to: currentLocation.coordinate)
         let distanceInMeter = calcDistanceInMeter(from: post.location, to: currentLocation.coordinate)
         switch onClicked {
@@ -252,12 +256,28 @@ struct Post: View {
                     Image(systemName: "location")
                     Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     Spacer()
-//                    Button(action: {
-//                        LottieView(name: "LottieLike", loopMode: .loop)
-//                    }, label: {
-//                        Image(systemName: "heart")
-//                    })
-//                    LottieView(name: "LottieLike", loopMode: .loop)
+                    Button(action: {
+                        if !isLike {
+                            self.isAnimating.toggle()
+                            // Lottie 애니메이션 길이에 맞춰 시간 조절
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                self.isAnimating = false
+                            }
+                        }
+                        self.isLike.toggle()
+                    }, label: {
+                        if isAnimating {
+                            LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
+                                .frame(width: 20, height: 20)
+                        } else {
+                            if isLike {
+                                Image(systemName: "heart.fill")
+                                    .foregroundColor(Color.red)
+                            } else {
+                                Image(systemName: "heart") // 애니메이션이 비활성화된 경우
+                            }
+                        }
+                    })
                     Text("\(post.likes)")
                 }
             }
