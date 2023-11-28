@@ -23,10 +23,13 @@ struct Story: Codable {
     let userId: Int
     let content: String
     let likeNum: Int
-    
     var date: Date {
         return Date(timeIntervalSince1970: createdAt / 1000) // 밀리초를 초로 변환
     }
+}
+
+struct LikePlusResponse: Codable {
+    let likeNum: Int
 }
 
 extension DateFormatter {
@@ -153,6 +156,50 @@ class PostModel: ObservableObject {
             return false
         }
     }
+    func likeStory(accessToken: String, id: Int) async -> Bool {
+        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/like/plus?storyId=" + String(id)) else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: userInfoURL)
+        request.httpMethod = "POST"
+        request.addValue(accessToken, forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("Request failed with status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+                return false
+            }
+            let newLikeNum = parseLikeNum(jsonData: data)
+            if newLikeNum != -1 {
+                DispatchQueue.main.async {
+                    self.updateLikeNum(for: id, likeNum: newLikeNum)
+                }
+                return true
+            }
+            return false
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
+    }
+    func parseLikeNum(jsonData: Data) -> Int {
+        let decoder = JSONDecoder()
+        do {
+            let response = try decoder.decode(LikePlusResponse.self, from: jsonData)
+            return response.likeNum
+        } catch {
+            print("Error parsing JSON: \(error)")
+            return -1
+        }
+    }
+    private func updateLikeNum(for id: Int, likeNum: Int) {
+        if let index = posts.firstIndex(where: { $0.id == id }) {
+            posts[index].likes = likeNum
+        }
+    }
     func createDummyPosts() {
         var dummyMessages = [Message]()
         for id in 1...20 {
@@ -181,6 +228,9 @@ class PostModel: ObservableObject {
 
 struct Post: View {
     @EnvironmentObject var locationModel: LocationModel
+    @EnvironmentObject var tokenModel: TokenModel
+    @EnvironmentObject var authModel: AuthModel
+    @EnvironmentObject var postModel: PostModel
     @State private var onClicked: Int = 0
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
@@ -257,25 +307,25 @@ struct Post: View {
                     Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     Spacer()
                     Button(action: {
-                        if !isLike {
-                            self.isAnimating.toggle()
-                            // Lottie 애니메이션 길이에 맞춰 시간 조절
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                self.isAnimating = false
-                            }
+                        self.isAnimating = true
+                        Task {
+                            await tokenModel.validateToken(authModel: authModel)
+                            await postModel.likeStory(
+                                accessToken: tokenModel.getToken("accessToken") ?? "", id: post.id
+                            )
                         }
-                        self.isLike.toggle()
+                        // Lottie 애니메이션 길이에 맞춰 시간 조절
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            self.isAnimating = false
+                        }
+                        self.isLike = true
                     }, label: {
                         if isAnimating {
                             LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
                                 .frame(width: 20, height: 20)
                         } else {
-                            if isLike {
-                                Image(systemName: "heart.fill")
-                                    .foregroundColor(Color.red)
-                            } else {
-                                Image(systemName: "heart") // 애니메이션이 비활성화된 경우
-                            }
+                            Image(systemName: isLike ? "heart.fill" : "heart") // 애니메이션이 비활성화된 경우
+                                .foregroundColor(isLike ? .red : .black)
                         }
                     })
                     Text("\(post.likes)")

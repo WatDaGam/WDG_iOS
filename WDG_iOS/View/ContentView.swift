@@ -62,6 +62,8 @@ struct ContentView: View {
                             scrollProxy: $scrollProxy,
                             namespace: mainListTop
                         )
+                        .environmentObject(tokenModel)
+                        .environmentObject(authModel)
                         .environmentObject(locationModel)
                         .environmentObject(postModel)
                         .onAppear {

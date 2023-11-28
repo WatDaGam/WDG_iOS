@@ -9,6 +9,8 @@ import SwiftUI
 import CoreLocation
 
 struct MainListView: View {
+    @EnvironmentObject var tokenModel: TokenModel
+    @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
     @Binding var latitude: Double
@@ -26,6 +28,9 @@ struct MainListView: View {
                     ForEach(postModel.posts) { post in
                         Post(post: post)
                             .environmentObject(locationModel)
+                            .environmentObject(tokenModel)
+                            .environmentObject(authModel)
+                            .environmentObject(postModel)
                         Divider()
                     }
                 }
