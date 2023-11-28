@@ -95,7 +95,7 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 return
             }
             // 성공적으로 위치 정보를 받았을 때 백오프 시간을 초기화합니다.
-            self.geocodeRequestDelay = 60
+            self.geocodeRequestDelay = 5
             if let placemark = placemarks?.first {
                 if let city = placemark.locality, let country = placemark.country {
                     self.locationName = "\(city), \(country)"
@@ -107,29 +107,44 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
         }
     }
+    private func shouldRequestNewData(for newLocation: CLLocation) -> Bool {
+        guard let lastLocation = refreshLocation else {
+            // refreshLocation이 설정되어 있지 않으면 처음으로 데이터를 요청해야 합니다.
+            self.refreshLocation = newLocation
+            return true
+        }
+        
+        // 거리를 계산합니다.
+        let distance = newLocation.distance(from: lastLocation)
+        print("간격: ", distance)
+        
+        if self.updateInterval == 0 {
+            self.updateInterval = 5
+            return true
+        }
+        // 거리가 30미터 이상이면 새로운 데이터를 요청합니다.
+        if distance >= 30 {
+            self.refreshLocation = newLocation
+        }
+        return distance >= 30
+    }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         // 가장 최근의 위치 정보 가져오기
         guard let latestLocation = locations.last else { return }
-        print("위치 정보 수신")
         self.location = latestLocation
-        if locationName == "위치 정보를 찾을 수 없음" {
-            updateLocation(latestLocation)
-        }
-        // 위치를 업데이트할 때마다 역지오코딩을 수행
-        print("updateInterval:", self.updateInterval)
-        if postModel.getPosts().isEmpty {
-            Task {
-                await tokenModel.validateToken(authModel: authModel)
-                await postModel.getStoryList(accessToken: tokenModel.getToken("accessToken") ?? "", lati: self.location?.coordinate.latitude, longi: self.location?.coordinate.longitude)
-            }
-        }
-        if self.updateInterval == 0 {
+//        if locationName == "위치 정보를 찾을 수 없음" {
+//            updateLocation(latestLocation)
+//        }
+        if shouldRequestNewData(for: latestLocation) {
             updateLocation(latestLocation)
             Task {
                 await tokenModel.validateToken(authModel: authModel)
-                await postModel.getStoryList(accessToken: tokenModel.getToken("accessToken") ?? "", lati: self.location?.coordinate.latitude, longi: self.location?.coordinate.longitude)
+                await postModel.getStoryList(
+                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                    lati: self.location?.coordinate.latitude,
+                    longi: self.location?.coordinate.longitude
+                )
             }
-            self.updateInterval = 60
         }
         self.updateInterval -= 1
     }
