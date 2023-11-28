@@ -37,7 +37,6 @@ struct MainListView: View {
                 .listStyle(.plain)
             }
             .onAppear {
-                print("proxy: \(proxy)")
                 scrollProxy = proxy // ScrollViewProxy를 저장합니다.
             }
             .onChange(of: postModel.posts.count) {
@@ -46,7 +45,23 @@ struct MainListView: View {
                     proxy.scrollTo(currentScrollOffset, anchor: .top)
                 }
             }
+            .refreshable {
+                print("새로고침")
+                Task {
+                    await reloadData()
+                }
+            }
         }
+    }
+    func reloadData() async {
+        // 여기에 새로고침 로직 구현
+        // 예: 새로운 데이터 가져오기, 위치 정보 업데이트 등
+        await tokenModel.validateToken(authModel: authModel)
+        await postModel.getStoryList(
+            accessToken: tokenModel.getToken("accessToken") ?? "",
+            lati: locationModel.currentLocation?.coordinate.latitude ?? 37.56,
+            longi: locationModel.currentLocation?.coordinate.longitude ?? 126.97
+        )
     }
 }
 
@@ -56,7 +71,12 @@ struct MainNavbarCenter:View {
     @Binding var longitude: Double
     @Binding var alertType: AlertType?
     private var locationManager: CLLocationManager
-    init(locationModel: LocationModel, latitude: Binding<Double>, longitude: Binding<Double>, alertType: Binding<AlertType?>) {
+    init(
+        locationModel: LocationModel,
+        latitude: Binding<Double>,
+        longitude: Binding<Double>,
+        alertType: Binding<AlertType?>
+    ) {
         _locationModel = ObservedObject(initialValue: locationModel)
         locationManager = CLLocationManager()
         _latitude = latitude

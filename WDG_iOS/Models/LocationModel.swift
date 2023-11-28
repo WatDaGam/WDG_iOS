@@ -52,7 +52,9 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.locationManager.startUpdatingLocation() // 위치 업데이트 시작
     }
     func getLocationName() -> String { return self.locationName }
-    func getCurrentLocation() -> CLLocation { return currentLocation ?? CLLocation(latitude: 37.5666612, longitude: 126.9783785) }
+    func getCurrentLocation() -> CLLocation {
+        return currentLocation ?? CLLocation(latitude: 37.5666612, longitude: 126.9783785)
+    }
     private func checkLocationServicesAuthorization() {
         switch locationManager.authorizationStatus {
         case .notDetermined:
