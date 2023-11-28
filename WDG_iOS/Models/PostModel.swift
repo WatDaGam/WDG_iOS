@@ -185,11 +185,15 @@ struct Post: View {
     var post: Message
     private let postMenuOption: [String] = ["신고하기"]
     var body: some View {
+        let currentLocation = locationModel.location ?? CLLocation(latitude: 37.5666612, longitude: 126.9783785)
+        let distanceText = formattedDistance(from: post.location, to: currentLocation.coordinate)
+        let distanceInMeter = calcDistanceInMeter(from: post.location, to: currentLocation.coordinate)
         switch onClicked {
         case 0:
             HStack {
                 Text("\(post.nickname) 왔다감")
                     .font(.system(size: 20).bold())
+                    .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                 Spacer()
                 VStack(alignment: .trailing) {
                     HStack {
@@ -199,14 +203,7 @@ struct Post: View {
                     Spacer()
                     HStack {
                         Image(systemName: "location")
-                        if let location = locationModel.location {
-                            let distanceText = formattedDistance(from: post.location, to: location.coordinate)
-                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                        } else {
-                            let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-                            let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
-                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                        }
+                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     }
                 }
                 .padding(.vertical)
@@ -222,6 +219,7 @@ struct Post: View {
                 HStack {
                     Text("\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
+                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                     VStack {
                         Spacer()
                         Text("\(post.location.latitude) \(post.location.longitude)")
@@ -229,40 +227,37 @@ struct Post: View {
                     }
                     .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                     Spacer()
-                    Menu {
-                        ForEach(postMenuOption, id: \.self) { option in
-                            Button(option) {
-                                if option == "신고하기" {
-                                    print("신고하기 누름")
+                    if distanceInMeter < 30 {
+                        Menu {
+                            ForEach(postMenuOption, id: \.self) { option in
+                                Button(option) {
+                                    if option == "신고하기" {
+                                        print("신고하기 누름")
+                                    }
                                 }
                             }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .foregroundColor(.black)
                         }
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .foregroundColor(.black)
                     }
                 }
                 HStack {
-                    Text(post.message)
+                    Text(distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다.")
+                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                     Spacer()
                 }
                 Spacer()
                 HStack {
                     Image(systemName: "location")
-                    if let location = locationModel.location {
-                        let distanceText = formattedDistance(from: post.location, to: location.coordinate)
-                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                    } else {
-                        let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-                        let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
-                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                    }
+                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     Spacer()
-                    Button(action: {
-                        LottieView(name: "LottieLike", loopMode: .loop)
-                    }, label: {
-                        Image(systemName: "heart")
-                    })
+//                    Button(action: {
+//                        LottieView(name: "LottieLike", loopMode: .loop)
+//                    }, label: {
+//                        Image(systemName: "heart")
+//                    })
+//                    LottieView(name: "LottieLike", loopMode: .loop)
                     Text("\(post.likes)")
                 }
             }
@@ -272,9 +267,14 @@ struct Post: View {
             Text("default")
         }
     }
-    func formattedDistance(from location1: LocationType, to coordinate2: CLLocationCoordinate2D) -> String {
+    func calcDistanceInMeter(from location1: LocationType, to location2: CLLocationCoordinate2D) -> Double {
         let coordinate1 = CLLocation(latitude: location1.latitude, longitude: location1.longitude)
-        let coordinate2 = CLLocation(latitude: coordinate2.latitude, longitude: coordinate2.longitude)
+        let coordinate2 = CLLocation(latitude: location2.latitude, longitude: location2.longitude)
+        return coordinate1.distance(from: coordinate2)
+    }
+    func formattedDistance(from location1: LocationType, to location2: CLLocationCoordinate2D) -> String {
+        let coordinate1 = CLLocation(latitude: location1.latitude, longitude: location1.longitude)
+        let coordinate2 = CLLocation(latitude: location2.latitude, longitude: location2.longitude)
         let distanceInMeters = coordinate1.distance(from: coordinate2)
         if distanceInMeters > 1000 {
             let distanceInKilometers = distanceInMeters / 1000
