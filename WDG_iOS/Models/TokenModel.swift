@@ -27,11 +27,17 @@ class TokenModel: ObservableObject {
     func deleteAllToken() {
         keychain.delete("accessToken")
         keychain.delete("refreshToken")
+        keychain.delete("accessExpire")
+        keychain.delete("refreshExpire")
     }
     @MainActor
     func validateToken(authModel: AuthModel?) async {
         isValidToken = await reissuanceAccessToken()
         if !isValidToken { authModel?.handleLogout() }
+    }
+    @MainActor
+    func autoLoginValidateToken() async -> Bool {
+        return await reissuanceAccessToken()
     }
     func reissuanceAccessToken() async -> Bool {
         guard let accessExpireStr = self.getToken("accessExpire"),
@@ -44,6 +50,7 @@ class TokenModel: ObservableObject {
             print("No access token or invalid date format")
             return false
         }
+        if self.getToken("refreshToken") == nil { return false }
         let refreshExpire = refreshExpireDouble / 1000
         if refreshExpire < Date().timeIntervalSince1970 { return false }
         let beforeAccessExpire = accessExpireDouble / 1000
