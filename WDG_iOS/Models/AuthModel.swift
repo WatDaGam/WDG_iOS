@@ -26,6 +26,9 @@ class AuthModel: ObservableObject {
         self.isLoggedIn = isLoggedIn
         self.isNewAccount = isNewAccount
         self.loginFailedAlert = loginFailedAlert
+        // 임시 토큰 삭제
+        tokenModel.deleteToken("tempAccessToken")
+        tokenModel.deleteToken("tempAccessExpire")
         // 자동로그인 처리
         Task {
             let isValidToken = await tokenModel.autoLoginValidateToken()
@@ -106,9 +109,8 @@ class AuthModel: ObservableObject {
                             continuation.resume(returning: false)
                         } else if httpResponse.statusCode == 201 {
                             self.isNewAccount = true
-                            self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
-                            self.tokenModel.saveToken(accessExpire, type: "accessExpire")
-                            self.tokenModel.saveToken(refreshExpire, type: "refreshExpire")
+                            self.tokenModel.saveToken(accessToken, type: "tempAccessToken")
+                            self.tokenModel.saveToken(accessExpire, type: "tempAccessExpire")
                             continuation.resume(returning: true)
                         } else {
                             self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)

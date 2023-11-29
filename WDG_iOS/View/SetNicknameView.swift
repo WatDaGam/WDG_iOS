@@ -19,6 +19,9 @@ struct SetNicknameView: View {
     @State private var nickname: String = ""
     @FocusState private var focusField: Field?
     @EnvironmentObject var authModel: AuthModel
+    @EnvironmentObject var tokenModel: TokenModel
+    @EnvironmentObject var postModel: PostModel
+    @EnvironmentObject var locationModel: LocationModel
     @State private var attempts: Int = 0
     @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
@@ -83,6 +86,13 @@ struct SetNicknameView: View {
                             let result = await self.setNickname.setNickname(nickname: nickname)
                             self.isValidNickname = result ? 2 : 1
                             self.authModel.isNewAccount = !result
+                            if result {
+                                await self.postModel.getStoryList(
+                                    accessToken: self.tokenModel.getToken("accessToken") ?? "",
+                                    lati: self.locationModel.currentLocation?.coordinate.latitude,
+                                    longi: self.locationModel.currentLocation?.coordinate.longitude
+                                )
+                            }
                         }
                     }, label: {
                         Text("가입하기")
@@ -96,7 +106,9 @@ struct SetNicknameView: View {
                 } else {
                     Button(action: {
                         Task {
-                            self.isValidNickname = await self.setNickname.checkNickname(nickname: nickname) ? 2 : 1
+                            self.isValidNickname = await self.setNickname.checkNickname(
+                                nickname: nickname
+                            ) ? 2 : 1
                             if self.infoList[isValidNickname] == "success" {
                                 self.isConfirm = true
                             } else {
