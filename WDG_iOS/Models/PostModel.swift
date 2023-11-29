@@ -20,7 +20,7 @@ struct Story: Codable {
     let lati: Double
     let id: Int
     let longi: Double
-    let userId: Int
+    let userId: Int?
     let content: String
     let likeNum: Int
     var date: Date {
@@ -46,7 +46,6 @@ extension DateFormatter {
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
     init() {
-        createDummyPosts()
     }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)
@@ -108,6 +107,7 @@ class PostModel: ObservableObject {
                 // Story 구조체 인스턴스를 Message 구조체로 변환
                 Message(
                     id: story.id, // 새로운 UUID 생성
+                    userId: story.userId ?? -1,
                     nickname: story.nickname,
                     message: story.content,
                     date: story.date,
@@ -159,7 +159,9 @@ class PostModel: ObservableObject {
         }
     }
     func likeStory(accessToken: String, id: Int) async -> Bool {
-        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/like/plus?storyId=" + String(id)) else {
+        guard let userInfoURL = URL(
+            string: "http://43.200.68.255:8080/like/plus?storyId=" + String(id)
+        ) else {
             print("Invalid URL")
             return false
         }
@@ -214,6 +216,7 @@ class PostModel: ObservableObject {
             // 더미 메시지 생성
             let message = Message(
                 id: id + 1000000,
+                userId: id + 1000000,
                 nickname: ["정찬웅", "yback", "sangkkim12"].randomElement()!,  // 더 안전한 접근 방법
                 message: "Sample message \(Int.random(in: 1...100))",
                 date: randomDate,
@@ -270,9 +273,10 @@ struct Post: View {
             .onTapGesture {
                 if distanceInMeter < 30 {
                     onClicked = 1
-                } else {
-                    ViewControllerWrapper()
                 }
+//                else {
+//                    ViewControllerWrapper()
+//                }
             }
         case 1:
             VStack(spacing: 20) {
@@ -361,20 +365,19 @@ struct Post: View {
     }
 }
 
-struct PostPreviews: PreviewProvider {
-    static var previews: some View {
-        let tokenModel = TokenModel()
-        let authModel = AuthModel(tokenModel: tokenModel)
-        let postModel = PostModel()
-        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
-//        postModel.createDummyPosts()
-        VStack {
-            Spacer()
-            Divider()
-            Post(post: postModel.posts[0])
-                .environmentObject(locationModel)
-            Divider()
-            Spacer()
-        }
-    }
-}
+//struct PostPreviews: PreviewProvider {
+//    static var previews: some View {
+//        let tokenModel = TokenModel()
+//        let authModel = AuthModel(tokenModel: tokenModel)
+//        let postModel = PostModel()
+//        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
+//        VStack {
+//            Spacer()
+//            Divider()
+//            Post(post: postModel.posts[0])
+//                .environmentObject(locationModel)
+//            Divider()
+//            Spacer()
+//        }
+//    }
+//}

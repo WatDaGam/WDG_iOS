@@ -14,15 +14,23 @@ struct LocationType: Codable {
 
 struct Message: Identifiable, Codable {
     let id: Int
+    let userId: Int
     let nickname: String
     var message: String
     var date: Date
     var likes: Int
     var location: LocationType
     init(
-        id: Int, nickname: String, message: String, date: Date, location: LocationType, likes: Int
+        id: Int,
+        userId: Int,
+        nickname: String,
+        message: String,
+        date: Date,
+        location: LocationType,
+        likes: Int
     ) {
         self.id = id
+        self.userId = userId
         self.nickname = nickname
         self.message = message
         self.date = date
@@ -30,9 +38,22 @@ struct Message: Identifiable, Codable {
         self.likes = likes
     }
     static func createSampleMessage(
-        id: Int, nickname: String, message: String, date: Date, location: LocationType, likes: Int) -> Message {
-            return Message(
-                id: id, nickname: nickname, message: message, date: date, location: location, likes: likes
-            )
+        id: Int,
+        userId: Int,
+        nickname: String,
+        message: String,
+        date: Date,
+        location: LocationType,
+        likes: Int
+    ) -> Message {
+        return Message(
+            id: id,
+            userId: userId,
+            nickname: nickname,
+            message: message,
+            date: date,
+            location: location,
+            likes: likes
+        )
     }
 }

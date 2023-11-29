@@ -43,6 +43,7 @@ struct ContentView: View {
     @State var selectedTab: Int = 0
     @State var messageForm: Message = Message(
         id: 0,
+        userId: 0,
         nickname: "myNickname",
         message: "",
         date: Date(),
