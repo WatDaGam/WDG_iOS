@@ -45,7 +45,9 @@ extension DateFormatter {
 
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
-    init() { }
+    init() {
+        createDummyPosts()
+    }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)
     }
@@ -266,7 +268,11 @@ struct Post: View {
             .fixedSize(horizontal: false, vertical: true)
             .frame(height: 90)
             .onTapGesture {
-                onClicked = 1
+                if distanceInMeter < 30 {
+                    onClicked = 1
+                } else {
+                    ViewControllerWrapper()
+                }
             }
         case 1:
             VStack(spacing: 20) {
@@ -361,6 +367,7 @@ struct PostPreviews: PreviewProvider {
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
         let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
+//        postModel.createDummyPosts()
         VStack {
             Spacer()
             Divider()
