@@ -27,7 +27,6 @@ class AuthModel: ObservableObject {
         self.isNewAccount = isNewAccount
         self.loginFailedAlert = loginFailedAlert
         // 자동로그인 처리
-        print("accessToken : ", tokenModel.getToken("accessToken"))
         Task {
             let isValidToken = await tokenModel.autoLoginValidateToken()
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
