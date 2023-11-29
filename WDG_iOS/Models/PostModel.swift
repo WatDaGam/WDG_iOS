@@ -23,10 +23,13 @@ struct Story: Codable {
     let userId: Int
     let content: String
     let likeNum: Int
-
     var date: Date {
         return Date(timeIntervalSince1970: createdAt / 1000) // 밀리초를 초로 변환
     }
+}
+
+struct LikePlusResponse: Codable {
+    let likeNum: Int
 }
 
 extension DateFormatter {
@@ -42,7 +45,9 @@ extension DateFormatter {
 
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
-    init() { }
+    init() {
+        createDummyPosts()
+    }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)
     }
@@ -153,6 +158,50 @@ class PostModel: ObservableObject {
             return false
         }
     }
+    func likeStory(accessToken: String, id: Int) async -> Bool {
+        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/like/plus?storyId=" + String(id)) else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: userInfoURL)
+        request.httpMethod = "POST"
+        request.addValue(accessToken, forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("Request failed with status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+                return false
+            }
+            let newLikeNum = parseLikeNum(jsonData: data)
+            if newLikeNum != -1 {
+                DispatchQueue.main.async {
+                    self.updateLikeNum(for: id, likeNum: newLikeNum)
+                }
+                return true
+            }
+            return false
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
+    }
+    func parseLikeNum(jsonData: Data) -> Int {
+        let decoder = JSONDecoder()
+        do {
+            let response = try decoder.decode(LikePlusResponse.self, from: jsonData)
+            return response.likeNum
+        } catch {
+            print("Error parsing JSON: \(error)")
+            return -1
+        }
+    }
+    private func updateLikeNum(for id: Int, likeNum: Int) {
+        if let index = posts.firstIndex(where: { $0.id == id }) {
+            posts[index].likes = likeNum
+        }
+    }
     func createDummyPosts() {
         var dummyMessages = [Message]()
         for id in 1...20 {
@@ -181,15 +230,26 @@ class PostModel: ObservableObject {
 
 struct Post: View {
     @EnvironmentObject var locationModel: LocationModel
+    @EnvironmentObject var tokenModel: TokenModel
+    @EnvironmentObject var authModel: AuthModel
+    @EnvironmentObject var postModel: PostModel
     @State private var onClicked: Int = 0
+    @State private var isAnimating: Bool = false
+    @State private var isLike: Bool = false
     var post: Message
     private let postMenuOption: [String] = ["신고하기"]
     var body: some View {
+        let currentLocation = locationModel.location ?? CLLocation(
+            latitude: 37.5666612, longitude: 126.9783785
+        )
+        let distanceText = formattedDistance(from: post.location, to: currentLocation.coordinate)
+        let distanceInMeter = calcDistanceInMeter(from: post.location, to: currentLocation.coordinate)
         switch onClicked {
         case 0:
             HStack {
                 Text("\(post.nickname) 왔다감")
                     .font(.system(size: 20).bold())
+                    .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                 Spacer()
                 VStack(alignment: .trailing) {
                     HStack {
@@ -199,14 +259,7 @@ struct Post: View {
                     Spacer()
                     HStack {
                         Image(systemName: "location")
-                        if let location = locationModel.location {
-                            let distanceText = formattedDistance(from: post.location, to: location.coordinate)
-                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                        } else {
-                            let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-                            let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
-                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                        }
+                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     }
                 }
                 .padding(.vertical)
@@ -215,13 +268,18 @@ struct Post: View {
             .fixedSize(horizontal: false, vertical: true)
             .frame(height: 90)
             .onTapGesture {
-                onClicked = 1
+                if distanceInMeter < 30 {
+                    onClicked = 1
+                } else {
+                    ViewControllerWrapper()
+                }
             }
         case 1:
             VStack(spacing: 20) {
                 HStack {
                     Text("\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
+                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                     VStack {
                         Spacer()
                         Text("\(post.location.latitude) \(post.location.longitude)")
@@ -229,39 +287,52 @@ struct Post: View {
                     }
                     .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                     Spacer()
-                    Menu {
-                        ForEach(postMenuOption, id: \.self) { option in
-                            Button(option) {
-                                if option == "신고하기" {
-                                    print("신고하기 누름")
+                    if distanceInMeter < 30 {
+                        Menu {
+                            ForEach(postMenuOption, id: \.self) { option in
+                                Button(option) {
+                                    if option == "신고하기" {
+                                        print("신고하기 누름")
+                                    }
                                 }
                             }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .foregroundColor(.black)
                         }
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .foregroundColor(.black)
                     }
                 }
                 HStack {
-                    Text(post.message)
+                    Text(distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다.")
+                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                     Spacer()
                 }
                 Spacer()
                 HStack {
                     Image(systemName: "location")
-                    if let location = locationModel.location {
-                        let distanceText = formattedDistance(from: post.location, to: location.coordinate)
-                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                    } else {
-                        let defaultLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-                        let distanceText = formattedDistance(from: post.location, to: defaultLocation.coordinate)
-                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                    }
+                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
                     Spacer()
                     Button(action: {
-                        LottieView(name: "LottieLike", loopMode: .loop)
+                        self.isAnimating = true
+                        Task {
+                            await tokenModel.validateToken(authModel: authModel)
+                            await postModel.likeStory(
+                                accessToken: tokenModel.getToken("accessToken") ?? "", id: post.id
+                            )
+                        }
+                        // Lottie 애니메이션 길이에 맞춰 시간 조절
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            self.isAnimating = false
+                        }
+                        self.isLike = true
                     }, label: {
-                        Image(systemName: "heart")
+                        if isAnimating {
+                            LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
+                                .frame(width: 20, height: 20)
+                        } else {
+                            Image(systemName: isLike ? "heart.fill" : "heart") // 애니메이션이 비활성화된 경우
+                                .foregroundColor(isLike ? .red : .black)
+                        }
                     })
                     Text("\(post.likes)")
                 }
@@ -272,9 +343,14 @@ struct Post: View {
             Text("default")
         }
     }
-    func formattedDistance(from location1: LocationType, to coordinate2: CLLocationCoordinate2D) -> String {
+    func calcDistanceInMeter(from location1: LocationType, to location2: CLLocationCoordinate2D) -> Double {
         let coordinate1 = CLLocation(latitude: location1.latitude, longitude: location1.longitude)
-        let coordinate2 = CLLocation(latitude: coordinate2.latitude, longitude: coordinate2.longitude)
+        let coordinate2 = CLLocation(latitude: location2.latitude, longitude: location2.longitude)
+        return coordinate1.distance(from: coordinate2)
+    }
+    func formattedDistance(from location1: LocationType, to location2: CLLocationCoordinate2D) -> String {
+        let coordinate1 = CLLocation(latitude: location1.latitude, longitude: location1.longitude)
+        let coordinate2 = CLLocation(latitude: location2.latitude, longitude: location2.longitude)
         let distanceInMeters = coordinate1.distance(from: coordinate2)
         if distanceInMeters > 1000 {
             let distanceInKilometers = distanceInMeters / 1000
@@ -291,6 +367,7 @@ struct PostPreviews: PreviewProvider {
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
         let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
+//        postModel.createDummyPosts()
         VStack {
             Spacer()
             Divider()

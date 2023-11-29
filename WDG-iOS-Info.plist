@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SERVER_URL</key>
-	<string>${SERVER_URL}</string>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -25,12 +21,12 @@
 		<false/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>43.200.68.255</key>
+			<key>3.35.136.131</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>3.35.136.131</key>
+			<key>43.200.68.255</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -42,11 +38,15 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>SERVER_URL</key>
+	<string>${SERVER_URL}</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>DelaGothicOne-Regular.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

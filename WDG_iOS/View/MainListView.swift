@@ -9,6 +9,8 @@ import SwiftUI
 import CoreLocation
 
 struct MainListView: View {
+    @EnvironmentObject var tokenModel: TokenModel
+    @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
     @Binding var latitude: Double
@@ -26,13 +28,15 @@ struct MainListView: View {
                     ForEach(postModel.posts) { post in
                         Post(post: post)
                             .environmentObject(locationModel)
+                            .environmentObject(tokenModel)
+                            .environmentObject(authModel)
+                            .environmentObject(postModel)
                         Divider()
                     }
                 }
                 .listStyle(.plain)
             }
             .onAppear {
-                print("proxy: \(proxy)")
                 scrollProxy = proxy // ScrollViewProxy를 저장합니다.
             }
             .onChange(of: postModel.posts.count) {
@@ -41,29 +45,50 @@ struct MainListView: View {
                     proxy.scrollTo(currentScrollOffset, anchor: .top)
                 }
             }
+            .refreshable {
+                print("새로고침")
+                Task {
+                    await reloadData()
+                }
+            }
         }
+    }
+    func reloadData() async {
+        // 여기에 새로고침 로직 구현
+        // 예: 새로운 데이터 가져오기, 위치 정보 업데이트 등
+        await tokenModel.validateToken(authModel: authModel)
+        await postModel.getStoryList(
+            accessToken: tokenModel.getToken("accessToken") ?? "",
+            lati: locationModel.currentLocation?.coordinate.latitude ?? 37.56,
+            longi: locationModel.currentLocation?.coordinate.longitude ?? 126.97
+        )
     }
 }
 
 struct MainNavbarCenter:View {
     @ObservedObject var locationModel: LocationModel
-    @State private var showingLocationSettingsAlert: Bool
     @Binding var latitude: Double
     @Binding var longitude: Double
+    @Binding var alertType: AlertType?
     private var locationManager: CLLocationManager
-    init(locationModel: LocationModel, latitude: Binding<Double>, longitude: Binding<Double>) {
+    init(
+        locationModel: LocationModel,
+        latitude: Binding<Double>,
+        longitude: Binding<Double>,
+        alertType: Binding<AlertType?>
+    ) {
         _locationModel = ObservedObject(initialValue: locationModel)
-        _showingLocationSettingsAlert = State(initialValue: false)
         locationManager = CLLocationManager()
         _latitude = latitude
         _longitude = longitude
+        _alertType = alertType
     }
     var body: some View {
         VStack {
             Spacer()
             Button(action: {
                 if locationManager.authorizationStatus == .denied {
-                    showingLocationSettingsAlert = true
+                    alertType = .locationAuth
                 }
             }, label: {
                 Text(locationModel.locationName)
@@ -71,20 +96,6 @@ struct MainNavbarCenter:View {
                     .foregroundColor(.white)
                     .font(.title3)
             })
-            .alert(isPresented: $showingLocationSettingsAlert) {
-                Alert(
-                    title: Text("위치 서비스 필요"),
-                    message: Text("위치 서비스를 사용하려면 설정에서 권한을 허용해 주세요."),
-                    primaryButton: .default(Text("설정으로 이동")) {
-                        // Take the user to the app settings
-                        if let settingUrl = URL(string: UIApplication.openSettingsURLString),
-                           UIApplication.shared.canOpenURL(settingUrl) {
-                            UIApplication.shared.open(settingUrl, options: [:], completionHandler: nil)
-                        }
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
             Spacer()
             if let location = locationModel.location {
                 Text("\(location.coordinate.latitude) \(location.coordinate.longitude)")
