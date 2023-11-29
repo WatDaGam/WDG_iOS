@@ -36,7 +36,7 @@ class SetNicknameViewModel: ObservableObject {
                 print("Invalid URL")
                 return false
             }
-            let accessToken = self.tokenModel.getToken("accessToken") ?? ""
+            let accessToken = self.tokenModel.getToken("tempAccessToken") ?? ""
             var request = URLRequest(url: reissuanceURL)
             request.httpMethod = "POST"
             request.addValue(accessToken, forHTTPHeaderField: "Authorization")
@@ -63,7 +63,7 @@ class SetNicknameViewModel: ObservableObject {
                 print("Invalid URL")
                 return false
             }
-            let accessToken = self.tokenModel.getToken("accessToken") ?? ""
+            let accessToken = self.tokenModel.getToken("tempAccessToken") ?? ""
             var request = URLRequest(url: reissuanceURL)
             request.httpMethod = "POST"
             request.addValue(accessToken, forHTTPHeaderField: "Authorization")

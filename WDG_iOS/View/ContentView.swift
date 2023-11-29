@@ -43,6 +43,7 @@ struct ContentView: View {
     @State var selectedTab: Int = 0
     @State var messageForm: Message = Message(
         id: 0,
+        userId: 0,
         nickname: "myNickname",
         message: "",
         date: Date(),
@@ -54,6 +55,9 @@ struct ContentView: View {
             if authModel.isNewAccount && authModel.isLoggedIn {
                 SetNicknameView()
                     .environmentObject(authModel)
+                    .environmentObject(tokenModel)
+                    .environmentObject(locationModel)
+                    .environmentObject(postModel)
             } else if authModel.isLoggedIn {
                 VStack {
                     switch selectedTab {

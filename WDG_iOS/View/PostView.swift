@@ -90,6 +90,7 @@ struct PostViewPreviews: PreviewProvider {
     @State static var alertType: AlertType?
     @State static var messageForm: Message = Message(
         id: 0,
+        userId: 0,
         nickname: "myNickname",
         message: "",
         date: Date(),
