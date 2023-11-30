@@ -46,6 +46,7 @@ extension DateFormatter {
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
     init() {
+        self.createDummyPosts()
     }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)
@@ -257,12 +258,16 @@ struct Post: View {
                 VStack(alignment: .trailing) {
                     HStack {
                         Image(systemName: "heart")
+                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                         Text("\(post.likes)")
+                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                     }
                     Spacer()
                     HStack {
                         Image(systemName: "location")
+                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                         Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
                     }
                 }
                 .padding(.vertical)
@@ -270,10 +275,11 @@ struct Post: View {
             .padding(.horizontal)
             .fixedSize(horizontal: false, vertical: true)
             .frame(height: 90)
+            .foregroundColor(.white)
             .onTapGesture {
-                if distanceInMeter < 30 {
+//                if distanceInMeter < 30 {
                     onClicked = 1
-                }
+//                }
 //                else {
 //                    ViewControllerWrapper()
 //                }
@@ -321,7 +327,8 @@ struct Post: View {
                         Task {
                             await tokenModel.validateToken(authModel: authModel)
                             await postModel.likeStory(
-                                accessToken: tokenModel.getToken("accessToken") ?? "", id: post.id
+                                accessToken: tokenModel.getToken("accessToken") ?? "", 
+                                id: post.id
                             )
                         }
                         // Lottie 애니메이션 길이에 맞춰 시간 조절
@@ -343,6 +350,9 @@ struct Post: View {
             }
             .padding(.horizontal)
             .frame(height: 200)
+            .onTapGesture {
+                onClicked = 0
+            }
         default:
             Text("default")
         }
@@ -365,19 +375,23 @@ struct Post: View {
     }
 }
 
-//struct PostPreviews: PreviewProvider {
-//    static var previews: some View {
-//        let tokenModel = TokenModel()
-//        let authModel = AuthModel(tokenModel: tokenModel)
-//        let postModel = PostModel()
-//        let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
-//        VStack {
-//            Spacer()
-//            Divider()
-//            Post(post: postModel.posts[0])
-//                .environmentObject(locationModel)
-//            Divider()
-//            Spacer()
-//        }
-//    }
-//}
+struct PostPreviews: PreviewProvider {
+    static var previews: some View {
+        let tokenModel = TokenModel()
+        let authModel = AuthModel(tokenModel: tokenModel)
+        let postModel = PostModel()
+        let locationModel = LocationModel(
+            tokenModel: tokenModel,
+            authModel: authModel,
+            postModel: postModel
+        )
+        VStack {
+            Spacer()
+            Divider()
+            Post(post: postModel.posts[0])
+                .environmentObject(locationModel)
+            Divider()
+            Spacer()
+        }
+    }
+}
