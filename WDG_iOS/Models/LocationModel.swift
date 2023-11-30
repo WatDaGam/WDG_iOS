@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import Combine
 
 // CLLocationCoordinate2D를 위한 Hashable 래퍼 구조체 정의
 struct LocationHash: Hashable {
@@ -38,9 +39,11 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var currentLocation: CLLocation?
     @Published var locationName: String = "위치 정보 없음"
     @Published var defaultLocation: CLLocation = CLLocation(latitude: 37.5666612, longitude: 126.9783785)
-    private var updateInterval = 0
+//    private var updateInterval = 0
     private let geocoder = CLGeocoder()
     private var locationCache: [LocationHash: String] = [:] // 위치 이름 캐시
+    private var timer: Timer?
+    private var timerRequest: Bool = false
     init(tokenModel: TokenModel, authModel: AuthModel, postModel: PostModel) {
         self.tokenModel = tokenModel
         self.authModel = authModel
@@ -50,6 +53,14 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization() // 사용 중 권한 요청
         self.locationManager.startUpdatingLocation() // 위치 업데이트 시작
+        self.startTimer()
+    }
+    func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
+            print("타이머 요청")
+            self?.timerRequest = true
+            self?.locationManager.requestLocation() // 위치 업데이트 요청
+        }
     }
     func getLocationName() -> String { return self.locationName }
     func getCurrentLocation() -> CLLocation {
@@ -118,10 +129,10 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         // 거리를 계산합니다.
         let distance = newLocation.distance(from: lastLocation)
         print("간격: ", distance)
-        if self.updateInterval == 0 {
-            self.updateInterval = 5
-            return true
-        }
+//        if self.updateInterval == 0 {
+//            self.updateInterval = 5
+//            return true
+//        }
         // 거리가 30미터 이상이면 새로운 데이터를 요청합니다.
         if distance >= 30 {
             self.refreshLocation = newLocation
@@ -129,12 +140,11 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         return distance >= 30
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if !timerRequest { return }
+        self.timerRequest = false
         // 가장 최근의 위치 정보 가져오기
         guard let latestLocation = locations.last else { return }
         self.location = latestLocation
-//        if locationName == "위치 정보를 찾을 수 없음" {
-//            updateLocation(latestLocation)
-//        }
         if shouldRequestNewData(for: latestLocation) {
             updateLocation(latestLocation)
             Task {
@@ -146,7 +156,6 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 )
             }
         }
-        self.updateInterval -= 1
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error getting location: \(error)")
@@ -175,8 +184,6 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 //                print(placemark)
                 let city = placemark.locality ?? "" // 도시
                 let subLocality = placemark.subLocality ?? "" // 부속 지역 이름 (예: 동/읍/면)
-                let thoroughfare = placemark.thoroughfare ?? "" // 길 이름
-                let subThoroughfare = placemark.subThoroughfare ?? "" // 길 번호
                 let country = placemark.country ?? "" // 국가
                 // 선택적으로 주소 구성 요소를 조합하여 상세한 주소 문자열을 생성합니다.
                 self.locationName = [subLocality, city, country]
