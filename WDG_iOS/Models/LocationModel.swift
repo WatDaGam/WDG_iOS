@@ -115,11 +115,9 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             self.refreshLocation = newLocation
             return true
         }
-        
         // 거리를 계산합니다.
         let distance = newLocation.distance(from: lastLocation)
         print("간격: ", distance)
-        
         if self.updateInterval == 0 {
             self.updateInterval = 5
             return true
