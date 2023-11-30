@@ -35,6 +35,8 @@ struct MainListView: View {
                     }
                 }
                 .listStyle(.plain)
+                .background(.white)
+                .colorScheme(.light)
             }
             .onAppear {
                 scrollProxy = proxy // ScrollViewProxy를 저장합니다.
@@ -46,7 +48,6 @@ struct MainListView: View {
                 }
             }
             .refreshable {
-                print("새로고침")
                 Task {
                     await reloadData()
                 }

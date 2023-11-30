@@ -69,11 +69,12 @@ struct PostView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
+                .foregroundColor(.white)
                 .padding(.horizontal)
                 Spacer()
             }
             .background(Color.white)
-            //            .background(Rectangle().foregroundColor(.white))
+            .colorScheme(.light)
         }
     }
 }

@@ -44,8 +44,9 @@ struct MyTabView: View {
         }
         .padding(.horizontal)
         .frame(height: 80)
-        .background(Rectangle().foregroundColor(.white))
         .foregroundColor(.black)
+        .background(.white)
+        .colorScheme(.light)
     }
     func scrollToTop() {
         withAnimation {

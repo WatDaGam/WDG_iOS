@@ -275,15 +275,16 @@ struct Post: View {
             .padding(.horizontal)
             .fixedSize(horizontal: false, vertical: true)
             .frame(height: 90)
-            .foregroundColor(.white)
             .onTapGesture {
-//                if distanceInMeter < 30 {
+                if distanceInMeter < 30 {
                     onClicked = 1
-//                }
+                }
 //                else {
 //                    ViewControllerWrapper()
 //                }
             }
+            .background(.white)
+            .colorScheme(.light)
         case 1:
             VStack(spacing: 20) {
                 HStack {
@@ -353,6 +354,8 @@ struct Post: View {
             .onTapGesture {
                 onClicked = 0
             }
+            .background(.white)
+            .colorScheme(.light)
         default:
             Text("default")
         }

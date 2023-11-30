@@ -109,7 +109,6 @@ struct ContentView: View {
                     default:
                         EmptyView()
                     }
-                    Divider()
                     if selectedTab != 1 {
                         MyTabView(
                             selectedTab: $selectedTab,
@@ -205,6 +204,8 @@ struct ContentView: View {
                 )
             }
         }
+        .background(.white)
+        .colorScheme(.light)
     }
     @ViewBuilder
     private func mainListNavbarView() -> some View {
