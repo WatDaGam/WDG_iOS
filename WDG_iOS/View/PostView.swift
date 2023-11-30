@@ -16,19 +16,6 @@ struct PostView: View {
     var latitude: Double
     var longitude: Double
     var locationName: String
-//    public init(
-//        postAlertType: Binding<PostAlertType?>,
-//        messageForm: Binding<Message>,
-//        latitude: Double,
-//        longitude: Double,
-//        locationName: String
-//    ) {
-//        _postAlertType = postAlertType
-//        _messageForm = messageForm
-//        self.latitude = latitude
-//        self.longitude = longitude
-//        self.locationName = locationName
-//    }
     var body: some View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
@@ -36,49 +23,57 @@ struct PostView: View {
                 HStack {
                     Text(locationName)
                     Spacer()
-                    Text("\(latitude) \(longitude)")
+//                    Text("\(latitude) \(longitude)")
                 }
                 .padding(.horizontal)
                 .font(.subheadline)
                 .foregroundColor(.gray)
                 VStack {
-                    TextEditor(text: $message)
-                        .onReceive(message.publisher.collect()) {
-                            self.message = String($0.prefix(50))
+                    ZStack(alignment: .topLeading) {
+                        TextEditor(text: $message)
+                            .onReceive(message.publisher.collect()) {
+                                self.message = String($0.prefix(100))
+                            }
+                            .padding(.horizontal, 4)
+                        if message.isEmpty {
+                            Text("여기에 메시지를 입력하세요")
+                                .foregroundColor(Color.gray)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
                         }
-                        .frame(maxHeight: .infinity, alignment: .top)
-                        .font(.title)
-                        .foregroundColor(.black)
+                    }
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .font(.title)
+                    .foregroundColor(.black)
                     Spacer()
                 }
-                .frame(maxHeight: .infinity)
-                .padding(.horizontal)
                 HStack {
                     Spacer()
                     VStack(spacing: 5) {
-                        Text("\(message.count)/50")
+                        Text("\(message.count)/100")
                             .padding(.leading)
                         Button(action: {
                             messageForm.location = LocationType(latitude: latitude, longitude: longitude)
                             messageForm.message = message
                             messageForm.date = Date()
-                            print("post clicked")
                             alertType = .postUpload
                         }, label: {
                             Text("남기기")
                         })
-                        .frame(width: 65)
-                        .frame(height: 45)
-                        .background(.gray)
+                        .frame(width: 80)
+                        .frame(height: 50)
+                        .background(Color(hex: "#D9D9D9"))
                         .foregroundColor(.black)
                         .font(.headline)
+                        .cornerRadius(10)
                     }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal)
                 Spacer()
             }
-            .background(Rectangle().foregroundColor(.white))
+            .background(Color.white)
+            //            .background(Rectangle().foregroundColor(.white))
         }
     }
 }
