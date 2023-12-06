@@ -29,11 +29,9 @@ struct ProfileView: View {
     }
     var postList: some View {
         List {
-            ForEach(postModel.posts) { post in
-                if post.nickname == nickname {
-                    Post(post: post)
-                        .environmentObject(locationModel)
-                }
+            ForEach(postModel.getMyPosts()) { post in
+                Post(post: post, myStory: true)
+                    .environmentObject(locationModel)
             }
         }
         .listStyle(.plain)

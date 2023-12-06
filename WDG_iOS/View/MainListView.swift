@@ -47,12 +47,6 @@ struct MainListView: View {
                     proxy.scrollTo(currentScrollOffset, anchor: .top)
                 }
             }
-//            .onChange(of: postModel.posts.count) {
-//                // posts가 변경될 때 스크롤 위치를 유지
-//                withAnimation {
-//                    proxy.scrollTo(currentScrollOffset, anchor: .top)
-//                }
-//            }
             .refreshable {
                 Task {
                     await reloadData()

@@ -9,6 +9,7 @@ import SwiftUI
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
+import SwiftUI_Snackbar
 
 @main
 struct WDG_iOSApp: App {
@@ -19,13 +20,17 @@ struct WDG_iOSApp: App {
         let postModel = PostModel()
         let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         let userInfo = UserInfo(tokenModel: tokenModel, authModel: authModel)
+        let snackbarController = SnackbarController()
         WindowGroup {
-            ContentView()
-                .environmentObject(authModel)
-                .environmentObject(tokenModel)
-                .environmentObject(postModel)
-                .environmentObject(locationModel)
-                .environmentObject(userInfo)
+            SnackBarHost {
+                ContentView()
+                    .environmentObject(authModel)
+                    .environmentObject(tokenModel)
+                    .environmentObject(postModel)
+                    .environmentObject(locationModel)
+                    .environmentObject(userInfo)
+            }
+            .environmentObject(snackbarController)
         }
     }
 }
@@ -37,11 +42,15 @@ struct AppPreview: PreviewProvider {
         let postModel = PostModel()
         let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         let userInfo = UserInfo(tokenModel: tokenModel, authModel: authModel)
-        ContentView()
-            .environmentObject(authModel)
-            .environmentObject(tokenModel)
-            .environmentObject(postModel)
-            .environmentObject(locationModel)
-            .environmentObject(userInfo)
+        let snackbarController = SnackbarController()
+        SnackBarHost {
+            ContentView()
+                .environmentObject(authModel)
+                .environmentObject(tokenModel)
+                .environmentObject(postModel)
+                .environmentObject(locationModel)
+                .environmentObject(userInfo)
+                .environmentObject(snackbarController)
+        }
     }
 }

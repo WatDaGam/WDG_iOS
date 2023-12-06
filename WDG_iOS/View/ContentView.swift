@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUI_Snackbar
 
 enum AlertType: Identifiable {
     case logout
@@ -35,6 +36,8 @@ struct ContentView: View {
     @EnvironmentObject var locationModel: LocationModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var userInfo: UserInfo
+    @EnvironmentObject var snackbarController : SnackbarController
+    @State var snackbarCount: Int = 0
     @Namespace var mainListTop
     @State var scrollProxy: ScrollViewProxy?
     @State var alertType: AlertType?
@@ -73,6 +76,7 @@ struct ContentView: View {
                         .environmentObject(authModel)
                         .environmentObject(locationModel)
                         .environmentObject(postModel)
+                        .environmentObject(snackbarController)
                         .onAppear {
                             Task {
                                 await userInfo.getUserInfo()
@@ -97,6 +101,10 @@ struct ContentView: View {
                         .onAppear {
                             Task {
                                 await userInfo.getUserInfo()
+                                await tokenModel.validateToken(authModel: authModel)
+                                await postModel.getMyStoryList(
+                                    accessToken: tokenModel.getToken("accessToken") ?? ""
+                                )
                             }
                         }
                     case 3:
@@ -219,9 +227,7 @@ struct ContentView: View {
                     alertType: $alertType
                 )
             },
-            right: {
-                MainNavbarRight(postModel: postModel)
-            }
+            right: {}
         )
     }
     @ViewBuilder

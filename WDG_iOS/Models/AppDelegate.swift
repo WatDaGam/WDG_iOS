@@ -9,6 +9,8 @@ import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
 import UIKit
+import SwiftUI
+import SwiftUI_Snackbar
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:

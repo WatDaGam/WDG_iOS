@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 import CoreLocation
+import SwiftUI_Snackbar
 
 struct StoryResponse: Codable {
     let stories: [Story]
@@ -45,6 +46,7 @@ extension DateFormatter {
 
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
+    var myPosts: [Message] = []
     init() {
         self.createDummyPosts()
     }
@@ -56,6 +58,9 @@ class PostModel: ObservableObject {
     }
     func getPosts() -> [Message] {
         return self.posts
+    }
+    func getMyPosts() -> [Message] {
+        return self.myPosts
     }
     func getStoryList(accessToken: String, lati: Double?, longi: Double?) async -> Bool {
         let jsonDict: [String: Any] = ["lati": lati ?? 0, "longi": longi ?? 0]
@@ -86,6 +91,40 @@ class PostModel: ObservableObject {
             if httpResponse.statusCode == 200 {
                 DispatchQueue.main.async {
                     self.posts = self.parseStories(jsonData: data) ?? []
+                }
+                // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
+                print("Account deletion successful.")
+                return true
+            } else {
+                print("Account deletion failed with status code: \(httpResponse.statusCode)")
+                return false
+            }
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
+    }
+    func getMyStoryList(accessToken: String) async -> Bool {
+        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/myStory") else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: userInfoURL)
+        request.httpMethod = "GET"
+        request.addValue(accessToken, forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                return false
+            }
+            print(String(data: data, encoding: .utf8) ?? "No data")
+            print(httpResponse.allHeaderFields)
+            print("Status Code: ", httpResponse.statusCode)
+            if httpResponse.statusCode == 200 {
+                DispatchQueue.main.async {
+                    self.myPosts = self.parseStories(jsonData: data) ?? []
                 }
                 // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
                 print("Account deletion successful.")
@@ -237,11 +276,13 @@ struct Post: View {
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var postModel: PostModel
+    @EnvironmentObject var snackbarController : SnackbarController
     @State private var onClicked: Int = 0
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
     @State private var isPresented: Bool = false
     var post: Message
+    var myStory: Bool?
     private let postMenuOption: [String] = ["신고하기"]
     var body: some View {
         let currentLocation = locationModel.location ?? CLLocation(
@@ -252,17 +293,24 @@ struct Post: View {
         switch onClicked {
         case 0:
             HStack {
-                if distanceInMeter < 30 {
+                if self.myStory ?? false || distanceInMeter < 30 {
                     Text("\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
-                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                        .foregroundColor(
+                            self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                        )
                 } else {
-                    Button("\(post.nickname) 왔다감") {
-                        isPresented = true
-                    }
-                    .sheet(isPresented: $isPresented) {
-                        ViewControllerWrapper()
-                    }
+                    Button(
+                        action: {
+                            snackbarController.showSnackBar(
+                                message: "메세지를 확인하려면 30m 이내로 접근해주세요",
+                                label: nil,
+                                action: nil
+                            )
+                        }, label: {
+                            Text("\(post.nickname) 왔다감")
+                        }
+                    )
                     .font(.system(size: 20).bold())
                     .foregroundColor(Color.gray)
                 }
@@ -270,16 +318,24 @@ struct Post: View {
                 VStack(alignment: .trailing) {
                     HStack {
                         Image(systemName: "heart")
-                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                            .foregroundColor(
+                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            )
                         Text("\(post.likes)")
-                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                            .foregroundColor(
+                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            )
                     }
                     Spacer()
                     HStack {
                         Image(systemName: "location")
-                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                            .foregroundColor(
+                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            )
                         Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                            .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                            .foregroundColor(
+                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            )
                     }
                 }
                 .padding(.vertical)
@@ -288,7 +344,7 @@ struct Post: View {
             .fixedSize(horizontal: false, vertical: true)
             .frame(height: 90)
             .onTapGesture {
-                if distanceInMeter < 30 {
+                if self.myStory ?? false || distanceInMeter < 30 {
                     onClicked = 1
                 }
             }
@@ -299,7 +355,9 @@ struct Post: View {
                 HStack {
                     Text("\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
-                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                        .foregroundColor(
+                            self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                        )
                     VStack {
                         Spacer()
                         Text("\(post.location.latitude) \(post.location.longitude)")
@@ -323,8 +381,12 @@ struct Post: View {
                     }
                 }
                 HStack {
-                    Text(distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다.")
-                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                    Text(
+                        self.myStory ?? false || distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다."
+                    )
+                    .foregroundColor(
+                        self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                    )
                     Spacer()
                 }
                 Spacer()
@@ -337,7 +399,7 @@ struct Post: View {
                         Task {
                             await tokenModel.validateToken(authModel: authModel)
                             await postModel.likeStory(
-                                accessToken: tokenModel.getToken("accessToken") ?? "", 
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
                                 id: post.id
                             )
                         }
