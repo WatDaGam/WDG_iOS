@@ -41,12 +41,18 @@ struct MainListView: View {
             .onAppear {
                 scrollProxy = proxy // ScrollViewProxy를 저장합니다.
             }
-            .onChange(of: postModel.posts.count) {
+            .onReceive(postModel.$posts) { _ in
                 // posts가 변경될 때 스크롤 위치를 유지
                 withAnimation {
                     proxy.scrollTo(currentScrollOffset, anchor: .top)
                 }
             }
+//            .onChange(of: postModel.posts.count) {
+//                // posts가 변경될 때 스크롤 위치를 유지
+//                withAnimation {
+//                    proxy.scrollTo(currentScrollOffset, anchor: .top)
+//                }
+//            }
             .refreshable {
                 Task {
                     await reloadData()

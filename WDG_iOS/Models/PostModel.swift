@@ -240,6 +240,7 @@ struct Post: View {
     @State private var onClicked: Int = 0
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
+    @State private var isPresented: Bool = false
     var post: Message
     private let postMenuOption: [String] = ["신고하기"]
     var body: some View {
@@ -251,9 +252,20 @@ struct Post: View {
         switch onClicked {
         case 0:
             HStack {
-                Text("\(post.nickname) 왔다감")
+                if distanceInMeter < 30 {
+                    Text("\(post.nickname) 왔다감")
+                        .font(.system(size: 20).bold())
+                        .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                } else {
+                    Button("\(post.nickname) 왔다감") {
+                        isPresented = true
+                    }
+                    .sheet(isPresented: $isPresented) {
+                        ViewControllerWrapper()
+                    }
                     .font(.system(size: 20).bold())
-                    .foregroundColor(distanceInMeter < 30 ? Color.black : Color.gray)
+                    .foregroundColor(Color.gray)
+                }
                 Spacer()
                 VStack(alignment: .trailing) {
                     HStack {
@@ -279,9 +291,6 @@ struct Post: View {
                 if distanceInMeter < 30 {
                     onClicked = 1
                 }
-//                else {
-//                    ViewControllerWrapper()
-//                }
             }
             .background(.white)
             .colorScheme(.light)

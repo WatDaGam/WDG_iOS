@@ -44,6 +44,15 @@
         "revision" : "f222cbdf325885926566172f6f5f06af95473158",
         "version" : "5.6.0"
       }
+    },
+    {
+      "identity" : "swiftui-snackbar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jmseb3/SwiftUI-Snackbar.git",
+      "state" : {
+        "revision" : "f9e758ddd6433ff7698e25f91d8ffe2eece65f80",
+        "version" : "0.0.3"
+      }
     }
   ],
   "version" : 2

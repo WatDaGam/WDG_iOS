@@ -48,11 +48,21 @@ struct SetNicknameView: View {
                 VStack {
                     HStack {
                         TextField("", text: $nickname)
-                            .onChange(of: nickname) { oldValue, newValue in
-                                if newValue.count > 10 { nickname = oldValue }
-                                if nickname.isEmpty { isValidNickname = 0 }
+                            .onReceive(nickname.publisher.collect()) { newValue in
+                                let newNickname = String(newValue.prefix(10))
+                                if newNickname.count > 10 {
+                                    nickname = newNickname
+                                }
+                                if newNickname.isEmpty {
+                                    isValidNickname = 0
+                                }
                                 isConfirm = false
                             }
+//                            .onChange(of: nickname) { oldValue, newValue in
+//                                if newValue.count > 10 { nickname = oldValue }
+//                                if nickname.isEmpty { isValidNickname = 0 }
+//                                isConfirm = false
+//                            }
                             .font(.system(size: 20, weight: .bold))
                             .focused($focusField, equals: .nickname)
                             .keyboardType(.asciiCapable)

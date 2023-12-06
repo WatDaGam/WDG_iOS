@@ -18,9 +18,9 @@ struct MyTabView: View {
                 if self.selectedTab == 0 { scrollToTop() }
                 self.selectedTab = 0
             }, label: {
-                Image(systemName: "list.bullet")
+                Image(systemName: selectedTab == 0 ? "list.bullet.circle.fill" : "list.bullet")
                     .resizable()
-                    .frame(width: 30, height: 30)
+                    .frame(width: selectedTab == 0 ? 25 : 20, height: selectedTab == 0 ? 25 : 20)
             })
             Spacer()
             Spacer()
@@ -29,21 +29,21 @@ struct MyTabView: View {
             }, label: {
                 Image(systemName: "square.and.pencil")
                     .resizable()
-                    .frame(width: 30, height: 30)
+                    .frame(width: 25, height: 25)
             })
             Spacer()
             Spacer()
             Button(action: {
                 self.selectedTab = 2
             }, label: {
-                Image(systemName: "person")
+                Image(systemName: selectedTab == 2 ? "person.fill" : "person")
                     .resizable()
-                    .frame(width: 30, height: 30)
+                    .frame(width: 25, height: 25)
             })
             Spacer()
         }
         .padding(.horizontal)
-        .frame(height: 80)
+        .frame(height: 70)
         .foregroundColor(.black)
         .background(.white)
         .colorScheme(.light)
