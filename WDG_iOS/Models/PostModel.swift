@@ -281,6 +281,7 @@ struct Post: View {
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
     @State private var isPresented: Bool = false
+    @State private var isMenuActive = false
     var post: Message
     var myStory: Bool?
     private let postMenuOption: [String] = ["신고하기"]
@@ -292,141 +293,156 @@ struct Post: View {
         let distanceInMeter = calcDistanceInMeter(from: post.location, to: currentLocation.coordinate)
         switch onClicked {
         case 0:
-            HStack {
+            Button(action: {
                 if self.myStory ?? false || distanceInMeter < 30 {
-                    Text("\(post.nickname) 왔다감")
+                    onClicked = 1
+                }
+            }, label: {
+                HStack {
+                    if self.myStory ?? false || distanceInMeter < 30 {
+                        Text("\(post.nickname) 왔다감")
+                            .font(.system(size: 20).bold())
+                            .foregroundColor(
+                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            )
+                    } else {
+                        Button(
+                            action: {
+                                snackbarController.showSnackBar(
+                                    message: "메세지를 확인하려면 30m 이내로 접근해주세요",
+                                    label: nil,
+                                    action: nil
+                                )
+                            }, label: {
+                                Text("\(post.nickname) 왔다감")
+                            }
+                        )
                         .font(.system(size: 20).bold())
+                        .foregroundColor(Color.gray)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing) {
+                        HStack {
+                            Image(systemName: isLike ? "heart.fill" : "heart")
+                                .foregroundColor(
+                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                                )
+                            Text("\(post.likes)")
+                                .foregroundColor(
+                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                                )
+                        }
+                        Spacer()
+                        HStack {
+                            Image(systemName: "location")
+                                .foregroundColor(
+                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                                )
+                            Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                                .foregroundColor(
+                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                                )
+                        }
+                    }
+                    .padding(.vertical)
+                }
+                .padding(.horizontal)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(height: 90)
+                .background(.white)
+                .colorScheme(.light)
+            })
+        case 1:
+            Button(action: {
+                if !isMenuActive {
+                    onClicked = 0
+                } else {
+                    isMenuActive = false
+                }
+            }, label: {
+                VStack(spacing: 20) {
+                    HStack {
+                        Text("\(post.nickname) 왔다감")
+                            .font(.system(size: 20).bold())
+                            .foregroundColor(
+                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            )
+                        VStack {
+                            Spacer()
+                            Text("\(post.location.latitude) \(post.location.longitude)")
+                                .font(.caption2)
+                                .foregroundColor(Color.black)
+                        }
+                        .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                        Spacer()
+                    }
+                    HStack {
+                        Text(
+                            self.myStory ?? false || distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다."
+                        )
                         .foregroundColor(
                             self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
                         )
-                } else {
-                    Button(
-                        action: {
-                            snackbarController.showSnackBar(
-                                message: "메세지를 확인하려면 30m 이내로 접근해주세요",
-                                label: nil,
-                                action: nil
-                            )
-                        }, label: {
-                            Text("\(post.nickname) 왔다감")
-                        }
-                    )
-                    .font(.system(size: 20).bold())
-                    .foregroundColor(Color.gray)
-                }
-                Spacer()
-                VStack(alignment: .trailing) {
-                    HStack {
-                        Image(systemName: "heart")
-                            .foregroundColor(
-                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                            )
-                        Text("\(post.likes)")
-                            .foregroundColor(
-                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                            )
+                        Spacer()
                     }
                     Spacer()
                     HStack {
                         Image(systemName: "location")
-                            .foregroundColor(
-                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                            )
                         Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                            .foregroundColor(
-                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                            )
-                    }
-                }
-                .padding(.vertical)
-            }
-            .padding(.horizontal)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(height: 90)
-            .onTapGesture {
-                if self.myStory ?? false || distanceInMeter < 30 {
-                    onClicked = 1
-                }
-            }
-            .background(.white)
-            .colorScheme(.light)
-        case 1:
-            VStack(spacing: 20) {
-                HStack {
-                    Text("\(post.nickname) 왔다감")
-                        .font(.system(size: 20).bold())
-                        .foregroundColor(
-                            self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                        )
-                    VStack {
                         Spacer()
-                        Text("\(post.location.latitude) \(post.location.longitude)")
-                            .font(.caption2)
-                    }
-                    .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
-                    Spacer()
-                    if distanceInMeter < 30 {
-                        Menu {
-                            ForEach(postMenuOption, id: \.self) { option in
-                                Button(option) {
-                                    if option == "신고하기" {
-                                        print("신고하기 누름")
-                                    }
-                                }
+                        Button(action: {
+                            self.isAnimating = true
+                            Task {
+                                await tokenModel.validateToken(authModel: authModel)
+                                await postModel.likeStory(
+                                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                                    id: post.id
+                                )
                             }
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .foregroundColor(.black)
-                        }
+                            // Lottie 애니메이션 길이에 맞춰 시간 조절
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                self.isAnimating = false
+                            }
+                            self.isLike = true
+                        }, label: {
+                            if isAnimating {
+                                LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
+                                    .frame(width: 20, height: 20)
+                            } else {
+                                Image(systemName: "heart")
+                                    .foregroundColor(.black)
+                            }
+                        })
+                        Text("\(post.likes)")
                     }
                 }
-                HStack {
-                    Text(
-                        self.myStory ?? false || distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다."
-                    )
-                    .foregroundColor(
-                        self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                    )
-                    Spacer()
+                .padding(.horizontal)
+                .frame(height: 200)
+                .background(.white)
+                .colorScheme(.light)
+            })
+            .foregroundColor(Color.black)
+            .contentShape(Rectangle()) // 전체 영역을 클릭 가능하게 설정
+            .overlay(
+                Menu {
+                    ForEach(postMenuOption, id: \.self) { option in
+                        Button(option) {
+                            if option == "신고하기" {
+                                print("신고하기 누름")
+                            }
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .foregroundColor(.black)
+                        .padding(10)
                 }
-                Spacer()
-                HStack {
-                    Image(systemName: "location")
-                    Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                    Spacer()
-                    Button(action: {
-                        self.isAnimating = true
-                        Task {
-                            await tokenModel.validateToken(authModel: authModel)
-                            await postModel.likeStory(
-                                accessToken: tokenModel.getToken("accessToken") ?? "",
-                                id: post.id
-                            )
-                        }
-                        // Lottie 애니메이션 길이에 맞춰 시간 조절
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            self.isAnimating = false
-                        }
-                        self.isLike = true
-                    }, label: {
-                        if isAnimating {
-                            LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
-                                .frame(width: 20, height: 20)
-                        } else {
-                            Image(systemName: isLike ? "heart.fill" : "heart") // 애니메이션이 비활성화된 경우
-                                .foregroundColor(isLike ? .red : .black)
-                        }
-                    })
-                    Text("\(post.likes)")
+                .padding([.trailing, .top], 10)  // 메뉴 버튼의 위치 조정
+                .onTapGesture {
+                    // 메뉴가 열릴 때 isMenuActive를 true로 설정
+                    isMenuActive = true
                 }
-            }
-            .padding(.horizontal)
-            .frame(height: 200)
-            .onTapGesture {
-                onClicked = 0
-            }
-            .background(.white)
-            .colorScheme(.light)
+            , alignment: .topTrailing)
         default:
             Text("default")
         }
