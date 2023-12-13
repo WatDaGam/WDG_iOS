@@ -217,67 +217,87 @@ struct ContentView: View {
     }
     @ViewBuilder
     private func mainListNavbarView() -> some View {
-        NavbarView(
-            left: { WDGLogoView(size: 24, spacing: -4, mode: true) },
-            center: {
-                MainNavbarCenter(
-                    locationModel : locationModel,
-                    latitude: $latitude,
-                    longitude: $longitude,
-                    alertType: $alertType
-                )
-            },
-            right: {}
-        )
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            NavbarView(
+                left: {},
+                center: {
+                    MainNavbarCenter(
+                        locationModel : locationModel,
+                        latitude: $latitude,
+                        longitude: $longitude,
+                        alertType: $alertType
+                    )
+                },
+                right: {}
+            )
+        }
+        .frame(height: 80)
     }
     @ViewBuilder
     private func postNavbarView() -> some View {
-        NavbarView(
-            left: {
-                Button(action: {
-                    print("cancle click")
-                    alertType = .postCancle
-                }, label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                    }
-                })
-                .foregroundColor(.white)
-            },
-            center: {
-                Text("\(userInfo.getUserNickname()) 왔다감")
-                    .foregroundStyle(.white)
-            },
-            right: {}
-        )
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            NavbarView(
+                left: {
+                    Button(action: {
+                        print("cancle click")
+                        alertType = .postCancle
+                    }, label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                        }
+                    })
+                    .foregroundColor(.white)
+                },
+                center: {
+                    Text("\(userInfo.getUserNickname()) 왔다감")
+                        .foregroundStyle(.white)
+                },
+                right: {}
+            )
+        }
+        .frame(height: 80)
     }
     @ViewBuilder
     private func settingsNavbarView() -> some View {
-        NavbarView(
-            left: {},
-            center: {
-                Text("마이페이지")
-                    .foregroundStyle(.white)
-            },
-            right: {}
-        )
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            NavbarView(
+                left: {},
+                center: {
+                    Text("마이페이지")
+                        .foregroundStyle(.white)
+                },
+                right: {}
+            )
+        }
+        .frame(height: 80)
     }
     @ViewBuilder
     private func profileNavbarView() -> some View {
-        NavbarView(
-            left: {
-                Button(action: {
-                    selectedTab = 2
-                }, label: {
-                    Image(systemName: "chevron.backward")
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            NavbarView(
+                left: {
+                    Button(action: {
+                        selectedTab = 2
+                    }, label: {
+                        Image(systemName: "chevron.backward")
+                            .foregroundColor(.white)
+                    }) },
+                center: {
+                    Text(userInfo.getUserNickname())
                         .foregroundColor(.white)
-                }) },
-            center: {
-                Text(userInfo.getUserNickname())
-                    .foregroundColor(.white)
-            },
-            right: {}
-        )
+                },
+                right: {}
+            )
+        }
+        .frame(height: 80)
     }
 }
 
