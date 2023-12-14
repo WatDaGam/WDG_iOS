@@ -13,6 +13,7 @@ struct MainListView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
+    @Binding var alertType: AlertType?
     @Binding var latitude: Double
     @Binding var longitude: Double
     @Binding var scrollProxy: ScrollViewProxy?
@@ -26,7 +27,7 @@ struct MainListView: View {
                     .id(namespace)
                 VStack {
                     ForEach(postModel.posts) { post in
-                        Post(post: post)
+                        Post(alertType: $alertType, post: post)
                             .environmentObject(locationModel)
                             .environmentObject(tokenModel)
                             .environmentObject(authModel)
@@ -140,6 +141,7 @@ struct MainListViewPreviews: PreviewProvider {
     @State static var latitude: Double = 37.5666612
     @State static var longitude: Double = 126.9783785
     @State static var scrollProxy: ScrollViewProxy?
+    @State static var alertType: AlertType?
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
@@ -147,6 +149,7 @@ struct MainListViewPreviews: PreviewProvider {
         let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
         @Namespace var mainListTop
         MainListView(
+            alertType: $alertType,
             latitude: $latitude,
             longitude: $longitude,
             scrollProxy: $scrollProxy,

@@ -14,6 +14,7 @@ enum AlertType: Identifiable {
     case postCancle
     case postUpload
     case locationAuth
+    case reportSuccess
     var id: Int {
         switch self {
         case .logout:
@@ -26,6 +27,8 @@ enum AlertType: Identifiable {
             return 3
         case .locationAuth:
             return 4
+        case .reportSuccess:
+            return 5
         }
     }
 }
@@ -67,6 +70,7 @@ struct ContentView: View {
                     case 0:
                         mainListNavbarView()
                         MainListView(
+                            alertType: $alertType,
                             latitude: $latitude,
                             longitude: $longitude,
                             scrollProxy: $scrollProxy,
@@ -110,6 +114,7 @@ struct ContentView: View {
                     case 3:
                         profileNavbarView()
                         ProfileView(
+                            alertType: $alertType,
                             nickname: userInfo.getUserNickname(),
                             numberOfPosts: userInfo.getUserStoryNum(),
                             numberOfLikes: userInfo.getUserLikeNum()
@@ -209,6 +214,21 @@ struct ContentView: View {
                         }
                     },
                     secondaryButton: .cancel(Text("취소"))
+                )
+            case .reportSuccess:
+                return Alert(
+                    title: Text("신고 완료"),
+                    message: Text("게시글 신고가 완료되었습니다."),
+                    dismissButton: .default(Text("확인")) {
+                        Task {
+                            await tokenModel.validateToken(authModel: authModel)
+                            await postModel.getStoryList(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                lati: locationModel.getCurrentLocation().coordinate.latitude,
+                                longi: locationModel.getCurrentLocation().coordinate.longitude
+                            )
+                        }
+                    }
                 )
             }
         }

@@ -229,6 +229,30 @@ class PostModel: ObservableObject {
             return false
         }
     }
+    func reportStory(accessToken: String, id: Int) async -> Bool {
+        guard let userInfoURL = URL(
+            string: "http://43.200.68.255:8080/report?storyId=" + String(id)
+        ) else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: userInfoURL)
+        request.httpMethod = "GET"
+        request.addValue(accessToken, forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("Request failed with status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+                return false
+            }
+            return true
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
+    }
     func parseLikeNum(jsonData: Data) -> Int {
         let decoder = JSONDecoder()
         do {
@@ -277,6 +301,7 @@ struct Post: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var snackbarController : SnackbarController
+    @Binding var alertType: AlertType?
     @State private var onClicked: Int = 0
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
@@ -428,7 +453,16 @@ struct Post: View {
                     ForEach(postMenuOption, id: \.self) { option in
                         Button(option) {
                             if option == "신고하기" {
-                                print("신고하기 누름")
+                                Task {
+                                    await tokenModel.validateToken(authModel: authModel)
+                                    let response = await postModel.reportStory(
+                                        accessToken: tokenModel.getToken("accessToken") ?? "",
+                                        id: post.id
+                                    )
+                                    if response {
+                                        alertType = .reportSuccess
+                                    }
+                                }
                             }
                         }
                     }
@@ -466,6 +500,7 @@ struct Post: View {
 }
 
 struct PostPreviews: PreviewProvider {
+    @State static var alertType: AlertType?
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
@@ -478,7 +513,7 @@ struct PostPreviews: PreviewProvider {
         VStack {
             Spacer()
             Divider()
-            Post(post: postModel.posts[0])
+            Post(alertType: $alertType, post: postModel.posts[0])
                 .environmentObject(locationModel)
             Divider()
             Spacer()
