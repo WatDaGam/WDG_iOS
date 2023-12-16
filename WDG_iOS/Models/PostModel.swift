@@ -328,30 +328,20 @@ struct Post: View {
             Button(action: {
                 if self.myStory ?? false || distanceInMeter < 30 {
                     onClicked = 1
+                } else {
+                    snackbarController.showSnackBar(
+                        message: "메세지를 확인하려면 30m 이내로 접근해주세요",
+                        label: nil,
+                        action: nil
+                    )
                 }
             }, label: {
                 HStack {
-                    if self.myStory ?? false || distanceInMeter < 30 {
-                        Text("\(post.nickname) 왔다감")
-                            .font(.system(size: 20).bold())
-                            .foregroundColor(
-                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                            )
-                    } else {
-                        Button(
-                            action: {
-                                snackbarController.showSnackBar(
-                                    message: "메세지를 확인하려면 30m 이내로 접근해주세요",
-                                    label: nil,
-                                    action: nil
-                                )
-                            }, label: {
-                                Text("\(post.nickname) 왔다감")
-                            }
-                        )
+                    Text("\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
-                        .foregroundColor(Color.gray)
-                    }
+                        .foregroundColor(
+                            self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                        )
                     Spacer()
                     VStack(alignment: .trailing) {
                         HStack {
