@@ -32,12 +32,13 @@ class SetNicknameViewModel: ObservableObject {
     func checkNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
             // 백엔드로 중복 검사 체크
-            guard let reissuanceURL = URL(string: "http://43.200.68.255:8080/nickname/check") else {
+            let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+            guard let requestURL = URL(string: "https://\(serverURLString)/nickname/check") else {
                 print("Invalid URL")
                 return false
             }
             let accessToken = self.tokenModel.getToken("tempAccessToken") ?? ""
-            var request = URLRequest(url: reissuanceURL)
+            var request = URLRequest(url: requestURL)
             request.httpMethod = "POST"
             request.addValue(accessToken, forHTTPHeaderField: "Authorization")
             request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
@@ -59,12 +60,13 @@ class SetNicknameViewModel: ObservableObject {
     }
     func setNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
-            guard let reissuanceURL = URL(string: "http://43.200.68.255:8080/nickname/set") else {
+            let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+            guard let requestURL = URL(string: "https://\(serverURLString)/nickname/set") else {
                 print("Invalid URL")
                 return false
             }
             let accessToken = self.tokenModel.getToken("tempAccessToken") ?? ""
-            var request = URLRequest(url: reissuanceURL)
+            var request = URLRequest(url: requestURL)
             request.httpMethod = "POST"
             request.addValue(accessToken, forHTTPHeaderField: "Authorization")
             request.addValue("text/plain", forHTTPHeaderField: "Content-Type")

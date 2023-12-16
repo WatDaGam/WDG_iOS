@@ -64,11 +64,12 @@ class PostModel: ObservableObject {
     }
     func getStoryList(accessToken: String, lati: Double?, longi: Double?) async -> Bool {
         let jsonDict: [String: Any] = ["lati": lati ?? 0, "longi": longi ?? 0]
-        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/storyList/renew") else {
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(string: "https://\(serverURLString)/storyList/renew") else {
             print("Invalid URL")
             return false
         }
-        var request = URLRequest(url: userInfoURL)
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "POST"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
@@ -105,11 +106,12 @@ class PostModel: ObservableObject {
         }
     }
     func getMyStoryList(accessToken: String) async -> Bool {
-        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/myStory") else {
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(string: "https://\(serverURLString)/myStory") else {
             print("Invalid URL")
             return false
         }
-        var request = URLRequest(url: userInfoURL)
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
@@ -162,11 +164,12 @@ class PostModel: ObservableObject {
     }
     func uploadStory(accessToken: String, content: String, lati: Double?, longi: Double?) async -> Bool {
         let jsonDict: [String: Any] = ["content": content, "lati": lati ?? 0, "longi": longi ?? 0]
-        guard let userInfoURL = URL(string: "http://43.200.68.255:8080/story/upload") else {
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(string: "https://\(serverURLString)/story/upload") else {
             print("Invalid URL")
             return false
         }
-        var request = URLRequest(url: userInfoURL)
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "POST"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type") // JSON 데이터임을 명시
@@ -199,13 +202,14 @@ class PostModel: ObservableObject {
         }
     }
     func likeStory(accessToken: String, id: Int) async -> Bool {
-        guard let userInfoURL = URL(
-            string: "http://43.200.68.255:8080/like/plus?storyId=" + String(id)
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(
+            string: "https://\(serverURLString)/like/plus?storyId=" + String(id)
         ) else {
             print("Invalid URL")
             return false
         }
-        var request = URLRequest(url: userInfoURL)
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "POST"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
@@ -230,13 +234,14 @@ class PostModel: ObservableObject {
         }
     }
     func reportStory(accessToken: String, id: Int) async -> Bool {
-        guard let userInfoURL = URL(
-            string: "http://43.200.68.255:8080/report?storyId=" + String(id)
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(
+            string: "https://\(serverURLString)/report?storyId=" + String(id)
         ) else {
             print("Invalid URL")
             return false
         }
-        var request = URLRequest(url: userInfoURL)
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시

@@ -15,6 +15,7 @@ enum AlertType: Identifiable {
     case postUpload
     case locationAuth
     case reportSuccess
+    case reportAlert
     var id: Int {
         switch self {
         case .logout:
@@ -29,6 +30,8 @@ enum AlertType: Identifiable {
             return 4
         case .reportSuccess:
             return 5
+        case .reportAlert:
+            return 6
         }
     }
 }
@@ -83,7 +86,7 @@ struct ContentView: View {
                         .environmentObject(snackbarController)
                         .onAppear {
                             Task {
-                                await userInfo.getUserInfo()
+                                await userInfo.getUserInfo(alertType: $alertType)
                             }
                         }
                     case 1:
@@ -104,7 +107,7 @@ struct ContentView: View {
                         )
                         .onAppear {
                             Task {
-                                await userInfo.getUserInfo()
+                                await userInfo.getUserInfo(alertType: $alertType)
                                 await tokenModel.validateToken(authModel: authModel)
                                 await postModel.getMyStoryList(
                                     accessToken: tokenModel.getToken("accessToken") ?? ""
@@ -229,6 +232,12 @@ struct ContentView: View {
                             )
                         }
                     }
+                )
+            case .reportAlert:
+                return Alert(
+                    title: Text("알림"),
+                    message: Text("신고된 게시글이 \(userInfo.getReportedStories().count)건 존재합니다.\n"),
+                    dismissButton: .default(Text("확인"))
                 )
             }
         }

@@ -91,7 +91,8 @@ class AuthModel: ObservableObject {
     }
     func getLoginInfoWithKakao(accessToken: String) async -> Bool {
         await withCheckedContinuation { continuation in
-            guard let loginURL = URL(string: "http://43.200.68.255:8080/login?platform=KAKAO") else {
+            let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+            guard let loginURL = URL(string: "https://\(serverURLString)/login?platform=KAKAO") else {
                 print("Invalid URL")
                 return
             }
@@ -128,12 +129,13 @@ class AuthModel: ObservableObject {
     }
     func deleteAccount() async -> Bool {
         await tokenModel.validateToken(authModel: self)
-        guard let deleteURL = URL(string: "http://43.200.68.255:8080/withdrawal") else {
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(string: "https://\(serverURLString)/withdrawal") else {
             print("Invalid URL")
             return false
         }
         let accessToken = self.tokenModel.getToken("accessToken") ?? ""
-        var request = URLRequest(url: deleteURL)
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "DELETE"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         do {

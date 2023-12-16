@@ -9,4 +9,4 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 KAKAO_NATIVE_APP_KEY = 27c267b47e61135cd098eb3fc9270bc6
-SERVER_URL = 43.200.68.255
+SERVER_URL = api.watdagam.com

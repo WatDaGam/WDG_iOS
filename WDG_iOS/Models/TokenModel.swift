@@ -55,12 +55,13 @@ class TokenModel: ObservableObject {
         if refreshExpire < Date().timeIntervalSince1970 { return false }
         let beforeAccessExpire = accessExpireDouble / 1000
         if beforeAccessExpire - Date().timeIntervalSince1970 < 10 {
-            guard let reissuanceURL = URL(string: "http://43.200.68.255:8080/refreshtoken") else {
+            let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+            guard let requestURL = URL(string: "https://\(serverURLString)/refreshtoken") else {
                 print("Invalid URL")
                 return false
             }
             let beforeRefreshToken = self.getToken("refreshToken") ?? ""
-            var request = URLRequest(url: reissuanceURL)
+            var request = URLRequest(url: requestURL)
             request.addValue(beforeRefreshToken, forHTTPHeaderField: "Refresh-Token")
             do {
                 let (_, response) = try await URLSession.shared.data(for: request)
