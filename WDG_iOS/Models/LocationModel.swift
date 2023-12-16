@@ -57,7 +57,6 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     func startTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
-            print("타이머 요청")
             self?.timerRequest = true
             self?.locationManager.requestLocation() // 위치 업데이트 요청
         }
@@ -128,11 +127,6 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
         // 거리를 계산합니다.
         let distance = newLocation.distance(from: lastLocation)
-        print("간격: ", distance)
-//        if self.updateInterval == 0 {
-//            self.updateInterval = 5
-//            return true
-//        }
         // 거리가 30미터 이상이면 새로운 데이터를 요청합니다.
         if distance >= 30 {
             self.refreshLocation = newLocation

@@ -62,6 +62,9 @@ class PostModel: ObservableObject {
     func getMyPosts() -> [Message] {
         return self.myPosts
     }
+    func removePost(id: Int) {
+        self.posts.removeAll { $0.id == id }
+    }
     func getStoryList(accessToken: String, lati: Double?, longi: Double?) async -> Bool {
         let jsonDict: [String: Any] = ["lati": lati ?? 0, "longi": longi ?? 0]
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
@@ -233,13 +236,13 @@ class PostModel: ObservableObject {
             return false
         }
     }
-    func reportStory(accessToken: String, id: Int) async -> Bool {
+    func reportStory(accessToken: String, id: Int) async -> Int {
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
         guard let requestURL = URL(
             string: "https://\(serverURLString)/report?storyId=" + String(id)
         ) else {
             print("Invalid URL")
-            return false
+            return -1
         }
         var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
@@ -247,15 +250,14 @@ class PostModel: ObservableObject {
         request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                print("Request failed with status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
-                return false
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return -1
             }
-            return true
+            print(httpResponse.statusCode)
+            return httpResponse.statusCode
         } catch {
             print("Fetch failed: \(error.localizedDescription)")
-            return false
+            return -1
         }
     }
     func parseLikeNum(jsonData: Data) -> Int {
@@ -464,7 +466,10 @@ struct Post: View {
                                         accessToken: tokenModel.getToken("accessToken") ?? "",
                                         id: post.id
                                     )
-                                    if response {
+                                    if response == 200 {
+                                        alertType = .reportSuccess
+                                    } else if response == 205 {
+                                        postModel.removePost(id: post.id)
                                         alertType = .reportSuccess
                                     }
                                 }
