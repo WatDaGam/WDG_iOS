@@ -89,15 +89,10 @@ class PostModel: ObservableObject {
                 print("Invalid response")
                 return false
             }
-            print(String(data: data, encoding: .utf8) ?? "No data")
-            print(httpResponse.allHeaderFields)
-            print("Status Code: ", httpResponse.statusCode)
             if httpResponse.statusCode == 200 {
                 DispatchQueue.main.async {
                     self.posts = self.parseStories(jsonData: data) ?? []
                 }
-                // 이 상태 변경들은 `@MainActor`로 마크된 함수나 `DispatchQueue.main.async`를 사용해야 할 수도 있습니다.
-                print("Account deletion successful.")
                 return true
             } else {
                 print("Account deletion failed with status code: \(httpResponse.statusCode)")
@@ -124,9 +119,6 @@ class PostModel: ObservableObject {
                 print("Invalid response")
                 return false
             }
-            print(String(data: data, encoding: .utf8) ?? "No data")
-            print(httpResponse.allHeaderFields)
-            print("Status Code: ", httpResponse.statusCode)
             if httpResponse.statusCode == 200 {
                 DispatchQueue.main.async {
                     self.myPosts = self.parseStories(jsonData: data) ?? []

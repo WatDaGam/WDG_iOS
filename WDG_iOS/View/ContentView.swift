@@ -236,7 +236,9 @@ struct ContentView: View {
             case .reportAlert:
                 return Alert(
                     title: Text("알림"),
-                    message: Text("신고된 게시글이 \(userInfo.getReportedStories().count)건 존재합니다.\n"),
+                    message: Text(
+                        "신고된 게시글이 \(userInfo.getReportedStoryNum())건 존재합니다.\n\n게시글을 조회하시려면 support@watdagam.com으로 문의해주세요."
+                    ),
                     dismissButton: .default(Text("확인"))
                 )
             }

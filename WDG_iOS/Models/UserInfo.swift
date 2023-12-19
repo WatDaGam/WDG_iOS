@@ -12,14 +12,14 @@ struct UserInfoResponse: Codable {
     let storyNum: Int
     let nickname: String
     let likeNum: Int
-    let reportedStories: [String]?
+    let reportedStoryNum: Int?
 }
 
 class UserInfo: ObservableObject {
     private var nickname: String = ""
     private var storyNum: Int = 0
     private var likeNum: Int = 0
-    private var reportedStories: [String] = []
+    private var reportedStoryNum: Int = 0
     var tokenModel: TokenModel
     var authModel: AuthModel
     init(tokenModel: TokenModel, authModel: AuthModel) {
@@ -29,7 +29,7 @@ class UserInfo: ObservableObject {
     func getUserNickname() -> String { return self.nickname }
     func getUserStoryNum() -> Int { return self.storyNum }
     func getUserLikeNum() -> Int { return self.likeNum }
-    func getReportedStories() -> [String] { return self.reportedStories }
+    func getReportedStoryNum() -> Int { return self.reportedStoryNum }
     func getUserInfo(alertType: Binding<AlertType?>) async -> Bool {
         await tokenModel.validateToken(authModel: authModel)
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
@@ -47,20 +47,21 @@ class UserInfo: ObservableObject {
                 print("Invalid response")
                 return false
             }
-
+            print(data)
             if httpResponse.statusCode == 200 {
                 let decoder = JSONDecoder()
                 let userInfoResponse = try decoder.decode(UserInfoResponse.self, from: data)
-                let reportedStories = userInfoResponse.reportedStories ?? []
-
+                let reportedStoryNum = userInfoResponse.reportedStoryNum ?? 0
+                print(userInfoResponse)
+                print(reportedStoryNum)
                 DispatchQueue.main.async {
                     self.nickname = userInfoResponse.nickname
                     self.storyNum = userInfoResponse.storyNum
                     self.likeNum = userInfoResponse.likeNum
 
-                    if !reportedStories.isEmpty {
+                    if reportedStoryNum != 0 {
                         alertType.wrappedValue = .reportAlert
-                        self.reportedStories = reportedStories
+                        self.reportedStoryNum = reportedStoryNum
                     }
                 }
                 return true
