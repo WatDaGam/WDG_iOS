@@ -58,14 +58,9 @@ struct SetNicknameView: View {
                                 }
                                 isConfirm = false
                             }
-//                            .onChange(of: nickname) { oldValue, newValue in
-//                                if newValue.count > 10 { nickname = oldValue }
-//                                if nickname.isEmpty { isValidNickname = 0 }
-//                                isConfirm = false
-//                            }
                             .font(.system(size: 20, weight: .bold))
                             .focused($focusField, equals: .nickname)
-                            .keyboardType(.asciiCapable)
+                            .keyboardType(.default)
                             .foregroundColor(.black)
                             .placeholder(when: nickname.isEmpty) {
                                 Text("닉네임을 입력하세요.").foregroundColor(.gray)
