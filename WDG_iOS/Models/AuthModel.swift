@@ -41,6 +41,51 @@ class AuthModel: ObservableObject {
         }
     }
     @MainActor
+    func handleAppleLogin(userId: String) {
+        isLoggedIn = loginWithApple(userId: userId)
+        if !isLoggedIn { loginFailedAlert = true }
+    }
+    func loginWithApple(userId: String) -> Bool {
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(string: "https://\(serverURLString)/login?platform=APPLE") else {
+            print("Invalid URL")
+            return false
+        }
+        var request = URLRequest(url: requestURL)
+        request.addValue("Bearer \(userId)", forHTTPHeaderField: "Authorization")
+        var result = false
+        let semaphore = DispatchSemaphore(value: 0) // 동기화를 위한 세마포어
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            defer { semaphore.signal() } // 작업이 완료되면 세마포어 신호를 보냄
+            if let error = error {
+                print("Fetch failed: \(error.localizedDescription)")
+                return
+            }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                return
+            }
+            DispatchQueue.main.async {
+                print(httpResponse.allHeaderFields)
+                let accessToken = httpResponse.headers["Authorization"] ?? ""
+                let refreshToken = httpResponse.headers["Refresh-Token"] ?? ""
+                let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+                let refreshExpire = httpResponse.headers["Refresh-Expiration-Time"] ?? ""
+
+                if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
+                    self.tokenModel.saveAllToken(access: accessToken, refresh: refreshToken)
+                    self.tokenModel.saveToken(accessExpire, type: "accessExpire")
+                    self.tokenModel.saveToken(refreshExpire, type: "refreshExpire")
+                    result = true
+                } else {
+                    print("Account deletion failed with status code: \(httpResponse.statusCode)")
+                }
+            }
+        }.resume()
+        semaphore.wait() // URLSession dataTask의 완료를 기다림
+        return result
+    }
+    @MainActor
     func handleKakaoLogin() {
         Task {
             isLoggedIn = await (UserApi.isKakaoTalkLoginAvailable() ?

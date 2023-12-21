@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var authModel: AuthModel
@@ -29,18 +30,49 @@ struct LoginView: View {
                             endAnimation = true
                         }
                     }
-                VStack {
+                VStack(spacing: 10) {
                     if endAnimation {
                         Button(action: {
                             authModel.handleKakaoLogin()
                         }, label: {
                             Image("KakaoLoginButtonImage")
+                                .resizable() // 이미지를 크기 조정 가능하게 만듭니다.
+                                .aspectRatio(contentMode: .fit) // 원본 이미지의 비율을 유지합니다.
+                                .frame(height: 69)
                         })
+                        signInWithAppleButton()
                     }
                 }
             }
         }
     }
+    private func signInWithAppleButton() -> some View {
+        SignInWithAppleButton(
+            .continue,
+            onRequest: { _ in },
+            onCompletion: { result in
+                // 인증 결과 처리
+                switch result {
+                case .success(let authorization):
+                    // 성공적인 인증 후 처리
+                    if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                        guard let identityTokenData = appleIDCredential.identityToken,
+                              let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
+                            return
+                        }
+                        // print("identity:", identityTokenString)
+                        authModel.handleAppleLogin(userId: identityTokenString)
+                    }
+                case .failure(let error):
+                    // 인증 실패 시 처리
+                    print("Authentication failed: \(error.localizedDescription)")
+                }
+            }
+        )
+        .signInWithAppleButtonStyle(.white)
+        .frame(width: 280, height: 70)
+    }
+
 }
 
 struct WDGLogoView: View {
