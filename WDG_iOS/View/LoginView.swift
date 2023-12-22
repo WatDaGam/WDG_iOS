@@ -60,8 +60,12 @@ struct LoginView: View {
                               let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
                             return
                         }
-                        // print("identity:", identityTokenString)
-                        authModel.handleAppleLogin(userId: identityTokenString)
+                        guard let identityTokenAuth = appleIDCredential.authorizationCode,
+                              let identityTokenAuthString = String(data: identityTokenAuth, encoding: .utf8) else {
+                            return
+                        }
+                        print(identityTokenString, identityTokenAuthString)
+                        authModel.handleAppleLogin(userId: identityTokenAuthString)
                     }
                 case .failure(let error):
                     // 인증 실패 시 처리

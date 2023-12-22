@@ -46,6 +46,7 @@ class AuthModel: ObservableObject {
         if !isLoggedIn { loginFailedAlert = true }
     }
     func loginWithApple(userId: String) -> Bool {
+        print(userId)
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
         guard let requestURL = URL(string: "https://\(serverURLString)/login?platform=APPLE") else {
             print("Invalid URL")

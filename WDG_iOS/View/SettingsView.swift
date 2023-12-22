@@ -12,20 +12,18 @@ struct SettingsView: View {
     @EnvironmentObject var locationModel: LocationModel
     @Binding var alertType: AlertType?
     @Binding var selectedTab: Int
-//    public init(
-//        settingAlertType: Binding<SettingAlertType?>,
-//        selectedTab: Binding<Int>,
-//    ) {
-//        _settingAlertType = settingAlertType
-//        _selectedTab = selectedTab
-//    }
     var body: some View {
-        List {
-            Button("프로필", action: { selectedTab = 3 })
-            Button("로그아웃", action: { alertType = .logout })
-            Button("회원탈퇴", action: { alertType = .removeAccount })
+        VStack {
+            BannerContentView(navigationTitle: "settings", adUnitID: "ca-app-pub-7132344735506626/9039057664")
+            Divider()
+            List {
+                Button("프로필", action: { selectedTab = 3 })
+                Button("로그아웃", action: { alertType = .logout })
+                Button("회원탈퇴", action: { alertType = .removeAccount })
+            }
+            .listStyle(.plain)
+            Spacer()
         }
-        .listStyle(.plain)
     }
 }
 

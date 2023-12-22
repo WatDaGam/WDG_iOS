@@ -20,37 +20,41 @@ struct MainListView: View {
     @State private var currentScrollOffset: CGFloat = 0
     var namespace: Namespace.ID
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                Color.clear
-                    .frame(height: 0)
-                    .id(namespace)
-                VStack {
-                    ForEach(postModel.posts) { post in
-                        Post(alertType: $alertType, post: post)
-                            .environmentObject(locationModel)
-                            .environmentObject(tokenModel)
-                            .environmentObject(authModel)
-                            .environmentObject(postModel)
-                        Divider()
+        VStack {
+            BannerContentView(navigationTitle: "mainList", adUnitID: "ca-app-pub-7132344735506626/9532213383")
+            Divider()
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Color.clear
+                        .frame(height: 0)
+                        .id(namespace)
+                    VStack {
+                        ForEach(postModel.posts) { post in
+                            Post(alertType: $alertType, post: post)
+                                .environmentObject(locationModel)
+                                .environmentObject(tokenModel)
+                                .environmentObject(authModel)
+                                .environmentObject(postModel)
+                            Divider()
+                        }
+                    }
+                    .listStyle(.plain)
+                    .background(.white)
+                    .colorScheme(.light)
+                }
+                .onAppear {
+                    scrollProxy = proxy // ScrollViewProxy를 저장합니다.
+                }
+                .onReceive(postModel.$posts) { _ in
+                    // posts가 변경될 때 스크롤 위치를 유지
+                    withAnimation {
+                        proxy.scrollTo(currentScrollOffset, anchor: .top)
                     }
                 }
-                .listStyle(.plain)
-                .background(.white)
-                .colorScheme(.light)
-            }
-            .onAppear {
-                scrollProxy = proxy // ScrollViewProxy를 저장합니다.
-            }
-            .onReceive(postModel.$posts) { _ in
-                // posts가 변경될 때 스크롤 위치를 유지
-                withAnimation {
-                    proxy.scrollTo(currentScrollOffset, anchor: .top)
-                }
-            }
-            .refreshable {
-                Task {
-                    await reloadData()
+                .refreshable {
+                    Task {
+                        await reloadData()
+                    }
                 }
             }
         }

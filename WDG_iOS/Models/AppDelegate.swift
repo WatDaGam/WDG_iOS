@@ -11,12 +11,14 @@ import KakaoSDKUser
 import UIKit
 import SwiftUI
 import SwiftUI_Snackbar
+import GoogleMobileAds
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:
                      [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
         KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
     func application(_ application: UIApplication, open appUrl: URL,
