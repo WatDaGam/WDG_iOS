@@ -66,7 +66,7 @@ struct LoginView: View {
                             return
                         }
                         print(appleIDCredential.user, identityTokenString, identityTokenAuthString)
-                        authModel.handleAppleLogin(userId: identityTokenAuthString)
+                        authModel.handleAppleLogin(userId: identityTokenString)
                     }
                 case .failure(let error):
                     // 인증 실패 시 처리
