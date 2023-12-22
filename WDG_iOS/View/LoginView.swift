@@ -55,6 +55,7 @@ struct LoginView: View {
                 switch result {
                 case .success(let authorization):
                     // 성공적인 인증 후 처리
+                    print(authorization)
                     if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
                         guard let identityTokenData = appleIDCredential.identityToken,
                               let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
@@ -64,7 +65,7 @@ struct LoginView: View {
                               let identityTokenAuthString = String(data: identityTokenAuth, encoding: .utf8) else {
                             return
                         }
-                        print(identityTokenString, identityTokenAuthString)
+                        print(appleIDCredential.user, identityTokenString, identityTokenAuthString)
                         authModel.handleAppleLogin(userId: identityTokenAuthString)
                     }
                 case .failure(let error):
