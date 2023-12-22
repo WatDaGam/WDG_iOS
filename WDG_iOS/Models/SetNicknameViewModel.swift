@@ -9,6 +9,8 @@ import Foundation
 
 class SetNicknameViewModel: ObservableObject {
     private var tokenModel: TokenModel = TokenModel()
+    private var isConfirm: Bool = false
+    func getIsConfirm() -> Bool { return self.isConfirm }
     func checkNicknameForm(nickname: String) -> Bool {
         // 닉네임 길이 검사
         if nickname.count < 2 {
@@ -47,14 +49,17 @@ class SetNicknameViewModel: ObservableObject {
                 let (_, response) = try await URLSession.shared.data(for: request)
                 guard let httpResponse = response as? HTTPURLResponse else {
                     print("Invalid response")
+                    self.isConfirm = false
                     return false
                 }
+                self.isConfirm = true
                 return httpResponse.statusCode == 200
             } catch {
                 print("Fetch failed: \(error.localizedDescription)")
                 return false
             }
         } else {
+            self.isConfirm = false
             return false
         }
     }

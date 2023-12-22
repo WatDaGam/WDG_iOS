@@ -85,7 +85,7 @@ struct SetNicknameView: View {
                     .padding(.top, -15)
                 }
                 Spacer()
-                if isConfirm {
+                if self.setNickname.getIsConfirm() {
                     Button(action: {
                         Task {
                             let result = await self.setNickname.setNickname(nickname: nickname)
