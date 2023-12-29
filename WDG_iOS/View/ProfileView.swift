@@ -12,6 +12,7 @@ struct ProfileView: View {
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
     @Binding var alertType: AlertType?
+    @Binding var reportPostId: Int
     var nickname: String
     var numberOfPosts: Int
     var numberOfLikes: Int
@@ -31,7 +32,7 @@ struct ProfileView: View {
     var postList: some View {
         List {
             ForEach(postModel.getMyPosts()) { post in
-                Post(alertType: $alertType, post: post, myStory: true)
+                Post(alertType: $alertType, reportPostId: $reportPostId, post: post, myStory: true)
                     .environmentObject(locationModel)
             }
         }
@@ -78,12 +79,13 @@ struct ProfileStatsView: View {
 
 struct ProfileView_Previews: PreviewProvider {
     @State static var alertType: AlertType?
+    @State static var reportPostId: Int = 0
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
         let postModel = PostModel()
         let locationModel = LocationModel(tokenModel: tokenModel, authModel: authModel, postModel: postModel)
-        ProfileView(alertType: $alertType, nickname: "test", numberOfPosts: 10, numberOfLikes: 10)
+        ProfileView(alertType: $alertType, reportPostId: $reportPostId, nickname: "test", numberOfPosts: 10, numberOfLikes: 10)
             .environmentObject(postModel)
             .environmentObject(locationModel)
     }

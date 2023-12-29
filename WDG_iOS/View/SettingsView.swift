@@ -14,7 +14,7 @@ struct SettingsView: View {
     @Binding var selectedTab: Int
     var body: some View {
         VStack {
-            BannerContentView(navigationTitle: "settings", adUnitID: "ca-app-pub-7132344735506626/9039057664")
+            BannerContentView(navigationTitle: "settings", adUnitID: "ca-app-pub-3940256099942544/6300978111")
             Divider()
             List {
                 Button("프로필", action: { selectedTab = 3 })

@@ -16,6 +16,7 @@ enum AlertType: Identifiable {
     case locationAuth
     case reportSuccess
     case reportAlert
+    case isReport
     var id: Int {
         switch self {
         case .logout:
@@ -32,6 +33,8 @@ enum AlertType: Identifiable {
             return 5
         case .reportAlert:
             return 6
+        case .isReport:
+            return 7
         }
     }
 }
@@ -59,6 +62,7 @@ struct ContentView: View {
         location: LocationType(latitude: 37.56, longitude: 126.97),
         likes: 0
     )
+    @State var reportPostId: Int = 0
     var body: some View {
         VStack {
             if authModel.isNewAccount && authModel.isLoggedIn {
@@ -77,6 +81,7 @@ struct ContentView: View {
                             latitude: $latitude,
                             longitude: $longitude,
                             scrollProxy: $scrollProxy,
+                            reportPostId: $reportPostId,
                             namespace: mainListTop
                         )
                         .environmentObject(tokenModel)
@@ -118,6 +123,7 @@ struct ContentView: View {
                         profileNavbarView()
                         ProfileView(
                             alertType: $alertType,
+                            reportPostId: $reportPostId,
                             nickname: userInfo.getUserNickname(),
                             numberOfPosts: userInfo.getUserStoryNum(),
                             numberOfLikes: userInfo.getUserLikeNum()
@@ -158,6 +164,7 @@ struct ContentView: View {
                     message: Text("로그아웃 시 로그인 화면으로 이동합니다."),
                     primaryButton: .destructive(Text("예")) {
                         authModel.handleLogout()
+                        selectedTab = 0
                     },
                     secondaryButton: .cancel(Text("아니오"))
                 )
@@ -166,6 +173,7 @@ struct ContentView: View {
                     title: Text("회원탈퇴"),
                     message: Text("회원탈퇴 시 모든 데이터가 삭제됩니다."),
                     primaryButton: .destructive(Text("탈퇴")) {
+                        selectedTab = 0
                         Task {
                             await authModel.deleteAccount()
                         }
@@ -240,6 +248,27 @@ struct ContentView: View {
                         "신고된 게시글이 \(userInfo.getReportedStoryNum())건 존재합니다.\n\n게시글을 조회하시려면 support@watdagam.com으로 문의해주세요."
                     ),
                     dismissButton: .default(Text("확인"))
+                )
+            case .isReport:
+                return Alert(
+                    title: Text("신고하기"),
+                    message: Text("신고하시겠습니까?"),
+                    primaryButton: .default(Text("확인")) {
+                        Task {
+                            await tokenModel.validateToken(authModel: authModel)
+                            let response = await postModel.reportStory(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                id: reportPostId
+                            )
+                            if response == 200 {
+                                alertType = .reportSuccess
+                            } else if response == 205 {
+                                postModel.removePost(id: reportPostId)
+                                alertType = .reportSuccess
+                            }
+                        }
+                    },
+                    secondaryButton: .cancel(Text("취소"))
                 )
             }
         }

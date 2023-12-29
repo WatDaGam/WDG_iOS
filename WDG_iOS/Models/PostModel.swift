@@ -301,6 +301,7 @@ struct Post: View {
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var snackbarController : SnackbarController
     @Binding var alertType: AlertType?
+    @Binding var reportPostId: Int
     @State private var onClicked: Int = 0
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
@@ -442,19 +443,21 @@ struct Post: View {
                     ForEach(postMenuOption, id: \.self) { option in
                         Button(option) {
                             if option == "신고하기" {
-                                Task {
-                                    await tokenModel.validateToken(authModel: authModel)
-                                    let response = await postModel.reportStory(
-                                        accessToken: tokenModel.getToken("accessToken") ?? "",
-                                        id: post.id
-                                    )
-                                    if response == 200 {
-                                        alertType = .reportSuccess
-                                    } else if response == 205 {
-                                        postModel.removePost(id: post.id)
-                                        alertType = .reportSuccess
-                                    }
-                                }
+                                reportPostId = post.id
+                                alertType = .isReport
+//                                Task {
+//                                    await tokenModel.validateToken(authModel: authModel)
+//                                    let response = await postModel.reportStory(
+//                                        accessToken: tokenModel.getToken("accessToken") ?? "",
+//                                        id: post.id
+//                                    )
+//                                    if response == 200 {
+//                                        alertType = .reportSuccess
+//                                    } else if response == 205 {
+//                                        postModel.removePost(id: post.id)
+//                                        alertType = .reportSuccess
+//                                    }
+//                                }
                             }
                         }
                     }
@@ -493,6 +496,7 @@ struct Post: View {
 
 struct PostPreviews: PreviewProvider {
     @State static var alertType: AlertType?
+    @State static var reportPostId: Int = 0
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
@@ -505,7 +509,7 @@ struct PostPreviews: PreviewProvider {
         VStack {
             Spacer()
             Divider()
-            Post(alertType: $alertType, post: postModel.posts[0])
+            Post(alertType: $alertType, reportPostId: $reportPostId, post: postModel.posts[0])
                 .environmentObject(locationModel)
             Divider()
             Spacer()

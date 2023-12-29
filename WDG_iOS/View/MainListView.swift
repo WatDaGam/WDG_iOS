@@ -17,11 +17,12 @@ struct MainListView: View {
     @Binding var latitude: Double
     @Binding var longitude: Double
     @Binding var scrollProxy: ScrollViewProxy?
+    @Binding var reportPostId: Int
     @State private var currentScrollOffset: CGFloat = 0
     var namespace: Namespace.ID
     var body: some View {
         VStack {
-            BannerContentView(navigationTitle: "mainList", adUnitID: "ca-app-pub-7132344735506626/9532213383")
+            BannerContentView(navigationTitle: "mainList", adUnitID: "ca-app-pub-3940256099942544/6300978111")
             Divider()
             ScrollViewReader { proxy in
                 ScrollView {
@@ -30,7 +31,7 @@ struct MainListView: View {
                         .id(namespace)
                     VStack {
                         ForEach(postModel.posts) { post in
-                            Post(alertType: $alertType, post: post)
+                            Post(alertType: $alertType, reportPostId: $reportPostId, post: post)
                                 .environmentObject(locationModel)
                                 .environmentObject(tokenModel)
                                 .environmentObject(authModel)
@@ -146,6 +147,7 @@ struct MainListViewPreviews: PreviewProvider {
     @State static var longitude: Double = 126.9783785
     @State static var scrollProxy: ScrollViewProxy?
     @State static var alertType: AlertType?
+    @State static var reportPostId: Int = 0
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
@@ -157,6 +159,7 @@ struct MainListViewPreviews: PreviewProvider {
             latitude: $latitude,
             longitude: $longitude,
             scrollProxy: $scrollProxy,
+            reportPostId: $reportPostId,
             namespace: mainListTop
         )
         .environmentObject(postModel)
