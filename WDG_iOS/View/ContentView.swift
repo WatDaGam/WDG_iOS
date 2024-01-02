@@ -223,7 +223,10 @@ struct ContentView: View {
                             UIApplication.shared.open(settingUrl, options: [:], completionHandler: nil)
                         }
                     },
-                    secondaryButton: .cancel(Text("취소"))
+                    secondaryButton: .cancel(Text("로그아웃")) {
+                        authModel.handleLogout()
+                        selectedTab = 0
+                    }
                 )
             case .reportSuccess:
                 return Alert(

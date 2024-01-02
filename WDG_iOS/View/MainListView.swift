@@ -19,6 +19,14 @@ struct MainListView: View {
     @Binding var scrollProxy: ScrollViewProxy?
     @Binding var reportPostId: Int
     @State private var currentScrollOffset: CGFloat = 0
+    init(alertType: Binding<AlertType?>, latitude: Binding<Double>, longitude: Binding<Double>, scrollProxy: Binding<ScrollViewProxy?>, reportPostId: Binding<Int>, namespace: Namespace.ID) {
+        _alertType = alertType
+        _latitude = latitude
+        _longitude = longitude
+        _scrollProxy = scrollProxy
+        _reportPostId = reportPostId
+        self.namespace = namespace
+    }
     var namespace: Namespace.ID
     var body: some View {
         VStack {
@@ -89,6 +97,11 @@ struct MainNavbarCenter:View {
         _latitude = latitude
         _longitude = longitude
         _alertType = alertType
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil, queue: .main) { [self] _ in
+                self.checkLocationAuthorization()
+        }
     }
     var body: some View {
         VStack {
@@ -114,6 +127,16 @@ struct MainNavbarCenter:View {
                     .foregroundColor(.white)
             }
             Spacer()
+        }
+        .onAppear {
+            if locationManager.authorizationStatus == .denied {
+                alertType = .locationAuth
+            }
+        }
+    }
+    private func checkLocationAuthorization() {
+        if locationManager.authorizationStatus == .denied {
+            alertType = .locationAuth
         }
     }
 }
