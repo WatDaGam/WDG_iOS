@@ -47,7 +47,6 @@ class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
     var myPosts: [Message] = []
     init() {
-        self.createDummyPosts()
     }
     func addPosts(message: Message) {
         self.posts.insert(message, at: 0)

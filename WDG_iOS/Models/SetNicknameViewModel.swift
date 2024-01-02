@@ -34,6 +34,7 @@ class SetNicknameViewModel: ObservableObject {
     func checkNickname(nickname: String) async -> Bool {
         if checkNicknameForm(nickname: nickname) {
             // 백엔드로 중복 검사 체크
+            print("checkNickname")
             let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
             guard let requestURL = URL(string: "https://\(serverURLString)/nickname/check") else {
                 print("Invalid URL")
@@ -46,13 +47,18 @@ class SetNicknameViewModel: ObservableObject {
             request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
             request.httpBody = nickname.data(using: .utf8)
             do {
-                let (_, response) = try await URLSession.shared.data(for: request)
+                let (data, response) = try await URLSession.shared.data(for: request)
                 guard let httpResponse = response as? HTTPURLResponse else {
                     print("Invalid response")
                     self.isConfirm = false
                     return false
                 }
-                self.isConfirm = true
+                if let responseBody = String(data: data, encoding: .utf8) {
+                    print("Response Body: \(responseBody)")
+                } else {
+                    print("Unable to parse response body")
+                }
+                self.isConfirm = httpResponse.statusCode == 200
                 return httpResponse.statusCode == 200
             } catch {
                 print("Fetch failed: \(error.localizedDescription)")

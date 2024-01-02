@@ -507,7 +507,7 @@
 				INFOPLIST_FILE = "WDG-iOS-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "왔다감";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 현재 위치를 기반으로 주변 메세지들을 제공하기 위해 필요한 권한입니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -547,7 +547,7 @@
 				INFOPLIST_FILE = "WDG-iOS-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "왔다감";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 현재 위치를 기반으로 주변 메세지들을 제공하기 위해 필요한 권한입니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
