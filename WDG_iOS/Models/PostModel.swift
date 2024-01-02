@@ -328,7 +328,9 @@ struct Post: View {
                 }
             }, label: {
                 HStack {
-                    Text(post.message.count < 10 ? "\(post.message)" : "\(String(post.message.prefix(10)))...")
+                    let messageWithoutNewLines = post.message.replacingOccurrences(of: "\n", with: "")
+                    let displayText = messageWithoutNewLines.count < 10 ? "\(messageWithoutNewLines)" : "\(String(messageWithoutNewLines.prefix(10)))..."
+                    Text(displayText)
                         .font(.system(size: 20).bold())
                         .foregroundColor(
                             self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
