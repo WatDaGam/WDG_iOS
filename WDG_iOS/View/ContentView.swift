@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftUI_Snackbar
 
 enum AlertType: Identifiable {
     case logout

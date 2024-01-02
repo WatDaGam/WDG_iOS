@@ -9,7 +9,6 @@ import SwiftUI
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
-import SwiftUI_Snackbar
 
 @main
 struct WDG_iOSApp: App {

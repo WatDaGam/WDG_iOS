@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		99439B422B43969D001882B3 /* MySnackbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B412B43969D001882B3 /* MySnackbar.swift */; };
+		99439B442B4396E1001882B3 /* MySnackbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B432B4396E1001882B3 /* MySnackbarController.swift */; };
+		99439B462B439733001882B3 /* MySnackbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B452B439733001882B3 /* MySnackbarView.swift */; };
+		99439B482B439761001882B3 /* MySnackbarOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B472B439761001882B3 /* MySnackbarOption.swift */; };
+		99439B4A2B439783001882B3 /* MySnackbarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B492B439783001882B3 /* MySnackbarItem.swift */; };
+		99439B4C2B4397A4001882B3 /* MySnackbarDuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B4B2B4397A4001882B3 /* MySnackbarDuration.swift */; };
+		99439B4E2B4397CA001882B3 /* MySnackbarAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B4D2B4397CA001882B3 /* MySnackbarAction.swift */; };
 		F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E62AECDCFF00B3E19E /* ContentView.swift */; };
 		F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E82AECDF1800B3E19E /* PostView.swift */; };
 		F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EA2AECE03600B3E19E /* SettingsView.swift */; };
@@ -38,7 +45,6 @@
 		F4C1B0952AF36858009B9FF3 /* KeyChainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0942AF36858009B9FF3 /* KeyChainSwift.swift */; };
 		F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */; };
 		F4D28B952B184A2700E61997 /* ColorConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D28B942B184A2700E61997 /* ColorConverter.swift */; };
-		F4D28B992B18ED4B00E61997 /* SwiftUI-Snackbar in Frameworks */ = {isa = PBXBuildFile; productRef = F4D28B982B18ED4B00E61997 /* SwiftUI-Snackbar */; };
 		F4D7892F2B0B4BCB001B9B19 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D7892E2B0B4BCB001B9B19 /* UserInfo.swift */; };
 		F4E92E612AF8D3E60041C8F4 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E602AF8D3E50041C8F4 /* PostModel.swift */; };
 		F4E92E632AF9C54B0041C8F4 /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E92E622AF9C54B0041C8F4 /* LocationModel.swift */; };
@@ -47,6 +53,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		99439B412B43969D001882B3 /* MySnackbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbar.swift; path = MySnackbar/MySnackbar.swift; sourceTree = "<group>"; };
+		99439B432B4396E1001882B3 /* MySnackbarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarController.swift; path = MySnackbar/MySnackbarController.swift; sourceTree = "<group>"; };
+		99439B452B439733001882B3 /* MySnackbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarView.swift; path = MySnackbar/MySnackbarView.swift; sourceTree = "<group>"; };
+		99439B472B439761001882B3 /* MySnackbarOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarOption.swift; path = MySnackbar/MySnackbarOption.swift; sourceTree = "<group>"; };
+		99439B492B439783001882B3 /* MySnackbarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarItem.swift; path = MySnackbar/MySnackbarItem.swift; sourceTree = "<group>"; };
+		99439B4B2B4397A4001882B3 /* MySnackbarDuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarDuration.swift; path = MySnackbar/MySnackbarDuration.swift; sourceTree = "<group>"; };
+		99439B4D2B4397CA001882B3 /* MySnackbarAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarAction.swift; path = MySnackbar/MySnackbarAction.swift; sourceTree = "<group>"; };
 		F43EE5E62AECDCFF00B3E19E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F43EE5E82AECDF1800B3E19E /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		F43EE5EA2AECE03600B3E19E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -93,7 +106,6 @@
 				F4623E802AEBD37F0044F0C5 /* KakaoSDK in Frameworks */,
 				F4623E882AEBD37F0044F0C5 /* KakaoSDKCommon in Frameworks */,
 				F4B3D2F82B351A7E00948868 /* GoogleMobileAds in Frameworks */,
-				F4D28B992B18ED4B00E61997 /* SwiftUI-Snackbar in Frameworks */,
 				F4623E822AEBD37F0044F0C5 /* KakaoSDKAuth in Frameworks */,
 				F44AEB5B2B0D71D600AA65FC /* Lottie in Frameworks */,
 			);
@@ -166,6 +178,13 @@
 			isa = PBXGroup;
 			children = (
 				F4623E902AEBEA590044F0C5 /* AppDelegate.swift */,
+				99439B4B2B4397A4001882B3 /* MySnackbarDuration.swift */,
+				99439B412B43969D001882B3 /* MySnackbar.swift */,
+				99439B452B439733001882B3 /* MySnackbarView.swift */,
+				99439B492B439783001882B3 /* MySnackbarItem.swift */,
+				99439B4D2B4397CA001882B3 /* MySnackbarAction.swift */,
+				99439B472B439761001882B3 /* MySnackbarOption.swift */,
+				99439B432B4396E1001882B3 /* MySnackbarController.swift */,
 				F4623E922AEBEC990044F0C5 /* SceneDelegate.swift */,
 				F4623E942AEBF3400044F0C5 /* AuthModel.swift */,
 				F4C1B0942AF36858009B9FF3 /* KeyChainSwift.swift */,
@@ -230,7 +249,6 @@
 				F4623E852AEBD37F0044F0C5 /* KakaoSDKCertCore */,
 				F4623E872AEBD37F0044F0C5 /* KakaoSDKCommon */,
 				F44AEB5A2B0D71D600AA65FC /* Lottie */,
-				F4D28B982B18ED4B00E61997 /* SwiftUI-Snackbar */,
 				F4B3D2F72B351A7E00948868 /* GoogleMobileAds */,
 			);
 			productName = WDG_iOS;
@@ -264,7 +282,6 @@
 			packageReferences = (
 				F4623E7E2AEBD37F0044F0C5 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				F44AEB592B0D71D600AA65FC /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				F4D28B972B18ED4B00E61997 /* XCRemoteSwiftPackageReference "SwiftUI-Snackbar" */,
 				F4B3D2F62B351A7E00948868 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = F4623E522AEBA4B20044F0C5 /* Products */;
@@ -321,7 +338,9 @@
 				F4623E952AEBF3400044F0C5 /* AuthModel.swift in Sources */,
 				F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */,
 				F4C1B08D2AF12DD2009B9FF3 /* SetNicknameViewModel.swift in Sources */,
+				99439B4A2B439783001882B3 /* MySnackbarItem.swift in Sources */,
 				F4E92E632AF9C54B0041C8F4 /* LocationModel.swift in Sources */,
+				99439B482B439761001882B3 /* MySnackbarOption.swift in Sources */,
 				F4E92E612AF8D3E60041C8F4 /* PostModel.swift in Sources */,
 				F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */,
 				F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */,
@@ -331,14 +350,19 @@
 				F4B3D2FA2B351DC500948868 /* GADBannerView.swift in Sources */,
 				F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
+				99439B442B4396E1001882B3 /* MySnackbarController.swift in Sources */,
 				F4E92E672AFE7F7B0041C8F4 /* NavbarView.swift in Sources */,
+				99439B4C2B4397A4001882B3 /* MySnackbarDuration.swift in Sources */,
 				F4C1B0892AEFCD6D009B9FF3 /* SetNicknameView.swift in Sources */,
 				F4E92E652AFE7CCE0041C8F4 /* MyTabView.swift in Sources */,
+				99439B462B439733001882B3 /* MySnackbarView.swift in Sources */,
 				F4C1B0932AF36738009B9FF3 /* TokenModel.swift in Sources */,
 				F43EE5ED2AED0EC800B3E19E /* Message.swift in Sources */,
 				F4623E972AEC036B0044F0C5 /* MainListView.swift in Sources */,
 				F4C1B08F2AF31F8B009B9FF3 /* ShakeMotion.swift in Sources */,
 				F4D7892F2B0B4BCB001B9B19 /* UserInfo.swift in Sources */,
+				99439B422B43969D001882B3 /* MySnackbar.swift in Sources */,
+				99439B4E2B4397CA001882B3 /* MySnackbarAction.swift in Sources */,
 				F4D28B952B184A2700E61997 /* ColorConverter.swift in Sources */,
 				F4623E552AEBA4B20044F0C5 /* WDG_iOSApp.swift in Sources */,
 			);
@@ -595,14 +619,6 @@
 				minimumVersion = 10.14.0;
 			};
 		};
-		F4D28B972B18ED4B00E61997 /* XCRemoteSwiftPackageReference "SwiftUI-Snackbar" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jmseb3/SwiftUI-Snackbar.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -640,11 +656,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F4B3D2F62B351A7E00948868 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
-		};
-		F4D28B982B18ED4B00E61997 /* SwiftUI-Snackbar */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F4D28B972B18ED4B00E61997 /* XCRemoteSwiftPackageReference "SwiftUI-Snackbar" */;
-			productName = "SwiftUI-Snackbar";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

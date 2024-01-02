@@ -9,7 +9,6 @@ import Foundation
 import Combine
 import SwiftUI
 import CoreLocation
-import SwiftUI_Snackbar
 
 struct StoryResponse: Codable {
     let stories: [Story]
