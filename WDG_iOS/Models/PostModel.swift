@@ -329,11 +329,14 @@ struct Post: View {
                 }
             }, label: {
                 HStack {
-                    Text("\(post.nickname) 왔다감")
+                    Text(post.message.count < 10 ? "\(post.message)" : "\(String(post.message.prefix(10)))...")
                         .font(.system(size: 20).bold())
                         .foregroundColor(
                             self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
                         )
+                    Text("  \(timeAgoSinceDate(post.date))")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color.gray)
                     Spacer()
                     VStack(alignment: .trailing) {
                         HStack {
@@ -376,18 +379,9 @@ struct Post: View {
             }, label: {
                 VStack(spacing: 20) {
                     HStack {
-                        Text("\(post.nickname) 왔다감")
-                            .font(.system(size: 20).bold())
-                            .foregroundColor(
-                                self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                            )
-                        VStack {
-                            Spacer()
-                            Text("\(post.location.latitude) \(post.location.longitude)")
-                                .font(.caption2)
-                                .foregroundColor(Color.black)
-                        }
-                        .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
+                        Text("\(post.location.latitude) \(post.location.longitude)")
+                            .font(.caption2)
+                            .foregroundColor(Color.black)
                         Spacer()
                     }
                     HStack {
@@ -400,34 +394,43 @@ struct Post: View {
                         Spacer()
                     }
                     Spacer()
-                    HStack {
+                    HStack(alignment: .bottom) {
                         Image(systemName: "location")
-                        Text(distanceText).fixedSize(horizontal: true, vertical: false)
+                        Text(distanceText)
+                            .fontWeight(.semibold)
+                            .fixedSize(horizontal: true, vertical: false)
                         Spacer()
-                        Button(action: {
-                            self.isAnimating = true
-                            Task {
-                                await tokenModel.validateToken(authModel: authModel)
-                                await postModel.likeStory(
-                                    accessToken: tokenModel.getToken("accessToken") ?? "",
-                                    id: post.id
-                                )
+                        VStack(alignment: .trailing) {
+                            Text("\(convertDateToString(date: post.date))")
+                            Text("\(post.nickname) 왔다감")                            
+                            HStack {
+                                Button(action: {
+                                    self.isAnimating = true
+                                    Task {
+                                        await tokenModel.validateToken(authModel: authModel)
+                                        await postModel.likeStory(
+                                            accessToken: tokenModel.getToken("accessToken") ?? "",
+                                            id: post.id
+                                        )
+                                    }
+                                    // Lottie 애니메이션 길이에 맞춰 시간 조절
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                        self.isAnimating = false
+                                    }
+                                    self.isLike = true
+                                }, label: {
+                                    if isAnimating {
+                                        LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
+                                            .frame(width: 20, height: 20)
+                                    } else {
+                                        Image(systemName: "heart")
+                                            .foregroundColor(.black)
+                                    }
+                                })
+                                Text("\(post.likes)")
+                                    .fontWeight(.semibold)
                             }
-                            // Lottie 애니메이션 길이에 맞춰 시간 조절
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                self.isAnimating = false
-                            }
-                            self.isLike = true
-                        }, label: {
-                            if isAnimating {
-                                LottieView(name: "LottieLike", loopMode: .playOnce) // 애니메이션이 활성화된 경우
-                                    .frame(width: 20, height: 20)
-                            } else {
-                                Image(systemName: "heart")
-                                    .foregroundColor(.black)
-                            }
-                        })
-                        Text("\(post.likes)")
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -444,19 +447,6 @@ struct Post: View {
                             if option == "신고하기" {
                                 reportPostId = post.id
                                 alertType = .isReport
-//                                Task {
-//                                    await tokenModel.validateToken(authModel: authModel)
-//                                    let response = await postModel.reportStory(
-//                                        accessToken: tokenModel.getToken("accessToken") ?? "",
-//                                        id: post.id
-//                                    )
-//                                    if response == 200 {
-//                                        alertType = .reportSuccess
-//                                    } else if response == 205 {
-//                                        postModel.removePost(id: post.id)
-//                                        alertType = .reportSuccess
-//                                    }
-//                                }
                             }
                         }
                     }
@@ -491,6 +481,74 @@ struct Post: View {
             return String(format: "%.0fm", distanceInMeters)
         }
     }
+    func convertDateToString(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
+        return dateFormatter.string(from: date)
+    }
+    func timeAgoSinceDate(_ date: Date, numericDates: Bool = true) -> String {
+        let calendar = Calendar.current
+        let now = Date()
+        let earliest = now < date ? now : date
+        let latest = (earliest == now) ? date : now
+
+        let components: DateComponents = calendar.dateComponents([.minute, .hour, .day, .weekOfYear, .month, .year, .second], from: earliest, to: latest)
+
+        if (components.year! >= 2) {
+            return "\(components.year!)년 전"
+        } else if (components.year! >= 1) {
+            if (numericDates){
+                return "1년 전"
+            } else {
+                return "작년"
+            }
+        } else if (components.month! >= 2) {
+            return "\(components.month!)개월 전"
+        } else if (components.month! >= 1) {
+            if (numericDates){
+                return "1개월 전"
+            } else {
+                return "지난 달"
+            }
+        } else if (components.weekOfYear! >= 2) {
+            return "\(components.weekOfYear!)주 전"
+        } else if (components.weekOfYear! >= 1) {
+            if (numericDates){
+                return "1주 전"
+            } else {
+                return "지난 주"
+            }
+        } else if (components.day! >= 2) {
+            return "\(components.day!)일 전"
+        } else if (components.day! >= 1) {
+            if (numericDates){
+                return "1일 전"
+            } else {
+                return "어제"
+            }
+        } else if (components.hour! >= 2) {
+            return "\(components.hour!)시간 전"
+        } else if (components.hour! >= 1) {
+            if (numericDates){
+                return "1시간 전"
+            } else {
+                return "한 시간 전"
+            }
+        } else if (components.minute! >= 2) {
+            return "\(components.minute!)분 전"
+        } else if (components.minute! >= 1) {
+            if (numericDates){
+                return "1분 전"
+            } else {
+                return "방금 전"
+            }
+        } else if (components.second! >= 3) {
+            return "\(components.second!)초 전"
+        } else {
+            return "방금 전"
+        }
+    }
+
 }
 
 struct PostPreviews: PreviewProvider {
