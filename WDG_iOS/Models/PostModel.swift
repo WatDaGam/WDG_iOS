@@ -330,7 +330,7 @@ struct Post: View {
                 HStack {
                     let messageWithoutNewLines = post.message.replacingOccurrences(of: "\n", with: "")
                     let displayText = messageWithoutNewLines.count < 10 ? "\(messageWithoutNewLines)" : "\(String(messageWithoutNewLines.prefix(10)))..."
-                    Text(displayText)
+                    Text(self.myStory ?? false || distanceInMeter < 30 ? displayText : "\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
                         .foregroundColor(
                             self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
