@@ -16,6 +16,7 @@ struct PostView: View {
     var latitude: Double
     var longitude: Double
     var locationName: String
+    @FocusState private var isInputActive: Bool
     var body: some View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
@@ -31,6 +32,7 @@ struct PostView: View {
                 VStack {
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: $message)
+                            .focused($isInputActive)
                             .onReceive(message.publisher.collect()) {
                                 self.message = String($0.prefix(100))
                             }
@@ -40,6 +42,9 @@ struct PostView: View {
                                 .foregroundColor(Color.gray)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 8)
+                                .onTapGesture {
+                                    isInputActive = true
+                                }
                         }
                     }
                     .frame(maxHeight: .infinity, alignment: .top)
