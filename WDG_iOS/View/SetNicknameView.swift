@@ -14,10 +14,9 @@ struct NicknameInfo {
 }
 
 struct SetNicknameView: View {
-    enum Field: Hashable { case nickname }
     @StateObject var setNickname: SetNicknameViewModel = SetNicknameViewModel()
     @State private var nickname: String = ""
-    @FocusState private var focusField: Field?
+    @FocusState private var focusField: Bool
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var postModel: PostModel
@@ -38,9 +37,6 @@ struct SetNicknameView: View {
             message: "닉네임을 사용하실 수 있습니다.", color: Color.green, image: "checkmark.circle"
         )
     ]
-//    init(authModel: AuthModel) {
-//        _authModel = ObservedObject(wrappedValue: authModel)
-//    }
     var body: some View {
         NavigationView {
             VStack {
@@ -59,7 +55,7 @@ struct SetNicknameView: View {
                                 isConfirm = false
                             }
                             .font(.system(size: 20, weight: .bold))
-                            .focused($focusField, equals: .nickname)
+                            .focused($focusField)
                             .keyboardType(.default)
                             .foregroundColor(.black)
                             .placeholder(when: nickname.isEmpty) {
@@ -153,7 +149,14 @@ struct SetNicknameView: View {
                     secondaryButton: .cancel(Text("아니오"))
                 )
             }
-            .onAppear { focusField = .nickname }
+            .onAppear {
+//                focusField = true
+                DispatchQueue.main.asyncAfter(
+                    deadline: .now() + 0.2, execute: {
+                        focusField = true
+                    }
+                )
+            }
         }
     }
 }
