@@ -46,18 +46,18 @@ struct ProfileView: View {
             }
             .padding(.vertical, 30)
             Divider()
-//            HStack { // 향후 이미지를 버튼으로 변경 예정
-//                Spacer() // 이미지를 중앙으로 밀기 위해 추가
-//                Image(systemName: "signpost.right")
-//                Spacer() // Divider와 다른 이미지 사이에 공간을 만들기 위해 추가
+            HStack { // 향후 이미지를 버튼으로 변경 예정
+                Spacer() // 이미지를 중앙으로 밀기 위해 추가
+                Image(systemName: "signpost.right")
+                Spacer() // Divider와 다른 이미지 사이에 공간을 만들기 위해 추가
 //                Divider()
 //                    .frame(height: 40) // Divider의 높이를 설정
 //                Spacer() // 다른 이미지와 Divider 사이에 공간을 만들기 위해 추가
 //                Image(systemName: "heart")
 //                Spacer() // 이미지를 중앙으로 밀기 위해 추가
-//            }
-//            .frame(height: 30) // HStack의 높이를 설정
-//            Divider()
+            }
+            .frame(height: 30) // HStack의 높이를 설정
+            Divider()
             postList
             Spacer()
         }

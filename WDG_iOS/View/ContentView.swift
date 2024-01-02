@@ -260,6 +260,7 @@ struct ContentView: View {
                                 id: reportPostId
                             )
                             if response == 200 {
+                                postModel.removePost(id: reportPostId)
                                 alertType = .reportSuccess
                             } else if response == 205 {
                                 postModel.removePost(id: reportPostId)

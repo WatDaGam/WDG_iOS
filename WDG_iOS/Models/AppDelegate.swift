@@ -10,7 +10,6 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import UIKit
 import SwiftUI
-import SwiftUI_Snackbar
 import GoogleMobileAds
 
 class AppDelegate: UIResponder, UIApplicationDelegate {

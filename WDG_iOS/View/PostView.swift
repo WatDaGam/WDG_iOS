@@ -81,6 +81,9 @@ struct PostView: View {
             .background(Color.white)
             .colorScheme(.light)
         }
+        .onAppear {
+            isInputActive = true
+        }
     }
 }
 
