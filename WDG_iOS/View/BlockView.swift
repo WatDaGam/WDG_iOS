@@ -18,7 +18,7 @@ struct BlockView: View {
             List {
                 ForEach(blockList) { user in
                     HStack {
-                        Text(user.nickname)
+                        Text(user.writerName)
                         Spacer()
                         Button(action: {
                             alertType = .isUnBlock

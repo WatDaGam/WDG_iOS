@@ -184,7 +184,6 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                     .filter { !$0.isEmpty }
                     .prefix(2)
                     .joined(separator: ", ")
-                print(self.locationName)
             }
         }
     }

@@ -12,13 +12,22 @@ struct UserInfoResponse: Codable {
     let storyNum: Int
     let nickname: String
     let likeNum: Int
-    let reportedStoryNum: Int?
+    let reportedStoryNum: Int
     let userId: Int
 }
 
-struct BlockInfo: Identifiable {
+struct BlockResponse: Codable {
+    let blockedUsers: [BlockInfo]
+}
+
+struct BlockInfo: Identifiable, Codable {
     let id: Int
-    let nickname: String
+    let writerName: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "writerId"
+        case writerName
+    }
 }
 
 class UserInfo: ObservableObject {
@@ -60,22 +69,18 @@ class UserInfo: ObservableObject {
                 print("Invalid response")
                 return false
             }
-            print(data)
             if httpResponse.statusCode == 200 {
                 let decoder = JSONDecoder()
                 let userInfoResponse = try decoder.decode(UserInfoResponse.self, from: data)
-                let reportedStoryNum = userInfoResponse.reportedStoryNum ?? 0
-                print(userInfoResponse)
-                print(reportedStoryNum)
                 DispatchQueue.main.async {
                     self.myId = userInfoResponse.userId
                     self.nickname = userInfoResponse.nickname
                     self.storyNum = userInfoResponse.storyNum
                     self.likeNum = userInfoResponse.likeNum
+                    self.reportedStoryNum = userInfoResponse.reportedStoryNum
 
-                    if reportedStoryNum != 0 {
+                    if userInfoResponse.reportedStoryNum != 0 {
                         alertType.wrappedValue = .reportAlert
-                        self.reportedStoryNum = reportedStoryNum
                     }
                 }
                 return true
@@ -91,7 +96,7 @@ class UserInfo: ObservableObject {
     func getBlockList() async -> Bool {
         await tokenModel.validateToken(authModel: authModel)
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
-        guard let requestURL = URL(string: "https://\(serverURLString)/blockList") else {
+        guard let requestURL = URL(string: "https://\(serverURLString)/block/list") else {
             print("Invalid URL")
             return false
         }
@@ -105,36 +110,31 @@ class UserInfo: ObservableObject {
                 print("Invalid response")
                 return false
             }
-            print(data)
+            let decoder = JSONDecoder()
             if httpResponse.statusCode == 200 {
-                let decoder = JSONDecoder()
-//                let blockResponse = try decoder.decode(UserInfoResponse.self, from: data)
-//                let reportedStoryNum = userInfoResponse.reportedStoryNum ?? 0
-//                print(userInfoResponse)
-//                print(reportedStoryNum)
-//                DispatchQueue.main.async {
-//                    self.blockList = userInfoResponse.nickname
-//                }
+                let blockListResponse = try decoder.decode(BlockResponse.self, from: data)
+                self.blockList = blockListResponse.blockedUsers
                 return true
             } else {
                 print("Request failed with status code: \(httpResponse.statusCode)")
                 return false
             }
         } catch {
-            print("Fetch failed: \(error.localizedDescription)")
+            print("Error occurred:", error.localizedDescription)
             return false
         }
     }
     func addBlockUser(accessToken: String, id: Int) async -> Int {
+        print("addBlockUser", id)
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
         guard let requestURL = URL(
-            string: "https://\(serverURLString)/block?userId=" + String(id)
+            string: "https://\(serverURLString)/block?writerId=" + String(id)
         ) else {
             print("Invalid URL")
             return -1
         }
         var request = URLRequest(url: requestURL)
-        request.httpMethod = "GET"
+        request.httpMethod = "POST"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
         do {
@@ -142,7 +142,6 @@ class UserInfo: ObservableObject {
             guard let httpResponse = response as? HTTPURLResponse else {
                 return -1
             }
-            print(httpResponse.statusCode)
             return httpResponse.statusCode
         } catch {
             print("Fetch failed: \(error.localizedDescription)")
@@ -152,13 +151,13 @@ class UserInfo: ObservableObject {
     func removeBlockUser(accessToken: String, id: Int) async -> Int {
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
         guard let requestURL = URL(
-            string: "https://\(serverURLString)/block/remove?userId=" + String(id)
+            string: "https://\(serverURLString)/block/remove?blockedUserId=" + String(id)
         ) else {
             print("Invalid URL")
             return -1
         }
         var request = URLRequest(url: requestURL)
-        request.httpMethod = "GET"
+        request.httpMethod = "POST"
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
         do {
@@ -166,7 +165,6 @@ class UserInfo: ObservableObject {
             guard let httpResponse = response as? HTTPURLResponse else {
                 return -1
             }
-            print(httpResponse.statusCode)
             return httpResponse.statusCode
         } catch {
             print("Fetch failed: \(error.localizedDescription)")

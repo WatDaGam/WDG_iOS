@@ -330,6 +330,11 @@ struct ContentView: View {
                                 accessToken: tokenModel.getToken("accessToken") ?? "",
                                 id: blockId
                             )
+                            let getResponse = await postModel.getStoryList(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                lati: locationModel.getCurrentLocation().coordinate.latitude,
+                                longi: locationModel.getCurrentLocation().coordinate.longitude
+                            )
                         }
                     },
                     secondaryButton: .cancel(Text("취소")) {
