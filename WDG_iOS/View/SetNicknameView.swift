@@ -14,17 +14,19 @@ struct NicknameInfo {
 }
 
 struct SetNicknameView: View {
+    @Binding var alertType: AlertType?
     @StateObject var setNickname: SetNicknameViewModel = SetNicknameViewModel()
-    @State private var nickname: String = ""
-    @FocusState private var focusField: Bool
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var tokenModel: TokenModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
+    @FocusState private var focusField: Bool
+    @State private var nickname: String = ""
     @State private var attempts: Int = 0
     @State private var isCancle: Bool = false
     @State private var isConfirm: Bool = false
     @State private var isValidNickname: Int = 0
+    @State private var isAgreement: Bool = false
     private var infoList: [String] = ["default", "fail", "success"]
     private var nicknameInfoDict: [String: NicknameInfo] = [
         "default": NicknameInfo(
@@ -37,9 +39,22 @@ struct SetNicknameView: View {
             message: "닉네임을 사용하실 수 있습니다.", color: Color.green, image: "checkmark.circle"
         )
     ]
+    init(alertType: Binding<AlertType?>) {
+        _alertType = alertType
+    }
     var body: some View {
-        NavigationView {
+        if isAgreement {
             VStack {
+                HStack {
+                    Button(action: {
+                        alertType = .isCancleSignIn
+                    }, label: {
+                        Text("취소")
+                            .foregroundColor(.blue)
+                    })
+                    .padding(.leading, 20)
+                    Spacer()
+                }
                 WDGLogoView(size: 68, spacing: -10, mode: false)
                 VStack {
                     HStack {
@@ -129,33 +144,83 @@ struct SetNicknameView: View {
                     .padding(.bottom, 0)
                 }
             }
-            .navigationBarItems(leading: Button(
-                action: {
-                    // 경고창을 표시
-                    isCancle = true
-                }, label: { Text("취소") })
-            )
-            .alert(isPresented: $isCancle) {
-                Alert(
-                    title: Text("회원가입 취소"),
-                    message: Text("취소 시 정보가 저장되지 않습니다."),
-                    primaryButton: .destructive(Text("예")) {
-                        // "예"를 선택했을 때의 동작
-                        // 토큰 삭제 및 로그아웃 처리
-                        Task {
-                            await self.authModel.deleteAccount()
-                        }
-                    },
-                    secondaryButton: .cancel(Text("아니오"))
-                )
-            }
             .onAppear {
-//                focusField = true
                 DispatchQueue.main.asyncAfter(
                     deadline: .now() + 0.2, execute: {
                         focusField = true
                     }
                 )
+            }
+        } else {
+            VStack {
+                HStack {
+                    Button(action: {
+                        alertType = .isCancleSignIn
+                    }, label: {
+                        Text("취소")
+                            .foregroundColor(.blue)
+                    })
+                    .padding(.leading, 20)
+                    Spacer()
+                }
+                WDGLogoView(size: 68, spacing: -10, mode: false)
+                    .padding(.bottom, 10)
+                Text("왔다감에 오신것을 환영합니다!")
+                    .font(.system(size: 24, weight: .bold))
+                Spacer()
+                Text("유의 사항을 확인해주세요.")
+                    .padding(.bottom, 20)
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
+                        Text("위치 정보의 안전한 사용")
+                            .font(.system(size: 16))
+                    }
+                    Text("우리 앱은 위치 정보를 사용합니다. 개인의 위치 정보를 공유하지 않도록 주의해 주세요‼️")
+                        .font(.system(size: 14))
+                        .padding(.bottom, 10)
+                    HStack {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
+                        Text("개인 정보 보호")
+                            .font(.system(size: 16))
+                    }
+                    Text("개인 신상 정보나 타인의 개인정보를 포함하는 내용은 게시하지 말아주세요.🙅‍♀️🙅‍♂️")
+                        .font(.system(size: 14))
+                        .padding(.bottom, 10)
+                    HStack {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
+                        Text("존중과 예의를 지켜주세요.")
+                            .font(.system(size: 16))
+                    }
+                    Text("모든 사용자가 존중받고 안전하게 느낄 수 있도록, 예의 바른 언어 사용을 부탁드려요.🙏")
+                        .font(.system(size: 14))
+                        .padding(.bottom, 10)
+                    HStack {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
+                        Text("신고 및 차단")
+                            .font(.system(size: 16))
+                    }
+                    Text("부적절한 게시글 및 사용자가 보이면 신고 및 차단 기능을 이용해보세요.🚨")
+                        .font(.system(size: 14))
+                }
+
+                .frame(width: UIScreen.main.bounds.width * 0.8)
+                Spacer()
+                Button(action: {
+                    isAgreement = true
+                }, label: {
+                    Text("동의합니다.")
+                        .font(Font.custom("Noto Sans", size: 20))
+                        .foregroundColor(.white)
+                })
+                .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
+                .frame(height: 50)  // 버튼의 높이 설정
+                .background(.blue)
+                .padding(.bottom, 0)
             }
         }
     }
@@ -173,11 +238,12 @@ extension View {
         }
 }
 
-struct SetNicknameViewPreviews: PreviewProvider {
-    static var previews: some View {
-        let tokenModel = TokenModel()
-        let authModel = AuthModel(tokenModel: tokenModel)
-        SetNicknameView()
-            .environmentObject(authModel)
-    }
-}
+//struct SetNicknameViewPreviews: PreviewProvider {
+//    @State static var alertType: AlertType?
+//    static var previews: some View {
+//        let tokenModel = TokenModel()
+//        let authModel = AuthModel(tokenModel: tokenModel)
+//        SetNicknameView(alertType: $alertType)
+//            .environmentObject(authModel)
+//    }
+//}

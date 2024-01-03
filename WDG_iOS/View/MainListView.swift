@@ -50,7 +50,7 @@ struct MainListView: View {
                                 reportPostId: $reportPostId,
                                 blockId: $blockId,
                                 post: post,
-                                myStory: userInfo.getMyId() == post.id
+                                myStory: userInfo.getMyId() == post.userId
                             )
                                 .environmentObject(locationModel)
                                 .environmentObject(tokenModel)

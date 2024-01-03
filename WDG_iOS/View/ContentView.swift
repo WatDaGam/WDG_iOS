@@ -18,6 +18,7 @@ enum AlertType: Identifiable {
     case isReport
     case isUnBlock
     case isBlock
+    case isCancleSignIn
     var id: Int {
         switch self {
         case .logout:
@@ -40,6 +41,8 @@ enum AlertType: Identifiable {
             return 8
         case .isBlock:
             return 9
+        case .isCancleSignIn:
+            return 10
         }
     }
 }
@@ -73,7 +76,7 @@ struct ContentView: View {
     var body: some View {
         VStack {
             if authModel.isNewAccount && authModel.isLoggedIn {
-                SetNicknameView()
+                SetNicknameView(alertType: $alertType)
                     .environmentObject(authModel)
                     .environmentObject(tokenModel)
                     .environmentObject(locationModel)
@@ -332,6 +335,19 @@ struct ContentView: View {
                     secondaryButton: .cancel(Text("취소")) {
                         blockId = 0
                     }
+                )
+            case .isCancleSignIn:
+                return Alert(
+                    title: Text("회원가입 취소"),
+                    message: Text("취소 시 정보가 저장되지 않습니다."),
+                    primaryButton: .destructive(Text("예")) {
+                        // "예"를 선택했을 때의 동작
+                        // 토큰 삭제 및 로그아웃 처리
+                        Task {
+                            await self.authModel.deleteAccount()
+                        }
+                    },
+                    secondaryButton: .cancel(Text("아니오"))
                 )
             }
         }
