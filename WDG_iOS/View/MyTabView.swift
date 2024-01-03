@@ -36,7 +36,7 @@ struct MyTabView: View {
             Button(action: {
                 self.selectedTab = 2
             }, label: {
-                Image(systemName: selectedTab == 2 ? "person.fill" : "person")
+                Image(systemName: selectedTab == 2 || selectedTab == 3 || selectedTab == 4 ? "person.fill" : "person")
                     .resizable()
                     .frame(width: 25, height: 25)
             })

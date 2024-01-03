@@ -18,6 +18,7 @@ struct SettingsView: View {
 //            Divider()
             List {
                 Button("프로필", action: { selectedTab = 3 })
+                Button("차단목록", action: { selectedTab = 4 })
                 Button("로그아웃", action: { alertType = .logout })
                 Button("회원탈퇴", action: { alertType = .removeAccount })
             }

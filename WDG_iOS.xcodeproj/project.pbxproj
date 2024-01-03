@@ -14,6 +14,7 @@
 		99439B4A2B439783001882B3 /* MySnackbarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B492B439783001882B3 /* MySnackbarItem.swift */; };
 		99439B4C2B4397A4001882B3 /* MySnackbarDuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B4B2B4397A4001882B3 /* MySnackbarDuration.swift */; };
 		99439B4E2B4397CA001882B3 /* MySnackbarAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B4D2B4397CA001882B3 /* MySnackbarAction.swift */; };
+		99439B502B44E822001882B3 /* BlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99439B4F2B44E822001882B3 /* BlockView.swift */; };
 		F43EE5E72AECDCFF00B3E19E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E62AECDCFF00B3E19E /* ContentView.swift */; };
 		F43EE5E92AECDF1800B3E19E /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5E82AECDF1800B3E19E /* PostView.swift */; };
 		F43EE5EB2AECE03600B3E19E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43EE5EA2AECE03600B3E19E /* SettingsView.swift */; };
@@ -60,6 +61,7 @@
 		99439B492B439783001882B3 /* MySnackbarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarItem.swift; path = MySnackbar/MySnackbarItem.swift; sourceTree = "<group>"; };
 		99439B4B2B4397A4001882B3 /* MySnackbarDuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarDuration.swift; path = MySnackbar/MySnackbarDuration.swift; sourceTree = "<group>"; };
 		99439B4D2B4397CA001882B3 /* MySnackbarAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MySnackbarAction.swift; path = MySnackbar/MySnackbarAction.swift; sourceTree = "<group>"; };
+		99439B4F2B44E822001882B3 /* BlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockView.swift; sourceTree = "<group>"; };
 		F43EE5E62AECDCFF00B3E19E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F43EE5E82AECDF1800B3E19E /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		F43EE5EA2AECE03600B3E19E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				F4C1B0962AF606B4009B9FF3 /* ProfileView.swift */,
 				F43EE5E82AECDF1800B3E19E /* PostView.swift */,
 				F43EE5E62AECDCFF00B3E19E /* ContentView.swift */,
+				99439B4F2B44E822001882B3 /* BlockView.swift */,
 				F4E92E642AFE7CCE0041C8F4 /* MyTabView.swift */,
 				F4C1B0882AEFCD6D009B9FF3 /* SetNicknameView.swift */,
 				F44AEB5E2B0D742A00AA65FC /* LottieView.swift */,
@@ -350,6 +353,7 @@
 				F4B3D2FA2B351DC500948868 /* GADBannerView.swift in Sources */,
 				F4C1B0972AF606B4009B9FF3 /* ProfileView.swift in Sources */,
 				F4623E642AEBA5AB0044F0C5 /* LoginView.swift in Sources */,
+				99439B502B44E822001882B3 /* BlockView.swift in Sources */,
 				99439B442B4396E1001882B3 /* MySnackbarController.swift in Sources */,
 				F4E92E672AFE7F7B0041C8F4 /* NavbarView.swift in Sources */,
 				99439B4C2B4397A4001882B3 /* MySnackbarDuration.swift in Sources */,

@@ -16,6 +16,7 @@ enum AlertType: Identifiable {
     case reportSuccess
     case reportAlert
     case isReport
+    case isUnBlock
     var id: Int {
         switch self {
         case .logout:
@@ -34,6 +35,8 @@ enum AlertType: Identifiable {
             return 6
         case .isReport:
             return 7
+        case .isUnBlock:
+            return 8
         }
     }
 }
@@ -126,6 +129,11 @@ struct ContentView: View {
                             nickname: userInfo.getUserNickname(),
                             numberOfPosts: userInfo.getUserStoryNum(),
                             numberOfLikes: userInfo.getUserLikeNum()
+                        )
+                    case 4:
+                        blockNavbarView()
+                        BlockView(
+                            alertType: $alertType
                         )
                     default:
                         EmptyView()
@@ -273,6 +281,17 @@ struct ContentView: View {
                     },
                     secondaryButton: .cancel(Text("취소"))
                 )
+            case .isUnBlock:
+                return Alert(
+                    title: Text("차단 해제"),
+                    message: Text("차단을 해제하시겠습니까?"),
+                    primaryButton: .default(Text("확인")) {
+                        Task {
+                            // 차단 해제 로직
+                        }
+                    },
+                    secondaryButton: .cancel(Text("취소"))
+                )
             }
         }
         .background(.white)
@@ -355,6 +374,28 @@ struct ContentView: View {
                     }) },
                 center: {
                     Text(userInfo.getUserNickname())
+                        .foregroundColor(.white)
+                },
+                right: {}
+            )
+        }
+        .frame(height: 80)
+    }
+    @ViewBuilder
+    private func blockNavbarView() -> some View {
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            NavbarView(
+                left: {
+                    Button(action: {
+                        selectedTab = 2
+                    }, label: {
+                        Image(systemName: "chevron.backward")
+                            .foregroundColor(.white)
+                    }) },
+                center: {
+                    Text("차단목록")
                         .foregroundColor(.white)
                 },
                 right: {}
