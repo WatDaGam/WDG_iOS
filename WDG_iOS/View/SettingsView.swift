@@ -17,7 +17,7 @@ struct SettingsView: View {
 //            BannerContentView(navigationTitle: "settings", adUnitID: "ca-app-pub-3940256099942544/6300978111")
 //            Divider()
             List {
-                Button("프로필", action: { selectedTab = 3 })
+                Button("내가 쓴 글", action: { selectedTab = 3 })
                 Button("차단목록", action: { selectedTab = 4 })
                 Button("로그아웃", action: { alertType = .logout })
                 Button("회원탈퇴", action: { alertType = .removeAccount })
