@@ -13,18 +13,23 @@ struct MainListView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var locationModel: LocationModel
+    @EnvironmentObject var userInfo: UserInfo
     @Binding var alertType: AlertType?
+    @Binding var selectedTab: Int
     @Binding var latitude: Double
     @Binding var longitude: Double
     @Binding var scrollProxy: ScrollViewProxy?
     @Binding var reportPostId: Int
+    @Binding var blockId: Int
     @State private var currentScrollOffset: CGFloat = 0
-    init(alertType: Binding<AlertType?>, latitude: Binding<Double>, longitude: Binding<Double>, scrollProxy: Binding<ScrollViewProxy?>, reportPostId: Binding<Int>, namespace: Namespace.ID) {
+    init(alertType: Binding<AlertType?>, selectedTab: Binding<Int>, latitude: Binding<Double>, longitude: Binding<Double>, scrollProxy: Binding<ScrollViewProxy?>, reportPostId: Binding<Int>, blockId: Binding<Int>, namespace: Namespace.ID) {
         _alertType = alertType
+        _selectedTab = selectedTab
         _latitude = latitude
         _longitude = longitude
         _scrollProxy = scrollProxy
         _reportPostId = reportPostId
+        _blockId = blockId
         self.namespace = namespace
     }
     var namespace: Namespace.ID
@@ -39,7 +44,14 @@ struct MainListView: View {
                         .id(namespace)
                     VStack {
                         ForEach(postModel.posts) { post in
-                            Post(alertType: $alertType, reportPostId: $reportPostId, post: post)
+                            Post(
+                                alertType: $alertType,
+                                selectedTab: $selectedTab,
+                                reportPostId: $reportPostId,
+                                blockId: $blockId,
+                                post: post,
+                                myStory: userInfo.getMyId() == post.id
+                            )
                                 .environmentObject(locationModel)
                                 .environmentObject(tokenModel)
                                 .environmentObject(authModel)
@@ -171,6 +183,8 @@ struct MainListViewPreviews: PreviewProvider {
     @State static var scrollProxy: ScrollViewProxy?
     @State static var alertType: AlertType?
     @State static var reportPostId: Int = 0
+    @State static var blockId: Int = 0
+    @State static var selectedTab: Int = 0
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
@@ -179,10 +193,12 @@ struct MainListViewPreviews: PreviewProvider {
         @Namespace var mainListTop
         MainListView(
             alertType: $alertType,
+            selectedTab: $selectedTab,
             latitude: $latitude,
             longitude: $longitude,
             scrollProxy: $scrollProxy,
             reportPostId: $reportPostId,
+            blockId: $blockId,
             namespace: mainListTop
         )
         .environmentObject(postModel)

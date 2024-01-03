@@ -17,6 +17,7 @@ enum AlertType: Identifiable {
     case reportAlert
     case isReport
     case isUnBlock
+    case isBlock
     var id: Int {
         switch self {
         case .logout:
@@ -37,6 +38,8 @@ enum AlertType: Identifiable {
             return 7
         case .isUnBlock:
             return 8
+        case .isBlock:
+            return 9
         }
     }
 }
@@ -65,6 +68,8 @@ struct ContentView: View {
         likes: 0
     )
     @State var reportPostId: Int = 0
+    @State var blockId: Int = 0
+    @State var removeBlockId: Int = 0
     var body: some View {
         VStack {
             if authModel.isNewAccount && authModel.isLoggedIn {
@@ -80,10 +85,12 @@ struct ContentView: View {
                         mainListNavbarView()
                         MainListView(
                             alertType: $alertType,
+                            selectedTab: $selectedTab,
                             latitude: $latitude,
                             longitude: $longitude,
                             scrollProxy: $scrollProxy,
                             reportPostId: $reportPostId,
+                            blockId: $blockId,
                             namespace: mainListTop
                         )
                         .environmentObject(tokenModel)
@@ -91,9 +98,10 @@ struct ContentView: View {
                         .environmentObject(locationModel)
                         .environmentObject(postModel)
                         .environmentObject(snackbarController)
+                        .environmentObject(userInfo)
                         .onAppear {
                             Task {
-                                await userInfo.getUserInfo(alertType: $alertType)
+                                let response = await userInfo.getUserInfo(alertType: $alertType)
                             }
                         }
                     case 1:
@@ -116,16 +124,19 @@ struct ContentView: View {
                             Task {
                                 await userInfo.getUserInfo(alertType: $alertType)
                                 await tokenModel.validateToken(authModel: authModel)
-                                await postModel.getMyStoryList(
+                                let response = await postModel.getMyStoryList(
                                     accessToken: tokenModel.getToken("accessToken") ?? ""
                                 )
+                                let getResponse = await userInfo.getBlockList()
                             }
                         }
                     case 3:
                         profileNavbarView()
                         ProfileView(
                             alertType: $alertType,
+                            selectedTab: $selectedTab,
                             reportPostId: $reportPostId,
+                            blockId: $blockId,
                             nickname: userInfo.getUserNickname(),
                             numberOfPosts: userInfo.getUserStoryNum(),
                             numberOfLikes: userInfo.getUserLikeNum()
@@ -133,7 +144,9 @@ struct ContentView: View {
                     case 4:
                         blockNavbarView()
                         BlockView(
-                            alertType: $alertType
+                            alertType: $alertType,
+                            removeBlockId: $removeBlockId,
+                            blockList: userInfo.getBlockList()
                         )
                     default:
                         EmptyView()
@@ -203,13 +216,13 @@ struct ContentView: View {
                     primaryButton: .destructive(Text("게시")) {
                         Task {
                             await tokenModel.validateToken(authModel: authModel)
-                            await postModel.uploadStory(
+                            let uploadResponse = await postModel.uploadStory(
                                 accessToken: tokenModel.getToken("accessToken") ?? "",
                                 content: messageForm.message,
                                 lati: messageForm.location.latitude,
                                 longi: messageForm.location.longitude
                             )
-                            await postModel.getStoryList(
+                            let response = await postModel.getStoryList(
                                 accessToken: tokenModel.getToken("accessToken") ?? "",
                                 lati: locationModel.getCurrentLocation().coordinate.latitude,
                                 longi: locationModel.getCurrentLocation().coordinate.longitude
@@ -243,7 +256,7 @@ struct ContentView: View {
                     dismissButton: .default(Text("확인")) {
                         Task {
                             await tokenModel.validateToken(authModel: authModel)
-                            await postModel.getStoryList(
+                            let response = await postModel.getStoryList(
                                 accessToken: tokenModel.getToken("accessToken") ?? "",
                                 lati: locationModel.getCurrentLocation().coordinate.latitude,
                                 longi: locationModel.getCurrentLocation().coordinate.longitude
@@ -279,18 +292,46 @@ struct ContentView: View {
                             }
                         }
                     },
-                    secondaryButton: .cancel(Text("취소"))
+                    secondaryButton: .cancel(Text("취소")) {
+                        reportPostId = 0
+                    }
                 )
             case .isUnBlock:
                 return Alert(
                     title: Text("차단 해제"),
                     message: Text("차단을 해제하시겠습니까?"),
                     primaryButton: .default(Text("확인")) {
+                        userInfo.removeBlockListById(id: removeBlockId)
                         Task {
                             // 차단 해제 로직
+                            await tokenModel.validateToken(authModel: authModel)
+                            let response = await userInfo.removeBlockUser(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                id: removeBlockId
+                            )
                         }
                     },
-                    secondaryButton: .cancel(Text("취소"))
+                    secondaryButton: .cancel(Text("취소")) {
+                        removeBlockId = 0
+                    }
+                )
+            case .isBlock:
+                return Alert(
+                    title: Text("사용자 차단"),
+                    message: Text("해당 유저를 차단하시겠습니까?\n차단하면 해당 유저가 작성한 모든 게시물이 필터링됩니다."),
+                    primaryButton: .default(Text("확인")) {
+                        Task {
+                            // 차단 해제 로직
+                            await tokenModel.validateToken(authModel: authModel)
+                            let response = await userInfo.addBlockUser(
+                                accessToken: tokenModel.getToken("accessToken") ?? "",
+                                id: blockId
+                            )
+                        }
+                    },
+                    secondaryButton: .cancel(Text("취소")) {
+                        blockId = 0
+                    }
                 )
             }
         }

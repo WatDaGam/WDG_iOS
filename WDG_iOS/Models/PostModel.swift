@@ -299,7 +299,9 @@ struct Post: View {
     @EnvironmentObject var postModel: PostModel
     @EnvironmentObject var snackbarController : SnackbarController
     @Binding var alertType: AlertType?
+    @Binding var selectedTab: Int
     @Binding var reportPostId: Int
+    @Binding var blockId: Int
     @State private var onClicked: Int = 0
     @State private var isAnimating: Bool = false
     @State private var isLike: Bool = false
@@ -307,7 +309,7 @@ struct Post: View {
     @State private var isMenuActive = false
     var post: Message
     var myStory: Bool?
-    private let postMenuOption: [String] = ["신고하기"]
+    private let postMenuOption: [String] = ["신고하기", "차단하기"]
     var body: some View {
         let currentLocation = locationModel.location ?? CLLocation(
             latitude: 37.5666612, longitude: 126.9783785
@@ -384,6 +386,28 @@ struct Post: View {
                             .font(.caption2)
                             .foregroundColor(Color.black)
                         Spacer()
+                        if selectedTab == 0 && self.myStory ?? false == false {
+                            Menu {
+                                ForEach(postMenuOption, id: \.self) { option in
+                                    Button(option) {
+                                        if option == "신고하기" {
+                                            reportPostId = post.id
+                                            alertType = .isReport
+                                        } else if option == "차단하기" {
+                                            blockId = post.userId
+                                            alertType = .isBlock
+                                        }
+                                    }
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis")
+                                    .foregroundColor(.black)
+                            }
+                            .onTapGesture {
+                                // 메뉴가 열릴 때 isMenuActive를 true로 설정
+                                isMenuActive = true
+                            }
+                        }
                     }
                     HStack {
                         Text(
@@ -403,7 +427,7 @@ struct Post: View {
                         Spacer()
                         VStack(alignment: .trailing) {
                             Text("\(convertDateToString(date: post.date))")
-                            Text("\(post.nickname) 왔다감")                            
+                            Text("\(post.nickname) 왔다감")
                             HStack {
                                 Button(action: {
                                     self.isAnimating = true
@@ -441,27 +465,6 @@ struct Post: View {
             })
             .foregroundColor(Color.black)
             .contentShape(Rectangle()) // 전체 영역을 클릭 가능하게 설정
-            .overlay(
-                Menu {
-                    ForEach(postMenuOption, id: \.self) { option in
-                        Button(option) {
-                            if option == "신고하기" {
-                                reportPostId = post.id
-                                alertType = .isReport
-                            }
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .foregroundColor(.black)
-                        .padding(10)
-                }
-                .padding([.trailing, .top], 10)  // 메뉴 버튼의 위치 조정
-                .onTapGesture {
-                    // 메뉴가 열릴 때 isMenuActive를 true로 설정
-                    isMenuActive = true
-                }
-            , alignment: .topTrailing)
         default:
             Text("default")
         }
@@ -492,9 +495,9 @@ struct Post: View {
         let now = Date()
         let earliest = now < date ? now : date
         let latest = (earliest == now) ? date : now
-
+        
         let components: DateComponents = calendar.dateComponents([.minute, .hour, .day, .weekOfYear, .month, .year, .second], from: earliest, to: latest)
-
+        
         if (components.year! >= 2) {
             return "\(components.year!)년 전"
         } else if (components.year! >= 1) {
@@ -549,12 +552,14 @@ struct Post: View {
             return "방금 전"
         }
     }
-
+    
 }
 
 struct PostPreviews: PreviewProvider {
     @State static var alertType: AlertType?
     @State static var reportPostId: Int = 0
+    @State static var blockId: Int = 0
+    @State static var selectedTab: Int = 0
     static var previews: some View {
         let tokenModel = TokenModel()
         let authModel = AuthModel(tokenModel: tokenModel)
@@ -567,8 +572,14 @@ struct PostPreviews: PreviewProvider {
         VStack {
             Spacer()
             Divider()
-            Post(alertType: $alertType, reportPostId: $reportPostId, post: postModel.posts[0])
-                .environmentObject(locationModel)
+            Post(
+                alertType: $alertType,
+                selectedTab: $selectedTab,
+                reportPostId: $reportPostId,
+                blockId: $blockId,
+                post: postModel.posts[0]
+            )
+            .environmentObject(locationModel)
             Divider()
             Spacer()
         }
