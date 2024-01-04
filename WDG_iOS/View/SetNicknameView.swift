@@ -114,10 +114,10 @@ struct SetNicknameView: View {
                         Text("가입하기")
                             .font(Font.custom("Noto Sans", size: 20))
                             .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
+                            .frame(height: 50)  // 버튼의 높이 설정
+                            .background(.blue)
                     })
-                    .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
-                    .frame(height: 50)  // 버튼의 높이 설정
-                    .background(.blue)
                     .padding(.bottom, 0)
                 } else {
                     Button(action: {
@@ -137,10 +137,10 @@ struct SetNicknameView: View {
                         Text("확인")
                             .font(Font.custom("Noto Sans", size: 20))
                             .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
+                            .frame(height: 50)  // 버튼의 높이 설정
+                            .background(.blue)
                     })
-                    .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
-                    .frame(height: 50)  // 버튼의 높이 설정
-                    .background(.blue)
                     .padding(.bottom, 0)
                 }
             }
@@ -216,10 +216,10 @@ struct SetNicknameView: View {
                     Text("동의합니다.")
                         .font(Font.custom("Noto Sans", size: 20))
                         .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
+                        .frame(height: 50)  // 버튼의 높이 설정
+                        .background(.blue)
                 })
-                .frame(maxWidth: .infinity)  // 버튼의 너비를 화면 전체로 확장
-                .frame(height: 50)  // 버튼의 높이 설정
-                .background(.blue)
                 .padding(.bottom, 0)
             }
         }
