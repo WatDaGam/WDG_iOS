@@ -10,7 +10,7 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var authModel: AuthModel
-    @State private var logoOffset: CGFloat = 150
+    @State private var logoOffset: CGFloat = 200
     @State private var endAnimation: Bool = false
     var body: some View {
         ZStack {
@@ -31,17 +31,19 @@ struct LoginView: View {
                         }
                     }
                 VStack(spacing: 10) {
-                    if endAnimation {
-                        Button(action: {
-                            authModel.handleKakaoLogin()
-                        }, label: {
-                            Image("KakaoLoginButtonImage")
-                                .resizable() // 이미지를 크기 조정 가능하게 만듭니다.
-                                .aspectRatio(contentMode: .fit) // 원본 이미지의 비율을 유지합니다.
-                                .frame(height: 69)
-                        })
-                        signInWithAppleButton()
-                    }
+                    Button(action: {
+                        authModel.handleKakaoLogin()
+                    }, label: {
+                        Image("KakaoLoginButtonImage")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 69)
+                    })
+                    .opacity(endAnimation ? 1 : 0)
+                    .animation(.easeIn(duration: 1), value: endAnimation)
+                    signInWithAppleButton()
+                        .opacity(endAnimation ? 1 : 0)
+                        .animation(.easeIn(duration: 1), value: endAnimation)
                 }
             }
         }

@@ -37,7 +37,37 @@ class TokenModel: ObservableObject {
     }
     @MainActor
     func autoLoginValidateToken() async -> Bool {
-        return await reissuanceAccessToken()
+        return await autoLoginValidateAccessToken()
+    }
+    func autoLoginValidateAccessToken() async -> Bool {
+        if self.getToken("refreshToken") == nil { return false }
+        let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
+        guard let requestURL = URL(string: "https://\(serverURLString)/refreshtoken") else {
+            print("Invalid URL")
+            return false
+        }
+        let beforeRefreshToken = self.getToken("refreshToken") ?? ""
+        var request = URLRequest(url: requestURL)
+        request.addValue(beforeRefreshToken, forHTTPHeaderField: "Refresh-Token")
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                return false
+            }
+            print("statusCode :", httpResponse.statusCode)
+            if httpResponse.statusCode != 200 {
+                return false
+            }
+            let accessToken = httpResponse.headers["Authorization"] ?? ""
+            let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
+            self.saveToken(accessToken, type: "accessToken")
+            self.saveToken(accessExpire, type: "accessExpire")
+            return true
+        } catch {
+            print("Fetch failed: \(error.localizedDescription)")
+            return false
+        }
     }
     func reissuanceAccessToken() async -> Bool {
         guard let accessExpireStr = self.getToken("accessExpire"),
@@ -77,6 +107,7 @@ class TokenModel: ObservableObject {
                 let accessExpire = httpResponse.headers["Access-Expiration-Time"] ?? ""
                 self.saveToken(accessToken, type: "accessToken")
                 self.saveToken(accessExpire, type: "accessExpire")
+                print("auto login status code: ", httpResponse.statusCode)
                 return true
             } catch {
                 print("Fetch failed: \(error.localizedDescription)")
