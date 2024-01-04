@@ -308,7 +308,7 @@ struct Post: View {
     @State private var isPresented: Bool = false
     @State private var isMenuActive = false
     var post: Message
-    var myStory: Bool?
+    var myStory: Bool
     private let postMenuOption: [String] = ["신고하기", "차단하기"]
     var body: some View {
         let currentLocation = locationModel.location ?? CLLocation(
@@ -319,7 +319,7 @@ struct Post: View {
         switch onClicked {
         case 0:
             Button(action: {
-                if self.myStory ?? false || distanceInMeter < 30 {
+                if selectedTab == 0 && distanceInMeter < 30 || selectedTab != 0 && self.myStory {
                     onClicked = 1
                 } else {
                     snackbarController.showSnackBar(
@@ -330,13 +330,12 @@ struct Post: View {
                 }
             }, label: {
                 HStack {
+                    let isVisible = selectedTab == 0 && distanceInMeter < 30 || selectedTab != 0 && self.myStory
                     let messageWithoutNewLines = post.message.replacingOccurrences(of: "\n", with: "")
                     let displayText = messageWithoutNewLines.count < 10 ? "\(messageWithoutNewLines)" : "\(String(messageWithoutNewLines.prefix(10)))..."
-                    Text(self.myStory ?? false || distanceInMeter < 30 ? displayText : "\(post.nickname) 왔다감")
+                    Text(isVisible ? displayText : "\(post.nickname) 왔다감")
                         .font(.system(size: 20).bold())
-                        .foregroundColor(
-                            self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                        )
+                        .foregroundColor(isVisible ? Color.black : Color.gray)
                     Text("  \(timeAgoSinceDate(post.date))")
                         .font(.system(size: 12))
                         .foregroundColor(Color.gray)
@@ -344,24 +343,16 @@ struct Post: View {
                     VStack(alignment: .trailing) {
                         HStack {
                             Image(systemName: isLike ? "heart.fill" : "heart")
-                                .foregroundColor(
-                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                                )
+                                .foregroundColor(isVisible ? Color.black : Color.gray)
                             Text("\(post.likes)")
-                                .foregroundColor(
-                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                                )
+                                .foregroundColor(isVisible ? Color.black : Color.gray)
                         }
                         Spacer()
                         HStack {
                             Image(systemName: "location")
-                                .foregroundColor(
-                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                                )
+                                .foregroundColor(isVisible ? Color.black : Color.gray)
                             Text(distanceText).fixedSize(horizontal: true, vertical: false)
-                                .foregroundColor(
-                                    self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
-                                )
+                                .foregroundColor(isVisible ? Color.black : Color.gray)
                         }
                     }
                     .padding(.vertical)
@@ -386,7 +377,7 @@ struct Post: View {
                             .font(.caption2)
                             .foregroundColor(Color.black)
                         Spacer()
-                        if selectedTab == 0 && self.myStory ?? false == false {
+                        if selectedTab == 0 && self.myStory == false {
                             Menu {
                                 ForEach(postMenuOption, id: \.self) { option in
                                     Button(option) {
@@ -398,10 +389,15 @@ struct Post: View {
                                             alertType = .isBlock
                                         }
                                     }
+                                    .padding(.trailing, 10)
                                 }
                             } label: {
                                 Image(systemName: "ellipsis")
                                     .foregroundColor(.black)
+                                    .imageScale(.medium)
+                                    .font(.system(size: 24))
+                                    .padding(.top, 10)
+                                    .padding(.trailing, 10)
                             }
                             .onTapGesture {
                                 // 메뉴가 열릴 때 isMenuActive를 true로 설정
@@ -409,25 +405,29 @@ struct Post: View {
                             }
                         }
                     }
+                    .padding(.bottom, -10)
                     HStack {
                         Text(
-                            self.myStory ?? false || distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다."
+                            self.myStory || distanceInMeter < 30 ? post.message : "거리가 멀어 메세지를 확인하실 수 없습니다."
                         )
                         .foregroundColor(
-                            self.myStory ?? false || distanceInMeter < 30 ? Color.black : Color.gray
+                            self.myStory || distanceInMeter < 30 ? Color.black : Color.gray
                         )
                         Spacer()
                     }
                     Spacer()
                     HStack(alignment: .bottom) {
-                        Image(systemName: "location")
+                        Image(systemName: "location.fill")
+                            .foregroundColor(.blue)
                         Text(distanceText)
                             .fontWeight(.semibold)
                             .fixedSize(horizontal: true, vertical: false)
                         Spacer()
                         VStack(alignment: .trailing) {
                             Text("\(convertDateToString(date: post.date))")
+                                .font(.system(size: 14))
                             Text("\(post.nickname) 왔다감")
+                                .font(.system(size: 14))
                             HStack {
                                 Button(action: {
                                     self.isAnimating = true
@@ -555,33 +555,33 @@ struct Post: View {
     
 }
 
-struct PostPreviews: PreviewProvider {
-    @State static var alertType: AlertType?
-    @State static var reportPostId: Int = 0
-    @State static var blockId: Int = 0
-    @State static var selectedTab: Int = 0
-    static var previews: some View {
-        let tokenModel = TokenModel()
-        let authModel = AuthModel(tokenModel: tokenModel)
-        let postModel = PostModel()
-        let locationModel = LocationModel(
-            tokenModel: tokenModel,
-            authModel: authModel,
-            postModel: postModel
-        )
-        VStack {
-            Spacer()
-            Divider()
-            Post(
-                alertType: $alertType,
-                selectedTab: $selectedTab,
-                reportPostId: $reportPostId,
-                blockId: $blockId,
-                post: postModel.posts[0]
-            )
-            .environmentObject(locationModel)
-            Divider()
-            Spacer()
-        }
-    }
-}
+//struct PostPreviews: PreviewProvider {
+//    @State static var alertType: AlertType?
+//    @State static var reportPostId: Int = 0
+//    @State static var blockId: Int = 0
+//    @State static var selectedTab: Int = 0
+//    static var previews: some View {
+//        let tokenModel = TokenModel()
+//        let authModel = AuthModel(tokenModel: tokenModel)
+//        let postModel = PostModel()
+//        let locationModel = LocationModel(
+//            tokenModel: tokenModel,
+//            authModel: authModel,
+//            postModel: postModel
+//        )
+//        VStack {
+//            Spacer()
+//            Divider()
+//            Post(
+//                alertType: $alertType,
+//                selectedTab: $selectedTab,
+//                reportPostId: $reportPostId,
+//                blockId: $blockId,
+//                post: postModel.posts[0]
+//            )
+//            .environmentObject(locationModel)
+//            Divider()
+//            Spacer()
+//        }
+//    }
+//}

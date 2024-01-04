@@ -153,6 +153,7 @@ class LocationModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error getting location: \(error)")
+        print("currentLocation: ", currentLocation)
         if currentLocation != nil {
             // 에러가 발생하더라도 이전 위치 정보(currentLocation)가 있으면 그 정보를 계속 사용합니다.
             // 이 경우 새로운 위치 업데이트가 실패하더라도 사용자에게 영향을 주지 않습니다.
