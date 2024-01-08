@@ -46,6 +46,8 @@ extension DateFormatter {
 class PostModel: ObservableObject {
     @Published var posts: [Message] = []  // 빈 배열로 초기화
     var myPosts: [Message] = []
+    private var reportedDemoId: [Int] = []
+    private var blockedDemoId: Bool = false
     init() {
     }
     func addPosts(message: Message) {
@@ -59,6 +61,16 @@ class PostModel: ObservableObject {
     }
     func getMyPosts() -> [Message] {
         return self.myPosts
+    }
+    func blockDemoId() {
+        self.blockedDemoId = !self.blockedDemoId
+    }
+    func getBlockedDemoId() -> Bool {
+        return self.blockedDemoId
+    }
+    func removeDemoPost(id: Int) {
+        self.reportedDemoId.append(id)
+        self.posts.removeAll { $0.id == id }
     }
     func removePost(id: Int) {
         self.posts.removeAll { $0.id == id }
@@ -89,7 +101,9 @@ class PostModel: ObservableObject {
             }
             if httpResponse.statusCode == 200 {
                 DispatchQueue.main.async {
-                    self.posts = self.parseStories(jsonData: data) ?? []
+                    self.posts = []
+                    self.createDummyPosts(lati: lati ?? 37.5666612, longi: longi ?? 126.9783785)
+                    self.posts += self.parseStories(jsonData: data) ?? []
                 }
                 return true
             } else {
@@ -239,7 +253,7 @@ class PostModel: ObservableObject {
         request.addValue(accessToken, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "accept") // JSON 데이터임을 명시
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (_, response) = try await URLSession.shared.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
                 return -1
             }
@@ -265,28 +279,30 @@ class PostModel: ObservableObject {
             posts[index].likes = likeNum
         }
     }
-    func createDummyPosts() {
-        var dummyMessages = [Message]()
-        for id in 1...20 {
-            // 무작위 날짜 생성 (최근 3년 내)
-            let randomDays = Int.random(in: 0...(365 * 3))
-            let randomDate = Calendar.current.date(byAdding: .day, value: -randomDays, to: Date())!
-            // 대한민국 서울 기준으로 무작위 위경도 생성
-            let latitude = Double.random(in: 37.4...37.7)
-            let longitude = Double.random(in: 126.8...127.2)
-            // 더미 메시지 생성
-            let message = Message(
-                id: id + 1000000,
-                userId: id + 1000000,
-                nickname: ["정찬웅", "yback", "sangkkim12"].randomElement()!,  // 더 안전한 접근 방법
-                message: "Sample message \(Int.random(in: 1...100))",
-                date: randomDate,
-                location: LocationType(latitude: latitude, longitude: longitude),
-                likes: Int.random(in: 0...200)
-            )
-            dummyMessages.append(message)
+    func createDummyPosts(lati: Double, longi: Double) {
+        if !self.blockedDemoId {
+            for id in 1...5 {
+                // 무작위 날짜 생성 (최근 3년 내)
+                let randomDays = Int.random(in: 0...(365 * 1))
+                let randomDate = Calendar.current.date(byAdding: .day, value: -randomDays, to: Date())!
+                // 대한민국 서울 기준으로 무작위 위경도 생성
+                //            let latitude = locationModel.currentLocation?.coordinate.latitude ?? 37.5666612
+                //            let longitude = locationModel.currentLocation?.coordinate.longitude ?? 126.9783785
+                // 더미 메시지 생성
+                let message = Message(
+                    id: id + 1000000,
+                    userId: 1000000,
+                    nickname: "demoAuthor",
+                    message: "This content is demo content\(id). you can use report and block test about this.",
+                    date: randomDate,
+                    location: LocationType(latitude: lati, longitude: longi),
+                    likes: id - 1
+                )
+                if !self.reportedDemoId.contains(id + 1000000) {
+                    self.posts.append(message)
+                }
+            }
         }
-        self.posts = dummyMessages
     }
     func sortByDate() { self.posts.sort(by: {$0.date > $1.date}) }
     func sortByLikes() { self.posts.sort(by: {$0.likes > $1.likes}) }

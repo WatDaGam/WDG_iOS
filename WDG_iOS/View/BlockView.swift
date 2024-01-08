@@ -10,12 +10,35 @@ import SwiftUI
 struct BlockView: View {
     @EnvironmentObject var authModel: AuthModel
     @EnvironmentObject var locationModel: LocationModel
+    @EnvironmentObject var postModel: PostModel
     @Binding var alertType: AlertType?
     @Binding var removeBlockId: Int
     var blockList: [BlockInfo]
     var body: some View {
         VStack {
             List {
+                if postModel.getBlockedDemoId() {
+                    HStack {
+                        Text("demoUser")
+                        Spacer()
+                        Button(action: {
+                            alertType = .isUnBlock
+                            removeBlockId = 1000000
+                        }, label: {
+                            Text("해제")
+                                .font(.system(size: 12))
+                                .foregroundColor(.gray)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 16)
+                                .cornerRadius(20)
+                                .background(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                )
+                        })
+                    }
+                }
                 ForEach(blockList) { user in
                     HStack {
                         Text(user.writerName)

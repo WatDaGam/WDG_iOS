@@ -19,6 +19,8 @@ enum AlertType: Identifiable {
     case isUnBlock
     case isBlock
     case isCancleSignIn
+    case completeBlock
+    case completeUnblock
     var id: Int {
         switch self {
         case .logout:
@@ -43,6 +45,10 @@ enum AlertType: Identifiable {
             return 9
         case .isCancleSignIn:
             return 10
+        case .completeBlock:
+            return 11
+        case .completeUnblock:
+            return 12
         }
     }
 }
@@ -280,19 +286,24 @@ struct ContentView: View {
                     title: Text("신고하기"),
                     message: Text("신고하시겠습니까?"),
                     primaryButton: .default(Text("확인")) {
-                        Task {
-                            await tokenModel.validateToken(authModel: authModel)
-                            let response = await postModel.reportStory(
-                                accessToken: tokenModel.getToken("accessToken") ?? "",
-                                id: reportPostId
-                            )
-                            if response == 200 {
-                                postModel.removePost(id: reportPostId)
-                                alertType = .reportSuccess
-                            } else if response == 205 {
-                                postModel.removePost(id: reportPostId)
-                                alertType = .reportSuccess
+                        if reportPostId < 1000000 {
+                            Task {
+                                await tokenModel.validateToken(authModel: authModel)
+                                let response = await postModel.reportStory(
+                                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                                    id: reportPostId
+                                )
+                                if response == 200 || response == 205 {
+                                    postModel.removePost(id: reportPostId)
+                                    alertType = .reportSuccess
+                                } else if response == 205 {
+                                    postModel.removePost(id: reportPostId)
+                                    alertType = .reportSuccess
+                                }
                             }
+                        } else {
+                            postModel.removeDemoPost(id: reportPostId)
+                            alertType = .reportSuccess
                         }
                     },
                     secondaryButton: .cancel(Text("취소")) {
@@ -304,15 +315,20 @@ struct ContentView: View {
                     title: Text("차단 해제"),
                     message: Text("차단을 해제하시겠습니까?"),
                     primaryButton: .default(Text("확인")) {
-                        userInfo.removeBlockListById(id: removeBlockId)
-                        Task {
-                            // 차단 해제 로직
-                            await tokenModel.validateToken(authModel: authModel)
-                            let response = await userInfo.removeBlockUser(
-                                accessToken: tokenModel.getToken("accessToken") ?? "",
-                                id: removeBlockId
-                            )
+                        if removeBlockId == 1000000 {
+                            postModel.blockDemoId()
+                        } else {
+                            userInfo.removeBlockListById(id: removeBlockId)
+                            Task {
+                                // 차단 해제 로직
+                                await tokenModel.validateToken(authModel: authModel)
+                                let response = await userInfo.removeBlockUser(
+                                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                                    id: removeBlockId
+                                )
+                            }
                         }
+                        alertType = .completeUnblock
                     },
                     secondaryButton: .cancel(Text("취소")) {
                         removeBlockId = 0
@@ -323,19 +339,31 @@ struct ContentView: View {
                     title: Text("사용자 차단"),
                     message: Text("해당 유저를 차단하시겠습니까?\n차단하면 해당 유저가 작성한 모든 게시물이 필터링됩니다."),
                     primaryButton: .default(Text("확인")) {
-                        Task {
-                            // 차단 해제 로직
-                            await tokenModel.validateToken(authModel: authModel)
-                            let response = await userInfo.addBlockUser(
-                                accessToken: tokenModel.getToken("accessToken") ?? "",
-                                id: blockId
-                            )
-                            let getResponse = await postModel.getStoryList(
-                                accessToken: tokenModel.getToken("accessToken") ?? "",
-                                lati: locationModel.getCurrentLocation().coordinate.latitude,
-                                longi: locationModel.getCurrentLocation().coordinate.longitude
-                            )
+                        if blockId == 1000000 {
+                            postModel.blockDemoId()
+                            Task {
+                                let getResponse = await postModel.getStoryList(
+                                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                                    lati: locationModel.getCurrentLocation().coordinate.latitude,
+                                    longi: locationModel.getCurrentLocation().coordinate.longitude
+                                )
+                            }
+                        } else {
+                            Task {
+                                // 차단 해제 로직
+                                await tokenModel.validateToken(authModel: authModel)
+                                let response = await userInfo.addBlockUser(
+                                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                                    id: blockId
+                                )
+                                let getResponse = await postModel.getStoryList(
+                                    accessToken: tokenModel.getToken("accessToken") ?? "",
+                                    lati: locationModel.getCurrentLocation().coordinate.latitude,
+                                    longi: locationModel.getCurrentLocation().coordinate.longitude
+                                )
+                            }
                         }
+                        alertType = .completeBlock
                     },
                     secondaryButton: .cancel(Text("취소")) {
                         blockId = 0
@@ -353,6 +381,18 @@ struct ContentView: View {
                         }
                     },
                     secondaryButton: .cancel(Text("아니오"))
+                )
+            case .completeBlock:
+                return Alert(
+                    title: Text("차단완료"),
+                    message: Text("차단이 완료되었습니다.\n차단 해제는 [마이페이지 > 차단목록 > 해제]로 할 수 있습니다."),
+                    dismissButton: .default(Text("확인"))
+                )
+            case .completeUnblock:
+                return Alert(
+                    title: Text("해제완료"),
+                    message: Text("차단 해제 완료되었습니다."),
+                    dismissButton: .default(Text("확인"))
                 )
             }
         }
