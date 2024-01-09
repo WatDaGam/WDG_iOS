@@ -76,6 +76,7 @@ class PostModel: ObservableObject {
         self.posts.removeAll { $0.id == id }
     }
     func getStoryList(accessToken: String, lati: Double?, longi: Double?) async -> Bool {
+        print("리스트 불러오기")
         let jsonDict: [String: Any] = ["lati": lati ?? 0, "longi": longi ?? 0]
         let serverURLString = Bundle.main.infoDictionary?["SERVER_URL"] as? String ?? ""
         guard let requestURL = URL(string: "https://\(serverURLString)/storyList/renew") else {
@@ -101,9 +102,9 @@ class PostModel: ObservableObject {
             }
             if httpResponse.statusCode == 200 {
                 DispatchQueue.main.async {
-                    self.posts = []
-                    self.createDummyPosts(lati: lati ?? 37.5666612, longi: longi ?? 126.9783785)
-                    self.posts += self.parseStories(jsonData: data) ?? []
+//                    self.posts = []
+//                    self.createDummyPosts(lati: lati ?? 37.5666612, longi: longi ?? 126.9783785)
+                    self.posts = self.parseStories(jsonData: data) ?? []
                 }
                 return true
             } else {

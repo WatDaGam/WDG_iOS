@@ -35,8 +35,8 @@ struct MainListView: View {
     var namespace: Namespace.ID
     var body: some View {
         VStack {
-//            BannerContentView(navigationTitle: "mainList", adUnitID: "ca-app-pub-3940256099942544/6300978111")
-//            Divider()
+            BannerContentView(navigationTitle: "mainList", adUnitID: "ca-app-pub-7132344735506626/9532213383")
+            Divider()
             ScrollViewReader { proxy in
                 ScrollView {
                     Color.clear
